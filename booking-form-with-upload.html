@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="navbar.css">
+    <link rel="icon" type="image/png" href="Assets/favicon1.png">
+    <title>Nail Architect - Booking Form</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Poppins;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background-color: #f2e9e9;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            flex: 1;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .page-subtitle {
+            font-size: 16px;
+            margin-bottom: 25px;
+            color: #666;
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        .booking-form-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            animation: fadeIn 0.7s ease-out forwards;
+        }
+        
+        .booking-form {
+            background-color: #e8d7d0;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #f2e9e9;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            background-color: #ffffff;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        
+        .service-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .service-option {
+            position: relative;
+            padding: 12px;
+            background-color: #f2e9e9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .service-option:hover {
+            background-color: #f8f0ed;
+        }
+        
+        .service-option input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        
+        .service-option label {
+            display: block;
+            padding-left: 30px;
+            cursor: pointer;
+            font-weight: normal;
+            margin-bottom: 0;
+        }
+        
+        .checkmark {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            height: 20px;
+            width: 20px;
+            background-color: #fff;
+            border-radius: 50%;
+        }
+        
+        .service-option input:checked ~ .checkmark {
+            background-color: #d9bbb0;
+        }
+        
+        .checkmark:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+        
+        .service-option input:checked ~ .checkmark:after {
+            display: block;
+        }
+        
+        .service-option .checkmark:after {
+            left: 7px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        .service-price {
+            float: right;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .upload-section {
+            border: 2px dashed #c0c0c0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background-color: #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-section:hover {
+            border-color: #a0a0a0;
+        }
+        
+        .upload-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .upload-text {
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .browse-button {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #d9bbb0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .browse-button:hover {
+            background-color: #ae9389;
+        }
+        
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .preview-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 5px;
+            object-fit: cover;
+            position: relative;
+        }
+        
+        .remove-image {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .date-time-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .payment-info {
+            background-color: #e8d7d0;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .info-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .qr-code {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 15px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qr-code img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        
+        .qr-instructions {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .policy-box {
+            background-color: #e8d7d0;
+            border-radius: 15px;
+            padding: 25px;
+        }
+        
+        .policy-content {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .policy-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .policy-checkbox input {
+            width: auto;
+            margin-top: 3px;
+        }
+        
+        .policy-checkbox label {
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+        
+        .submit-button {
+            padding: 12px 24px;
+            background-color: #d9bbb0;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+        
+        .submit-button:hover {
+            background-color: #ae9389;
+            transform: translateY(-2px);
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            font-size: 14px;
+            cursor: pointer;
+            position: relative;
+            animation: fadeIn 0.9s ease-out forwards;
+            color: #000;
+        }
+        
+        .back-button:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: #000;
+            transition: width 0.6s ease;
+        }
+        
+        .back-button:hover:after {
+            width: 100%;
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 1024px) {
+            .booking-form-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .payment-info, .policy-box {
+                flex: 1;
+                min-width: 300px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .service-options {
+                grid-template-columns: 1fr;
+            }
+            
+            .date-time-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="Assets/logo.png" alt="Nail Architect Logo">
+                    </a>
+                </div>
+            </div>
+            <div class="nav-links">
+                <div class="nav-link">Services</div>
+                <div class="book-now">Book Now</div>
+                <div class="login-icon"></div>
+            </div>
+        </header>
+        
+        <a href="index.html">
+            <div class="back-button">← Back</div>
+          </a>
+        <div class="page-title">Book Your Appointment</div>
+        <div class="page-subtitle">Complete the form below to schedule your visit</div>
+        
+        <div class="booking-form-container">
+            <div class="booking-form">
+                <form id="appointment-form">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Select Service</label>
+                        <div class="service-options">
+                            <div class="service-option">
+                                <input type="radio" id="service1" name="service" value="classic-manicure" required>
+                                <label for="service1">Soft Gel<span class="service-price">starts at P200</span></label>
+                                <span class="checkmark"></span>
+                            </div>
+                            
+                            <div class="service-option">
+                                <input type="radio" id="service2" name="service" value="gel-manicure">
+                                <label for="service2">Press Ons<span class="service-price">starts at P200</span></label>
+                                <span class="checkmark"></span>
+                            </div>
+                            
+                            <div class="service-option">
+                                <input type="radio" id="service3" name="service" value="pedicure">
+                                <label for="service3">Builder Gel<span class="service-price">starts at P200</span></label>
+                                <span class="checkmark"></span>
+                            </div>
+                            
+                            <div class="service-option">
+                                <input type="radio" id="service4" name="service" value="nail-art">
+                                <label for="service4">Menicure<span class="service-price">starts at P200</span></label>
+                                <span class="checkmark"></span>
+                            </div>
+                            
+                            <div class="service-option">
+                                <input type="radio" id="service5" name="service" value="dip-powder">
+                                <label for="service5">Removal/Fill<span class="service-price">starts at P200</span></label>
+                                <span class="checkmark"></span>
+                            </div>
+                            
+                            <div class="service-option">
+                                <input type="radio" id="service6" name="service" value="extensions">
+                                <label for="service6">Other Services<span class="service-price">starts at P200</span></label>
+                                <span class="checkmark"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Nail Inspiration Images (Optional)</label>
+                        <div class="upload-section" id="upload-area">
+                            <div class="upload-icon">📁</div>
+                            <div class="upload-text">Drag and drop images or click to browse</div>
+                            <div class="browse-button">Browse Files</div>
+                            <input type="file" id="nail-inspo" name="nail-inspo" class="file-input" accept="image/*" multiple>
+                            <div class="preview-container" id="image-preview"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="date-time-grid">
+                            <div>
+                                <label for="date">Preferred Date</label>
+                                <input type="date" id="date" name="date" required>
+                            </div>
+                            
+                            <div>
+                                <label for="time">Preferred Time</label>
+                                <select id="time" name="time" required>
+                                    <option value="">Select a time</option>
+                                    <option value="9:00">9:00 AM</option>
+                                    <option value="10:00">10:00 AM</option>
+                                    <option value="11:00">11:00 AM</option>
+                                    <option value="12:00">12:00 PM</option>
+                                    <option value="13:00">1:00 PM</option>
+                                    <option value="14:00">2:00 PM</option>
+                                    <option value="15:00">3:00 PM</option>
+                                    <option value="16:00">4:00 PM</option>
+                                    <option value="17:00">5:00 PM</option>
+                                    <option value="18:00">6:00 PM</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Special Requests or Notes</label>
+                        <textarea id="notes" name="notes" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Screenshot of the Payment</label>
+                        <div class="upload-section" id="upload-area">
+                            <div class="upload-icon">📁</div>
+                            <div class="upload-text">Drag and drop images or click to browse</div>
+                            <div class="browse-button">Browse Files</div>
+                            <input type="file" id="nail-inspo" name="nail-inspo" class="file-input" accept="image/*" multiple>
+                            <div class="preview-container" id="image-preview"></div>
+                        </div>
+                    </div>
+                    <div class="form-group policy-checkbox">
+                        <input type="checkbox" id="deposit-confirm" name="deposit-confirm" required>
+                        <label for="deposit-confirm">I confirm that I have made the deposit payment via the QR code</label>
+                    </div>
+                    
+                    <button type="submit" class="submit-button">Book Appointment</button>
+                </form>
+            </div>
+            
+            <div class="sidebar">
+                <div class="payment-info">
+                    <div class="info-title">Down Payment</div>
+                    <p>A P500 deposit is required to secure your appointment. This amount will be deducted from your final bill.</p>
+                    
+                    <div class="qr-container">
+                        <div class="qr-code">
+                            <img src="Assets/qr.png" alt="Payment QR Code">
+                        </div>
+                        <div class="qr-instructions">
+                            Scan this QR code with your phone's camera to make the P500 deposit payment using your preferred payment app.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="policy-box">
+                    <div class="info-title">Salon Policies</div>
+                    <div class="policy-content">
+                        <p><strong>Cancellation Policy:</strong> We require 24 hours notice for cancellations or rescheduling. Late cancellations (less than 24 hours) or no-shows will forfeit the deposit.</p>
+                        <p><strong>Late Arrivals:</strong> If you're more than 15 minutes late, we may need to reschedule or modify your service.</p>
+                        <p><strong>Health & Safety:</strong> Please inform us of any health concerns or allergies before your appointment.</p>
+                    </div>
+                    
+                    <div class="policy-checkbox">
+                        <input type="checkbox" id="policy-agree" name="policy-agree" required>
+                        <label for="policy-agree">I have read and agree to the salon policies</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize date picker with current date + 1 day as minimum
+            const dateInput = document.getElementById('date');
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
+            dateInput.setAttribute('min', tomorrowFormatted);
+            
+            // Handle file upload and preview
+            const fileInput = document.getElementById('nail-inspo');
+            const previewContainer = document.getElementById('image-preview');
+            const uploadArea = document.getElementById('upload-area');
+            
+            // Handle drag and drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                uploadArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                uploadArea.style.borderColor = '#a0a0a0';
+                uploadArea.style.backgroundColor = '#e5e5e5';
+            }
+            
+            function unhighlight() {
+                uploadArea.style.borderColor = '#c0c0c0';
+                uploadArea.style.backgroundColor = '#f0f0f0';
+            }
+            
+            uploadArea.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+            
+            fileInput.addEventListener('change', function() {
+                handleFiles(this.files);
+            });
+            
+            function handleFiles(files) {
+                // Limit to 3 images
+                const maxFiles = 3;
+                let validFiles = Array.from(files).slice(0, maxFiles);
+                
+                // Clear existing previews if more than max allowed
+                if (previewContainer.children.length + validFiles.length > maxFiles) {
+                    previewContainer.innerHTML = '';
+                }
+                
+                validFiles.forEach(file => {
+                    if (!file.type.match('image.*')) {
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const imagePreviewWrapper = document.createElement('div');
+                        imagePreviewWrapper.style.position = 'relative';
+                        
+                        const img = document.createElement('img');
+                        img.classList.add('preview-image');
+                        img.src = e.target.result;
+                        
+                        const removeBtn = document.createElement('div');
+                        removeBtn.classList.add('remove-image');
+                        removeBtn.innerHTML = '×';
+                        removeBtn.addEventListener('click', function() {
+                            imagePreviewWrapper.remove();
+                        });
+                        
+                        imagePreviewWrapper.appendChild(img);
+                        imagePreviewWrapper.appendChild(removeBtn);
+                        
+                        if (previewContainer.children.length < maxFiles) {
+                            previewContainer.appendChild(imagePreviewWrapper);
+                        }
+                    }
+                    
+                    reader.readAsDataURL(file);
+                });
+            }
+            
+            // Form validation
+            document.getElementById('appointment-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Basic validation
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const phone = document.getElementById('phone').value;
+                const date = document.getElementById('date').value;
+                const time = document.getElementById('time').value;
+                const serviceSelected = document.querySelector('input[name="service"]:checked');
+                const depositConfirm = document.getElementById('deposit-confirm').checked;
+                const policyAgree = document.getElementById('policy-agree').checked;
+                
+                let isValid = true;
+                
+                if (!name || !email || !phone || !date || !time || !serviceSelected || !depositConfirm || !policyAgree) {
+                    isValid = false;
+                    alert('Please fill in all required fields and confirm the policies.');
+                }
+                
+                if (isValid) {
+                    // In a real implementation, you would send the form data to your server
+                    alert('Thank you! Your appointment has been booked successfully.');
+                    this.reset();
+                    previewContainer.innerHTML = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
