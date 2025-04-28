@@ -1,3 +1,41 @@
+<?php
+// Start session
+session_start();
+
+// Check if user is logged in
+$logged_in = isset($_SESSION['user_id']);
+
+// If logged in, get the first letter of the user's first name for the avatar
+$user_name = '';
+$user_email = '';
+$user_phone = '';
+
+if ($logged_in) {
+    // Get first letter for avatar
+    $first_letter = substr($_SESSION['user_name'], 0, 1);
+    
+    // Connect to database to get user info
+    $conn = mysqli_connect("localhost", "root", "", "nail_architect_db");
+    if ($conn) {
+        $user_id = $_SESSION['user_id'];
+        $query = "SELECT first_name, last_name, email, phone FROM users WHERE id = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+            $user_name = $user['first_name'] . ' ' . $user['last_name'];
+            $user_email = $user['email'];
+            $user_phone = $user['phone'];
+        }
+        
+        mysqli_close($conn);
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +43,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
     <link rel="icon" type="image/png" href="Assets/favicon1.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Nail Architect - Booking Form</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -48,6 +87,54 @@
             justify-content: space-between;
             align-items: center;
             padding-bottom: 15px;
+        }
+        
+        .logo-container img {
+            height: 60px;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-link:hover {
+            opacity: 0.7;
+        }
+        
+        .book-now {
+            padding: 8px 20px;
+            background-color: #e8d7d0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .book-now:hover {
+            background-color: #d9bbb0;
+        }
+        
+        .login-icon {
+            cursor: pointer;
+        }
+        
+        .user-initial {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e0c5b7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
         }
         
         .page-title {
@@ -422,7 +509,7 @@
         <header>
             <div class="logo-container">
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="index.php">
                         <img src="Assets/logo.png" alt="Nail Architect Logo">
                     </a>
                 </div>
@@ -430,69 +517,73 @@
             <div class="nav-links">
                 <div class="nav-link">Services</div>
                 <div class="book-now">Book Now</div>
-                <div class="login-icon"></div>
+                <?php if ($logged_in): ?>
+                    <div class="user-initial"><?php echo $first_letter; ?></div>
+                <?php else: ?>
+                    <div class="login-icon"><i class="fa fa-user"></i></div>
+                <?php endif; ?>
             </div>
         </header>
         
-        <a href="index.html">
+        <a href="index.php">
             <div class="back-button">← Back</div>
-          </a>
+        </a>
         <div class="page-title">Book Your Appointment</div>
         <div class="page-subtitle">Complete the form below to schedule your visit</div>
         
         <div class="booking-form-container">
             <div class="booking-form">
-                <form id="appointment-form">
+                <form id="appointment-form" method="POST" action="process_booking.php" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="name">Your Name</label>
-                        <input type="text" id="name" name="name" required>
+                        <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($user_name); ?>" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required>
+                        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user_email); ?>" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" required>
+                        <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($user_phone); ?>" required>
                     </div>
                     
                     <div class="form-group">
                         <label>Select Service</label>
                         <div class="service-options">
                             <div class="service-option">
-                                <input type="radio" id="service1" name="service" value="classic-manicure" required>
+                                <input type="radio" id="service1" name="service" value="soft-gel" required>
                                 <label for="service1">Soft Gel<span class="service-price">starts at P800</span></label>
                                 <span class="checkmark"></span>
                             </div>
                             
                             <div class="service-option">
-                                <input type="radio" id="service2" name="service" value="gel-manicure">
+                                <input type="radio" id="service2" name="service" value="press-ons">
                                 <label for="service2">Press Ons<span class="service-price">starts at P300</span></label>
                                 <span class="checkmark"></span>
                             </div>
                             
                             <div class="service-option">
-                                <input type="radio" id="service3" name="service" value="pedicure">
+                                <input type="radio" id="service3" name="service" value="builder-gel">
                                 <label for="service3">Builder Gel<span class="service-price">starts at P750</span></label>
                                 <span class="checkmark"></span>
                             </div>
                             
                             <div class="service-option">
-                                <input type="radio" id="service4" name="service" value="nail-art">
+                                <input type="radio" id="service4" name="service" value="menicure">
                                 <label for="service4">Menicure<span class="service-price">starts at P400</span></label>
                                 <span class="checkmark"></span>
                             </div>
                             
                             <div class="service-option">
-                                <input type="radio" id="service5" name="service" value="dip-powder">
+                                <input type="radio" id="service5" name="service" value="removal-fill">
                                 <label for="service5">Removal/Fill<span class="service-price">starts at P150</span></label>
                                 <span class="checkmark"></span>
                             </div>
                             
                             <div class="service-option">
-                                <input type="radio" id="service6" name="service" value="extensions">
+                                <input type="radio" id="service6" name="service" value="other">
                                 <label for="service6">Other Services<span class="service-price">price varies</span></label>
                                 <span class="checkmark"></span>
                             </div>
@@ -501,12 +592,12 @@
                     
                     <div class="form-group">
                         <label>Nail Inspiration Images (Optional)</label>
-                        <div class="upload-section" id="upload-area">
+                        <div class="upload-section" id="inspiration-upload">
                             <div class="upload-icon">📁</div>
                             <div class="upload-text">Drag and drop images or click to browse</div>
                             <div class="browse-button">Browse Files</div>
-                            <input type="file" id="nail-inspo" name="nail-inspo" class="file-input" accept="image/*" multiple>
-                            <div class="preview-container" id="image-preview"></div>
+                            <input type="file" id="nail-inspo" name="nail_inspo[]" class="file-input" accept="image/*" multiple>
+                            <div class="preview-container" id="inspo-preview"></div>
                         </div>
                     </div>
                     
@@ -540,20 +631,31 @@
                         <label for="notes">Special Requests or Notes</label>
                         <textarea id="notes" name="notes" rows="3"></textarea>
                     </div>
+                    
                     <div class="form-group">
                         <label>Upload Screenshot of the Payment</label>
-                        <div class="upload-section" id="upload-area">
+                        <div class="upload-section" id="payment-upload">
                             <div class="upload-icon">📁</div>
-                            <div class="upload-text">Drag and drop images or click to browse</div>
+                            <div class="upload-text">Drag and drop payment screenshot or click to browse</div>
                             <div class="browse-button">Browse Files</div>
-                            <input type="file" id="nail-inspo" name="nail-inspo" class="file-input" accept="image/*" multiple>
-                            <div class="preview-container" id="image-preview"></div>
+                            <input type="file" id="payment-proof" name="payment_proof" class="file-input" accept="image/*" required>
+                            <div class="preview-container" id="payment-preview"></div>
                         </div>
                     </div>
+                    
                     <div class="form-group policy-checkbox">
                         <input type="checkbox" id="deposit-confirm" name="deposit-confirm" required>
                         <label for="deposit-confirm">I confirm that I have made the deposit payment via the QR code</label>
                     </div>
+                    
+                    <div class="form-group policy-checkbox">
+                        <input type="checkbox" id="policy-agree" name="policy-agree" required>
+                        <label for="policy-agree">I have read and agree to the salon policies</label>
+                    </div>
+                    
+                    <?php if ($logged_in): ?>
+                        <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
+                    <?php endif; ?>
                     
                     <button type="submit" class="submit-button">Book Appointment</button>
                 </form>
@@ -581,15 +683,9 @@
                         <p><strong>Late Arrivals:</strong> If you're more than 15 minutes late, we may need to reschedule or modify your service.</p>
                         <p><strong>Health & Safety:</strong> Please inform us of any health concerns or allergies before your appointment.</p>
                     </div>
-                    
-                    <div class="policy-checkbox">
-                        <input type="checkbox" id="policy-agree" name="policy-agree" required>
-                        <label for="policy-agree">I have read and agree to the salon policies</label>
-                    </div>
                 </div>
             </div>
         </div>
-    
     </div>
     
     <script>
@@ -601,99 +697,126 @@
             const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
             dateInput.setAttribute('min', tomorrowFormatted);
             
-            // Handle file upload and preview
-            const fileInput = document.getElementById('nail-inspo');
-            const previewContainer = document.getElementById('image-preview');
-            const uploadArea = document.getElementById('upload-area');
-            
-            // Handle drag and drop
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, preventDefaults, false);
-            });
-            
-            function preventDefaults(e) {
+            // Handle navigation
+            const backButton = document.querySelector('.back-button');
+            backButton.addEventListener('click', function(e) {
                 e.preventDefault();
-                e.stopPropagation();
-            }
-            
-            ['dragenter', 'dragover'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, highlight, false);
+                window.location.href = 'index.php';
             });
             
-            ['dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, unhighlight, false);
+            const servicesLink = document.querySelector('.nav-link');
+            servicesLink.addEventListener('click', function() {
+                window.location.href = 'services.php';
             });
             
-            function highlight() {
-                uploadArea.style.borderColor = '#a0a0a0';
-                uploadArea.style.backgroundColor = '#e5e5e5';
-            }
-            
-            function unhighlight() {
-                uploadArea.style.borderColor = '#c0c0c0';
-                uploadArea.style.backgroundColor = '#f0f0f0';
-            }
-            
-            uploadArea.addEventListener('drop', handleDrop, false);
-            
-            function handleDrop(e) {
-                const dt = e.dataTransfer;
-                const files = dt.files;
-                handleFiles(files);
-            }
-            
-            fileInput.addEventListener('change', function() {
-                handleFiles(this.files);
+            <?php if ($logged_in): ?>
+            const userInitial = document.querySelector('.user-initial');
+            userInitial.addEventListener('click', function() {
+                window.location.href = 'members-lounge.php';
             });
+            <?php else: ?>
+            const loginIcon = document.querySelector('.login-icon');
+            loginIcon.addEventListener('click', function() {
+                window.location.href = 'login.php';
+            });
+            <?php endif; ?>
             
-            function handleFiles(files) {
-                // Limit to 3 images
-                const maxFiles = 3;
-                let validFiles = Array.from(files).slice(0, maxFiles);
+            // Handle file uploads for inspiration images
+            setupFileUpload('nail-inspo', 'inspo-preview', 'inspiration-upload', 3);
+            
+            // Handle file upload for payment proof
+            setupFileUpload('payment-proof', 'payment-preview', 'payment-upload', 1);
+            
+            // Setup file upload functionality
+            function setupFileUpload(inputId, previewId, areaId, maxFiles) {
+                const fileInput = document.getElementById(inputId);
+                const previewContainer = document.getElementById(previewId);
+                const uploadArea = document.getElementById(areaId);
                 
-                // Clear existing previews if more than max allowed
-                if (previewContainer.children.length + validFiles.length > maxFiles) {
-                    previewContainer.innerHTML = '';
+                // Handle drag and drop
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, preventDefaults, false);
+                });
+                
+                function preventDefaults(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
                 
-                validFiles.forEach(file => {
-                    if (!file.type.match('image.*')) {
-                        return;
-                    }
-                    
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        const imagePreviewWrapper = document.createElement('div');
-                        imagePreviewWrapper.style.position = 'relative';
-                        
-                        const img = document.createElement('img');
-                        img.classList.add('preview-image');
-                        img.src = e.target.result;
-                        
-                        const removeBtn = document.createElement('div');
-                        removeBtn.classList.add('remove-image');
-                        removeBtn.innerHTML = '×';
-                        removeBtn.addEventListener('click', function() {
-                            imagePreviewWrapper.remove();
-                        });
-                        
-                        imagePreviewWrapper.appendChild(img);
-                        imagePreviewWrapper.appendChild(removeBtn);
-                        
-                        if (previewContainer.children.length < maxFiles) {
-                            previewContainer.appendChild(imagePreviewWrapper);
-                        }
-                    }
-                    
-                    reader.readAsDataURL(file);
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, function() {
+                        uploadArea.style.borderColor = '#a0a0a0';
+                        uploadArea.style.backgroundColor = '#e5e5e5';
+                    }, false);
                 });
+                
+                ['dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, function() {
+                        uploadArea.style.borderColor = '#c0c0c0';
+                        uploadArea.style.backgroundColor = '#f0f0f0';
+                    }, false);
+                });
+                
+                uploadArea.addEventListener('drop', function(e) {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    handleFiles(files);
+                }, false);
+                
+                fileInput.addEventListener('change', function() {
+                    handleFiles(this.files);
+                });
+                
+                function handleFiles(files) {
+                    // Limit to max files
+                    let validFiles = Array.from(files).slice(0, maxFiles);
+                    
+                    // Clear existing previews if single file upload
+                    if (maxFiles === 1) {
+                        previewContainer.innerHTML = '';
+                    }
+                    // Clear if more than max allowed for multiple uploads
+                    else if (previewContainer.children.length + validFiles.length > maxFiles) {
+                        previewContainer.innerHTML = '';
+                    }
+                    
+                    validFiles.forEach(file => {
+                        if (!file.type.match('image.*')) {
+                            return;
+                        }
+                        
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            const imagePreviewWrapper = document.createElement('div');
+                            imagePreviewWrapper.style.position = 'relative';
+                            
+                            const img = document.createElement('img');
+                            img.classList.add('preview-image');
+                            img.src = e.target.result;
+                            
+                            const removeBtn = document.createElement('div');
+                            removeBtn.classList.add('remove-image');
+                            removeBtn.innerHTML = '×';
+                            removeBtn.addEventListener('click', function() {
+                                imagePreviewWrapper.remove();
+                            });
+                            
+                            imagePreviewWrapper.appendChild(img);
+                            imagePreviewWrapper.appendChild(removeBtn);
+                            
+                            if (previewContainer.children.length < maxFiles) {
+                                previewContainer.appendChild(imagePreviewWrapper);
+                            }
+                        }
+                        
+                        reader.readAsDataURL(file);
+                    });
+                }
             }
             
             // Form validation
             document.getElementById('appointment-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
                 // Basic validation
                 const name = document.getElementById('name').value;
                 const email = document.getElementById('email').value;
@@ -703,19 +826,11 @@
                 const serviceSelected = document.querySelector('input[name="service"]:checked');
                 const depositConfirm = document.getElementById('deposit-confirm').checked;
                 const policyAgree = document.getElementById('policy-agree').checked;
+                const paymentProof = document.getElementById('payment-proof').files.length > 0;
                 
-                let isValid = true;
-                
-                if (!name || !email || !phone || !date || !time || !serviceSelected || !depositConfirm || !policyAgree) {
-                    isValid = false;
-                    alert('Please fill in all required fields and confirm the policies.');
-                }
-                
-                if (isValid) {
-                    // In a real implementation, you would send the form data to your server
-                    alert('Thank you! Your appointment has been booked successfully.');
-                    this.reset();
-                    previewContainer.innerHTML = '';
+                if (!name || !email || !phone || !date || !time || !serviceSelected || !depositConfirm || !policyAgree || !paymentProof) {
+                    e.preventDefault();
+                    alert('Please fill in all required fields, upload payment proof, and confirm the policies.');
                 }
             });
         });

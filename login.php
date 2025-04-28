@@ -1,3 +1,62 @@
+<?php
+session_start();
+
+// Handle logout
+if (isset($_GET['logout'])) {
+    // Destroy the session
+    session_unset();
+    session_destroy();
+    
+    // Start a new session
+    session_start();
+}
+
+$conn = mysqli_connect("localhost", "root", "", "nail_architect_db");
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+$error_message = ""; // Initialize an error message variable
+
+if (isset($_POST['login'])) {
+    if (!empty($_POST['email']) && !empty($_POST['password'])) {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+
+        // Fetch user data from the database
+        $stmt = $conn->prepare("SELECT id, first_name, last_name, password FROM users WHERE email=?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 1) {
+            $row = $result->fetch_assoc();
+            $hashedPassword = $row['password'];
+
+            // Verify the password
+            if (password_verify($password, $hashedPassword)) {
+                // Set session variables
+                $_SESSION['user_id'] = $row['id'];
+                $_SESSION['user_name'] = $row['first_name'] . ' ' . $row['last_name'];
+                $_SESSION['user_email'] = $email;
+                
+                // Redirect to members area
+                header("Location: members-lounge.php");
+                exit();
+            } else {
+                $error_message = "Invalid email or password. Please try again.";
+            }
+        } else {
+            $error_message = "Invalid email or password. Please try again.";
+        }
+    } else {
+        $error_message = "Both fields are required.";
+    }
+}
+
+mysqli_close($conn);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +64,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Nail Architect - Login</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -49,6 +109,27 @@
             padding-bottom: 15px;
         }
         
+        .logo-container img {
+            height: 60px;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            cursor: pointer;
+        }
+        
+        .book-now {
+            padding: 8px 20px;
+            background-color: #e8d7d0;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        
         .login-container {
             display: flex;
             flex-direction: column;
@@ -66,6 +147,7 @@
             width: 100%;
             max-width: 450px;
             animation: fadeIn 0.7s ease-out forwards;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
         
         .login-title {
@@ -102,6 +184,26 @@
             box-shadow: 0 0 5px rgba(0,0,0,0.1);
         }
         
+        .password-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            cursor: pointer;
+            color: #666;
+            font-size: 16px;
+            user-select: none;
+            transition: color 0.3s ease;
+        }
+        
+        .toggle-password:hover {
+            color: #333;
+        }
+        
         .forgot-password {
             text-align: right;
             font-size: 12px;
@@ -131,49 +233,6 @@
         .login-button:hover {
             background-color: #ae9389;
             transform: translateY(-2px);
-        }
-        
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 25px 0;
-        }
-        
-        .divider::before, .divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background-color: #c0c0c0;
-        }
-        
-        .divider-text {
-            padding: 0 15px;
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .social-login {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-        
-        .social-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 20px;
-        }
-        
-        .social-button:hover {
-            background-color: #e0e0e0;
-            transform: translateY(-3px);
         }
         
         .signup-link {
@@ -217,6 +276,34 @@
             width: 100%;
         }
         
+        /* Toast notification for errors */
+        .toast {
+            visibility: hidden;
+            width: 280px;
+            margin: 0 auto;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: absolute;
+            z-index: 1;
+            left: 0;
+            right: 0;
+            bottom: 100px; /* Position it above the back button */
+            font-size: 17px;
+        }
+
+        .toast.show {
+            visibility: visible;
+            animation: fadeInOut 3s;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+        
         /* Responsive styles */
         @media (max-width: 768px) {
             .login-form-container {
@@ -230,7 +317,7 @@
         <header>
             <div class="logo-container">
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="index.php">
                         <img src="Assets/logo.png" alt="Nail Architect Logo">
                     </a>
                 </div>
@@ -245,7 +332,7 @@
             <div class="login-form-container">
                 <div class="login-title">Welcome Back</div>
                 
-                <form id="login-form">
+                <form id="login-form" method="POST" action="">
                     <div class="form-group">
                         <label for="email">Email Address</label>
                         <input type="email" id="email" name="email" required>
@@ -253,63 +340,52 @@
                     
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required>
-                        <div class="forgot-password">Forgot password?</div>
+                        <div class="password-input-container">
+                            <input type="password" id="password" name="password" required>
+                            <i id="toggle-password-icon" class="fa fa-eye toggle-password" onclick="togglePassword()"></i>
+                        </div>
+                        <div class="forgot-password" onclick="alert('Password reset functionality would open here')">Forgot password?</div>
                     </div>
                     
-                    <button type="submit" class="login-button">Sign In</button>
+                    <button type="submit" name="login" class="login-button">Sign In</button>
                 </form>
                 
                 <div class="signup-link">
-                    Don't have an account? <span class="signup-text">Sign Up</span>
+                    Don't have an account? <span class="signup-text" onclick="window.location.href='sign-up.php'">Sign Up</span>
                 </div>
+                
+                <?php if (!empty($error_message)): ?>
+                <div id="toast" class="toast"><?php echo $error_message; ?></div>
+                <script>
+                    // Show toast message
+                    const toast = document.getElementById("toast");
+                    toast.classList.add("show");
+                    setTimeout(() => {
+                        toast.classList.remove("show");
+                    }, 3000); // Toast is visible for 3 seconds
+                </script>
+                <?php endif; ?>
             </div>
             
-            <div class="back-button">← Back to Home</div>
+            <div class="back-button" onclick="window.location.href='index.php'">← Back to Home</div>
         </div>
     </div>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
- 
-            const loginForm = document.getElementById('login-form');
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggle-password-icon');
             
-            loginForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
-                
-
-                if (!email || !password) {
-                    alert('Please fill in all fields');
-                    return;
-                }
-                
-                console.log('Login attempted with:', { email });
- 
-                setTimeout(function() {
-                    window.location.href = 'members-lounge.html';
-                }, 1000);
-            });
-
-            const backButton = document.querySelector('.back-button');
-            backButton.addEventListener('click', function() {
-                window.location.href = 'index.html';
-            });
-            
-            const signupLink = document.querySelector('.signup-text');
-            signupLink.addEventListener('click', function() {
-
-                alert('Sign up functionality would open here');
-            });
-            
-            const forgotPassword = document.querySelector('.forgot-password');
-            forgotPassword.addEventListener('click', function() {
-
-                alert('Password reset functionality would open here');
-            });
-        });
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
     </script>
 </body>
 </html>

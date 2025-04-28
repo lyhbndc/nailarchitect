@@ -1,3 +1,22 @@
+<?php
+// Start session
+session_start();
+
+// Check if user is logged in
+$logged_in = isset($_SESSION['user_id']);
+
+// If logged in, get the first letter of the user's first name for the avatar
+if ($logged_in) {
+    $first_letter = substr($_SESSION['user_name'], 0, 1);
+}
+
+// Handle logout
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +24,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Nail Architect</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -50,6 +70,54 @@
             align-items: center;
             padding-bottom: 15px;
             animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .logo-container img {
+            height: 60px;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-link:hover {
+            opacity: 0.7;
+        }
+        
+        .book-now {
+            padding: 8px 20px;
+            background-color: #e8d7d0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .book-now:hover {
+            background-color: #d9bbb0;
+        }
+        
+        .login-icon {
+            cursor: pointer;
+        }
+        
+        .user-initial {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e0c5b7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
         }
         
         .grid {
@@ -135,20 +203,20 @@
         }
         
         .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        to bottom,
-        rgba(217, 187, 176, 0) 0%,
-        rgba(217, 187, 176, 0.3) 50%,
-        rgba(217, 187, 176, 0.5) 75%,
-        rgba(217, 187, 176, 0.7) 100%
-    );
-    z-index: 1;
-}
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(217, 187, 176, 0) 0%,
+                rgba(217, 187, 176, 0.3) 50%,
+                rgba(217, 187, 176, 0.5) 75%,
+                rgba(217, 187, 176, 0.7) 100%
+            );
+            z-index: 1;
+        }
         
         .grid-title {
             font-weight: bold;
@@ -242,7 +310,7 @@
         <header>
             <div class="logo-container">
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="index.php">
                         <img src="Assets/logo.png" alt="Nail Architect Logo">
                     </a>
                 </div>
@@ -250,7 +318,11 @@
             <div class="nav-links">
                 <div class="nav-link">Services</div>
                 <div class="book-now">Book Now</div>
-                <div class="login-icon"></div>
+                <?php if ($logged_in): ?>
+                    <div class="user-initial"><?php echo $first_letter; ?></div>
+                <?php else: ?>
+                    <div class="login-icon"><i class="fa fa-user"></i></div>
+                <?php endif; ?>
             </div>
         </header>
         
@@ -316,53 +388,60 @@
             // Handle navigation
             const viewServices = document.querySelector('.card-action');
             viewServices.addEventListener('click', function() {
-                window.location.href = 'services.html';
+                window.location.href = 'services.php';
             });
             
             const servicesLink = document.querySelector('.nav-link');
             servicesLink.addEventListener('click', function() {
-                window.location.href = 'services.html';
+                window.location.href = 'services.php';
             });
             
             const services = document.querySelector('.main-card');
             services.addEventListener('click', function() {
-                window.location.href = 'services.html';
+                window.location.href = 'services.php';
             });
 
             const bookNow = document.querySelector('.book-now');
             bookNow.addEventListener('click', function() {
-                window.location.href = 'booking-form-with-upload.html';
+                window.location.href = 'booking.php';
             });
             
             const bookAppointment = document.querySelector('.book-appointment');
             bookAppointment.addEventListener('click', function() {
-                window.location.href = 'booking-form-with-upload.html';
+                window.location.href = 'booking.php';
             });
             
             const gallery = document.querySelector('.gallery');
             gallery.addEventListener('click', function() {
-                window.location.href = 'gallery.html';
+                window.location.href = 'gallery.php';
             });
             
             const contact = document.querySelector('.contact');
             contact.addEventListener('click', function() {
-                window.location.href = 'get-in-touch-page.html';
+                window.location.href = 'contact.php';
             });
             
             const faq = document.querySelector('.faq');
             faq.addEventListener('click', function() {
-                window.location.href = 'matchmaking.html';
+                window.location.href = 'matchmaking.php';
             });
             
             const visitUs = document.querySelector('.visit-us');
             visitUs.addEventListener('click', function() {
-                window.location.href = 'faq.html';
+                window.location.href = 'faq.php';
             });
             
+            <?php if ($logged_in): ?>
+            const userInitial = document.querySelector('.user-initial');
+            userInitial.addEventListener('click', function() {
+                window.location.href = 'members-lounge.php';
+            });
+            <?php else: ?>
             const loginIcon = document.querySelector('.login-icon');
             loginIcon.addEventListener('click', function() {
-                window.location.href = 'login.html';
+                window.location.href = 'login.php';
             });
+            <?php endif; ?>
         });
     </script>
 </body>

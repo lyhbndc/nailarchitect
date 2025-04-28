@@ -1,3 +1,51 @@
+<?php
+// Start session
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to login page if not logged in
+    header("Location: login.php");
+    exit();
+}
+
+// Database connection
+$conn = mysqli_connect("localhost", "root", "", "nail_architect_db");
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+// Get user data from database for the logged in user
+$user_id = $_SESSION['user_id'];
+$query = "SELECT * FROM users WHERE id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 1) {
+    $user = $result->fetch_assoc();
+} else {
+    // Redirect to login if user not found
+    session_destroy();
+    header("Location: login.php");
+    exit();
+}
+
+// Handle logout
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: login.php");
+    exit();
+}
+
+// Get first letter of first name for avatar
+$first_letter = substr($user['first_name'], 0, 1);
+
+// Close database connection
+mysqli_close($conn);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +53,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Nail Architect - Members Lounge</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -50,7 +99,35 @@
             padding-bottom: 15px;
         }
         
+        .logo-container img {
+            height: 60px;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            cursor: pointer;
+        }
+        
+        .book-now {
+            padding: 8px 20px;
+            background-color: #e8d7d0;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        
         .user-initial {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e0c5b7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 18px;
             font-weight: bold;
         }
@@ -108,6 +185,12 @@
         }
         
         .profile-email {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .profile-phone {
             font-size: 14px;
             color: #666;
             margin-bottom: 20px;
@@ -445,35 +528,6 @@
             background-color: #ae9389;
         }
         
-        .feedback-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .star-rating {
-            display: flex;
-            gap: 10px;
-            margin: 10px 0;
-            justify-content: center;
-        }
-        
-        .star {
-            width: 30px;
-            height: 30px;
-            background-color: #e0e0e0;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .star:hover, .star.active {
-            background-color: #c0c0c0;
-        }
-        
         /* Responsive styles */
         @media (max-width: 1024px) {
             .member-content {
@@ -510,7 +564,7 @@
        <header>
             <div class="logo-container">
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="index.php">
                         <img src="Assets/logo.png" alt="Nail Architect Logo">
                     </a>
                 </div>
@@ -518,20 +572,20 @@
             <div class="nav-links">
                 <div class="nav-link">Services</div>
                 <div class="book-now">Book Now</div>
-                <div class="login-icon"></div>
+                <div class="user-initial"><?php echo $first_letter; ?></div>
             </div>
         </header>
         
-        <div class="page-title">Members Lounge</div>
+        <div class="page-title">Welcome, <?php echo $user['first_name']; ?>!</div>
         <div class="page-subtitle">Manage your appointments and account information</div>
         
         <div class="member-content">
             <div class="sidebar">
                 <div class="profile-card">
-                    <div class="avatar">S</div>
-                    <div class="profile-name">John Lexer</div>
-                    <div class="profile-email">johnlexer@gmail.com</div>
-                    <div class="profile-email">0965898349</div>
+                    <div class="avatar"><?php echo $first_letter; ?></div>
+                    <div class="profile-name"><?php echo $user['first_name'] . ' ' . $user['last_name']; ?></div>
+                    <div class="profile-email"><?php echo $user['email']; ?></div>
+                    <div class="profile-phone"><?php echo $user['phone']; ?></div>
                     <div class="action-button" id="edit-profile-btn">Edit Profile</div>
                 </div>
                 
@@ -570,7 +624,7 @@
                                 <div class="appointment-details">
                                     <div class="detail-item">
                                         <div class="detail-label">Date</div>
-                                        <div class="detail-value">April 8, 2025</div>
+                                        <div class="detail-value">April 30, 2025</div>
                                     </div>
                                     
                                     <div class="detail-item">
@@ -605,49 +659,7 @@
                                 </div>
                             </div>
                             
-                            <div class="appointment-card" data-id="appointment-2">
-                                <div class="appointment-header">
-                                    <div class="appointment-service">Luxury Pedicure</div>
-                                    <div class="appointment-status status-pending">Pending</div>
-                                </div>
-                                
-                                <div class="appointment-details">
-                                    <div class="detail-item">
-                                        <div class="detail-label">Date</div>
-                                        <div class="detail-value">April 22, 2025</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Time</div>
-                                        <div class="detail-value">11:00 AM</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Duration</div>
-                                        <div class="detail-value">75 minutes</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Technician</div>
-                                        <div class="detail-value">TBD</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Price</div>
-                                        <div class="detail-value">$65</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Reference</div>
-                                        <div class="detail-value">#NAI-2025076</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="appointment-actions">
-                                    <div class="action-button reschedule-btn" data-id="appointment-2">Reschedule</div>
-                                    <div class="action-button cancel-btn" data-id="appointment-2">Cancel</div>
-                                </div>
-                            </div>
+                            <!-- You can replace these static appointments with data from your database -->
                         </div>
                     </div>
                     
@@ -692,52 +704,11 @@
                                         <div class="detail-value">#NAI-2025021</div>
                                     </div>
                                 </div>
-                              
                             </div>
                             
-                            <div class="appointment-card" data-id="appointment-4">
-                                <div class="appointment-header">
-                                    <div class="appointment-service">Nail Art</div>
-                                    <div class="appointment-status status-completed">Completed</div>
-                                </div>
-                                
-                                <div class="appointment-details">
-                                    <div class="detail-item">
-                                        <div class="detail-label">Date</div>
-                                        <div class="detail-value">February 28, 2025</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Time</div>
-                                        <div class="detail-value">1:00 PM</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Duration</div>
-                                        <div class="detail-value">30 minutes</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Technician</div>
-                                        <div class="detail-value">Jessica</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Price</div>
-                                        <div class="detail-value">$25</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Reference</div>
-                                        <div class="detail-value">#NAI-2025018</div>
-                                    </div>
-                                </div>
-                             
-                            </div>
+                            <!-- You can replace these static appointments with data from your database -->
                         </div>
                     </div>
-                    
-                    
                 </div>
             </div>
         </div>
@@ -793,28 +764,31 @@
     </div>
 </div>
 
-
-
 <!-- Profile Edit Modal -->
 <div class="modal" id="profile-modal">
     <div class="modal-content">
         <div class="close-modal">&times;</div>
         <div class="modal-title">Edit Profile</div>
         
-        <form class="contact-form">
+        <form class="contact-form" id="profile-form" method="POST" action="update_profile.php">
             <div class="form-group">
                 <label for="profile-first-name">First Name</label>
-                <input type="text" id="profile-first-name" name="first-name" value="">
+                <input type="text" id="profile-first-name" name="first_name" value="<?php echo htmlspecialchars($user['first_name']); ?>">
             </div>
             
             <div class="form-group">
                 <label for="profile-last-name">Last Name</label>
-                <input type="text" id="profile-last-name" name="last-name" value="">
+                <input type="text" id="profile-last-name" name="last_name" value="<?php echo htmlspecialchars($user['last_name']); ?>">
             </div>
             
             <div class="form-group">
                 <label for="profile-email">Email Address</label>
-                <input type="email" id="profile-email" name="email" value="">
+                <input type="email" id="profile-email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>">
+            </div>
+            
+            <div class="form-group">
+                <label for="profile-phone">Phone Number</label>
+                <input type="tel" id="profile-phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>">
             </div>
             
             <div class="form-group">
@@ -824,8 +798,10 @@
             
             <div class="form-group">
                 <label for="profile-confirm-password">Confirm Password</label>
-                <input type="password" id="profile-confirm-password" name="confirm-password" placeholder="Confirm new password">
+                <input type="password" id="profile-confirm-password" name="confirm_password" placeholder="Confirm new password">
             </div>
+            
+            <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
             
             <div class="modal-buttons">
                 <div class="modal-button confirm-button" id="save-profile">Save Changes</div>
@@ -837,6 +813,16 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+
+        // Navigation for header links
+document.querySelector('.nav-link').addEventListener('click', function() {
+    window.location.href = 'services.php';
+});
+
+document.querySelector('.book-now').addEventListener('click', function() {
+    window.location.href = 'booking.php';
+});
+
         // Tab switching functionality
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
@@ -872,11 +858,9 @@
                 // Handle menu actions
                 if (item.id === 'appointments-menu') {
                     tabs[0].click(); // Activate the Upcoming tab
-                } else if (item.id === 'contact-menu') {
-                    tabs[2].click(); // Activate the Contact Info tab
                 } else if (item.id === 'logout-menu') {
                     // Logout functionality
-                    window.location.href = 'login-form.html';
+                    window.location.href = 'login.php?logout=1';
                 }
             });
         });
@@ -928,35 +912,6 @@
             });
         });
         
-        // Feedback button functionality
-        const feedbackButtons = document.querySelectorAll('.feedback-btn');
-        const feedbackModal = document.getElementById('feedback-modal');
-        
-        feedbackButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                feedbackModal.style.display = 'flex';
-            });
-        });
-        
-        // Star rating functionality
-        const stars = document.querySelectorAll('.star');
-        
-        stars.forEach(star => {
-            star.addEventListener('click', () => {
-                const value = parseInt(star.getAttribute('data-value'));
-                
-                // Reset all stars
-                stars.forEach(s => s.classList.remove('active'));
-                
-                // Activate stars up to the clicked one
-                stars.forEach(s => {
-                    if (parseInt(s.getAttribute('data-value')) <= value) {
-                        s.classList.add('active');
-                    }
-                });
-            });
-        });
-        
         // Edit profile button functionality
         const editProfileBtn = document.getElementById('edit-profile-btn');
         const profileModal = document.getElementById('profile-modal');
@@ -996,26 +951,9 @@
             cancelModal.style.display = 'none';
         });
         
-        document.getElementById('submit-feedback').addEventListener('click', function() {
-            const activeStars = document.querySelectorAll('.star.active').length;
-            const feedbackText = document.getElementById('feedback-comments').value;
-            
-            if (activeStars === 0) {
-                alert('Please give a star rating.');
-                return;
-            }
-            
-            alert('Thank you for your feedback!');
-            feedbackModal.style.display = 'none';
-            
-            // In a real app, this would send the data to the server
-        });
-        
-        document.getElementById('cancel-feedback').addEventListener('click', function() {
-            feedbackModal.style.display = 'none';
-        });
-        
+        // Profile edit form submission
         document.getElementById('save-profile').addEventListener('click', function() {
+            const formElement = document.getElementById('profile-form');
             const password = document.getElementById('profile-password').value;
             const confirmPassword = document.getElementById('profile-confirm-password').value;
             
@@ -1024,61 +962,12 @@
                 return;
             }
             
-            alert('Profile updated successfully!');
-            profileModal.style.display = 'none';
-            
-            // Update displayed name if changed
-            const firstName = document.getElementById('profile-first-name').value;
-            const lastName = document.getElementById('profile-last-name').value;
-            
-            if (firstName && lastName) {
-                document.querySelector('.profile-name').textContent = `${firstName} ${lastName}`;
-                document.querySelector('.user-initial').textContent = firstName.charAt(0);
-            }
-            
-            // In a real app, this would send the data to the server
+            // Submit the form
+            formElement.submit();
         });
         
         document.getElementById('cancel-profile').addEventListener('click', function() {
             profileModal.style.display = 'none';
-        });
-        
-        // Contact form submission
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Contact information updated successfully!');
-        });
-        
-        // Book again functionality
-        const bookAgainButtons = document.querySelectorAll('.book-again-btn');
-        
-        bookAgainButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const service = button.getAttribute('data-service');
-                // In a real app, this would redirect to the booking page with pre-selected service
-                window.location.href = `booking-form-with-upload.html?service=${encodeURIComponent(service)}`;
-            });
-        });
-        
-        // Navigation handlers
-        document.querySelector('.logo').addEventListener('click', function() {
-            window.location.href = 'index.html';
-        });
-        
-        document.getElementById('home-nav').addEventListener('click', function() {
-            window.location.href = 'index.html';
-        });
-        
-        document.getElementById('services-nav').addEventListener('click', function() {
-            window.location.href = 'services.html';
-        });
-        
-        document.getElementById('gallery-nav').addEventListener('click', function() {
-            window.location.href = 'gallery.html';
-        });
-        
-        document.getElementById('book-now-nav').addEventListener('click', function() {
-            window.location.href = 'booking-form-with-upload.html';
         });
     });
 </script>

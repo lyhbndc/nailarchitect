@@ -187,7 +187,7 @@
         <header>
             <div class="logo-container">
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="index.php">
                         <img src="Assets/logo.png" alt="Nail Architect Logo">
                     </a>
                 </div>
@@ -199,7 +199,7 @@
             </div>
         </header>
 
-        <a href="index.html">
+        <a href="index.php">
             <div class="back-button">← Back</div>
           </a>
         <div class="page-title">Our Gallery</div>

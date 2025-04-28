@@ -1,3 +1,16 @@
+<?php
+// Start session
+session_start();
+
+// Check if user is logged in
+$logged_in = isset($_SESSION['user_id']);
+
+// If logged in, get the first letter of the user's first name for the avatar
+if ($logged_in) {
+    $first_letter = substr($_SESSION['user_name'], 0, 1);
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +18,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Nail Architect - Services</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -50,6 +64,53 @@
             padding-bottom: 15px;
         }
         
+        .logo-container img {
+            height: 60px;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-link:hover {
+            opacity: 0.7;
+        }
+        
+        .book-now {
+            padding: 8px 20px;
+            background-color: #e8d7d0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .book-now:hover {
+            background-color: #d9bbb0;
+        }
+        
+        .login-icon {
+            cursor: pointer;
+        }
+        
+        .user-initial {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #e0c5b7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
         
         .page-title {
             font-size: 24px;
@@ -157,7 +218,7 @@
         <header>
             <div class="logo-container">
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="index.php">
                         <img src="Assets/logo.png" alt="Nail Architect Logo">
                     </a>
                 </div>
@@ -165,13 +226,17 @@
             <div class="nav-links">
                 <div class="nav-link">Services</div>
                 <div class="book-now">Book Now</div>
-                <div class="login-icon"></div>
+                <?php if ($logged_in): ?>
+                    <div class="user-initial"><?php echo $first_letter; ?></div>
+                <?php else: ?>
+                    <div class="login-icon"><i class="fa fa-user"></i></div>
+                <?php endif; ?>
             </div>
         </header>
 
-        <a href="index.html">
+        <a href="index.php">
             <div class="back-button">← Back</div>
-          </a>
+        </a>
         <div class="page-title">Our Services</div>
         <div class="page-subtitle">Choose from our range of premium nail care services</div>
         
@@ -236,8 +301,6 @@
                 </div>
             </div>
         </div>
-        
-
     </div>
     
     <script>
@@ -245,22 +308,34 @@
             // Handle navigation
             const backButton = document.querySelector('.back-button');
             backButton.addEventListener('click', function() {
-                window.location.href = 'index.html';
+                window.location.href = 'index.php';
             });
             
             const logo = document.querySelector('.logo');
             logo.addEventListener('click', function() {
-                window.location.href = 'index.html';
+                window.location.href = 'index.php';
             });
             
             const bookNow = document.querySelector('.book-now');
             bookNow.addEventListener('click', function() {
-                window.location.href = 'booking-form-with-upload.html';
+                window.location.href = 'booking.php';
             });
             
+            <?php if ($logged_in): ?>
+            const userInitial = document.querySelector('.user-initial');
+            userInitial.addEventListener('click', function() {
+                window.location.href = 'members-lounge.php';
+            });
+            <?php else: ?>
             const loginIcon = document.querySelector('.login-icon');
             loginIcon.addEventListener('click', function() {
-                window.location.href = 'login-form.html';
+                window.location.href = 'login.php';
+            });
+            <?php endif; ?>
+            
+            const servicesLink = document.querySelector('.nav-link');
+            servicesLink.addEventListener('click', function() {
+                window.location.href = 'services.php';
             });
         });
     </script>

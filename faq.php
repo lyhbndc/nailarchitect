@@ -232,7 +232,7 @@
         <header>
             <div class="logo-container">
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="index.php">
                         <img src="Assets/logo.png" alt="Nail Architect Logo">
                     </a>
                 </div>
@@ -243,7 +243,7 @@
                 <div class="login-icon"></div>
             </div>
         </header>
-        <a href="index.html">
+        <a href="index.php">
             <div class="back-button">← Back</div>
           </a>
         <div class="page-title">Policies & FAQ</div>
@@ -396,33 +396,33 @@
             
             // Navigation handlers
             document.querySelector('.logo').addEventListener('click', function() {
-                window.location.href = 'index.html';
+                window.location.href = 'index.php';
             });
             
             const navLinks = document.querySelectorAll('.nav-links .nav-link');
             
             navLinks[0].addEventListener('click', function() {
-                window.location.href = 'index.html';
+                window.location.href = 'index.php';
             });
             
             navLinks[1].addEventListener('click', function() {
-                window.location.href = 'services.html';
+                window.location.href = 'services.php';
             });
             
             navLinks[2].addEventListener('click', function() {
-                window.location.href = 'gallery.html';
+                window.location.href = 'gallery.php';
             });
             
             document.querySelector('.book-now').addEventListener('click', function() {
-                window.location.href = 'booking-form-with-upload.html';
+                window.location.href = 'booking-form-with-upload.php';
             });
             
             document.querySelector('.login-icon').addEventListener('click', function() {
-                window.location.href = 'login-form.html';
+                window.location.href = 'login-form.php';
             });
             
             document.querySelector('.back-button').addEventListener('click', function() {
-                window.location.href = 'index.html';
+                window.location.href = 'index.php';
             });
         });
     </script>

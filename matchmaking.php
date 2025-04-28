@@ -148,7 +148,7 @@
         <header>
             <div class="logo-container">
                 <div class="logo">
-                    <a href="index.html">
+                    <a href="index.php">
                         <img src="Assets/logo.png" alt="Nail Architect Logo">
                     </a>
                 </div>
@@ -350,7 +350,7 @@
                                 <!-- Other matches will be populated by JavaScript -->
                             </div>
                         </div>
-                        <a href="booking-form-with-upload.html" class="btn btn-primary book-now-btn">Book This Style Now</a>
+                        <a href="booking-form-with-upload.php" class="btn btn-primary book-now-btn">Book This Style Now</a>
                         <div class="mt-3">
                             <button class="btn btn-outline-secondary" id="retake-quiz">Retake Quiz</button>
                         </div>
