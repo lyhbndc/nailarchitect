@@ -42,6 +42,32 @@ if (isset($_GET['logout'])) {
 // Get first letter of first name for avatar
 $first_letter = substr($user['first_name'], 0, 1);
 
+// Fetch user's bookings
+$upcoming_bookings = [];
+$past_bookings = [];
+
+// Get upcoming bookings (pending and confirmed)
+$upcoming_query = "SELECT * FROM bookings WHERE user_id = ? AND (status = 'pending' OR status = 'confirmed') AND date >= CURDATE() ORDER BY date ASC, time ASC";
+$upcoming_stmt = $conn->prepare($upcoming_query);
+$upcoming_stmt->bind_param("i", $user_id);
+$upcoming_stmt->execute();
+$upcoming_result = $upcoming_stmt->get_result();
+
+while ($row = $upcoming_result->fetch_assoc()) {
+    $upcoming_bookings[] = $row;
+}
+
+// Get past bookings (completed or cancelled or past date)
+$past_query = "SELECT * FROM bookings WHERE user_id = ? AND (status = 'completed' OR status = 'cancelled' OR date < CURDATE()) ORDER BY date DESC, time DESC";
+$past_stmt = $conn->prepare($past_query);
+$past_stmt->bind_param("i", $user_id);
+$past_stmt->execute();
+$past_result = $past_stmt->get_result();
+
+while ($row = $past_result->fetch_assoc()) {
+    $past_bookings[] = $row;
+}
+
 // Close database connection
 mysqli_close($conn);
 ?>
@@ -314,6 +340,11 @@ mysqli_close($conn);
             color: #616161;
         }
         
+        .status-cancelled {
+            background-color: #ffcdd2;
+            color: #c62828;
+        }
+        
         .appointment-details {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -357,11 +388,13 @@ mysqli_close($conn);
             background-color: #ae9389;
             cursor: pointer;
             transition: all 0.3s ease;
+            color: #fff;
         }
         
         .tab.active {
             background-color: #f0f0f0;
             font-weight: bold;
+            color: #333;
         }
         
         .tab-content {
@@ -615,51 +648,74 @@ mysqli_close($conn);
                         <div class="section-title">Upcoming Appointments</div>
                         
                         <div class="appointments-list" id="upcoming-appointments">
-                            <div class="appointment-card" data-id="appointment-1">
-                                <div class="appointment-header">
-                                    <div class="appointment-service">Gel Manicure</div>
-                                    <div class="appointment-status status-confirmed">Confirmed</div>
+                            <?php if (empty($upcoming_bookings)): ?>
+                                <div class="no-appointments">
+                                    <div class="no-appointments-icon">📅</div>
+                                    <p>You don't have any upcoming appointments.</p>
+                                    <a href="booking.php" class="action-button">Book Appointment</a>
                                 </div>
-                                
-                                <div class="appointment-details">
-                                    <div class="detail-item">
-                                        <div class="detail-label">Date</div>
-                                        <div class="detail-value">April 30, 2025</div>
+                            <?php else: ?>
+                                <?php foreach ($upcoming_bookings as $booking): ?>
+                                    <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
+                                        <div class="appointment-header">
+                                            <div class="appointment-service">
+                                                <?php 
+                                                // Format service name
+                                                $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
+                                                echo $service_name; 
+                                                ?>
+                                            </div>
+                                            <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
+                                                <?php echo ucfirst($booking['status']); ?>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="appointment-details">
+                                            <div class="detail-item">
+                                                <div class="detail-label">Date</div>
+                                                <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
+                                            </div>
+                                            
+                                            <div class="detail-item">
+                                                <div class="detail-label">Time</div>
+                                                <div class="detail-value">
+                                                    <?php 
+                                                    // Format time (12-hour format)
+                                                    echo date('g:i A', strtotime($booking['time'])); 
+                                                    ?>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="detail-item">
+                                                <div class="detail-label">Duration</div>
+                                                <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
+                                            </div>
+                                            
+                                            <div class="detail-item">
+                                                <div class="detail-label">Technician</div>
+                                                <div class="detail-value"><?php echo $booking['technician']; ?></div>
+                                            </div>
+                                            
+                                            <div class="detail-item">
+                                                <div class="detail-label">Price</div>
+                                                <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
+                                            </div>
+                                            
+                                            <div class="detail-item">
+    <div class="detail-label">Reference</div>
+    <div class="detail-value">#NAI-<?php echo $booking['reference_id']; ?></div>
+</div>
+                                        </div>
+                                        
+                                        <?php if ($booking['status'] != 'cancelled'): ?>
+                                        <div class="appointment-actions">
+                                            <div class="action-button reschedule-btn" data-id="<?php echo $booking['id']; ?>">Reschedule</div>
+                                            <div class="action-button cancel-btn" data-id="<?php echo $booking['id']; ?>">Cancel</div>
+                                        </div>
+                                        <?php endif; ?>
                                     </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Time</div>
-                                        <div class="detail-value">2:00 PM</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Duration</div>
-                                        <div class="detail-value">60 minutes</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Technician</div>
-                                        <div class="detail-value">Jessica</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Price</div>
-                                        <div class="detail-value">$45</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Reference</div>
-                                        <div class="detail-value">#NAI-2025042</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="appointment-actions">
-                                    <div class="action-button reschedule-btn" data-id="appointment-1">Reschedule</div>
-                                    <div class="action-button cancel-btn" data-id="appointment-1">Cancel</div>
-                                </div>
-                            </div>
-                            
-                            <!-- You can replace these static appointments with data from your database -->
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                     
@@ -667,46 +723,72 @@ mysqli_close($conn);
                         <div class="section-title">Past Appointments</div>
                         
                         <div class="appointments-list" id="past-appointments">
-                            <div class="appointment-card" data-id="appointment-3">
-                                <div class="appointment-header">
-                                    <div class="appointment-service">Classic Manicure</div>
-                                    <div class="appointment-status status-completed">Completed</div>
+                            <?php if (empty($past_bookings)): ?>
+                                <div class="no-appointments">
+                                    <div class="no-appointments-icon">📅</div>
+                                    <p>You don't have any past appointments.</p>
                                 </div>
-                                
-                                <div class="appointment-details">
-                                    <div class="detail-item">
-                                        <div class="detail-label">Date</div>
-                                        <div class="detail-value">March 15, 2025</div>
+                            <?php else: ?>
+                                <?php foreach ($past_bookings as $booking): ?>
+                                    <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
+                                        <div class="appointment-header">
+                                            <div class="appointment-service">
+                                                <?php 
+                                                // Format service name
+                                                $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
+                                                echo $service_name; 
+                                                ?>
+                                            </div>
+                                            <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
+                                                <?php echo ucfirst($booking['status']); ?>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="appointment-details">
+                                            <div class="detail-item">
+                                                <div class="detail-label">Date</div>
+                                                <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
+                                            </div>
+                                            
+                                            <div class="detail-item">
+                                                <div class="detail-label">Time</div>
+                                                <div class="detail-value">
+                                                    <?php 
+                                                    // Format time (12-hour format)
+                                                    echo date('g:i A', strtotime($booking['time'])); 
+                                                    ?>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="detail-item">
+                                                <div class="detail-label">Duration</div>
+                                                <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
+                                            </div>
+                                            
+                                            <div class="detail-item">
+                                                <div class="detail-label">Technician</div>
+                                                <div class="detail-value"><?php echo $booking['technician']; ?></div>
+                                            </div>
+                                            
+                                            <div class="detail-item">
+                                                <div class="detail-label">Price</div>
+                                                <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
+                                            </div>
+                                            
+                                            <div class="detail-item">
+    <div class="detail-label">Reference</div>
+    <div class="detail-value">#NAI-<?php echo $booking['reference_id']; ?></div>
+</div>
+                                        </div>
+                                        
+                                        <?php if ($booking['status'] == 'completed'): ?>
+                                        <div class="appointment-actions">
+                                            <div class="action-button book-again-btn" data-service="<?php echo $booking['service']; ?>">Book Again</div>
+                                        </div>
+                                        <?php endif; ?>
                                     </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Time</div>
-                                        <div class="detail-value">3:30 PM</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Duration</div>
-                                        <div class="detail-value">45 minutes</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Technician</div>
-                                        <div class="detail-value">Maria</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Price</div>
-                                        <div class="detail-value">$35</div>
-                                    </div>
-                                    
-                                    <div class="detail-item">
-                                        <div class="detail-label">Reference</div>
-                                        <div class="detail-value">#NAI-2025021</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- You can replace these static appointments with data from your database -->
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -751,225 +833,276 @@ mysqli_close($conn);
     
    <!-- Cancel Modal -->
    <div class="modal" id="cancel-modal">
-    <div class="modal-content">
-        <div class="close-modal">&times;</div>
-        <div class="modal-title">Cancel Appointment</div>
-        
-        <p>Are you sure you want to cancel your appointment? A cancellation fee may apply if it's within 24 hours of your scheduled time.</p>
-        
-        <div class="modal-buttons">
-            <div class="modal-button confirm-button" id="confirm-cancel">Yes, Cancel</div>
-            <div class="modal-button cancel-button" id="abort-cancel">No, Keep It</div>
-        </div>
-    </div>
-</div>
-
-<!-- Profile Edit Modal -->
-<div class="modal" id="profile-modal">
-    <div class="modal-content">
-        <div class="close-modal">&times;</div>
-        <div class="modal-title">Edit Profile</div>
-        
-        <form class="contact-form" id="profile-form" method="POST" action="update_profile.php">
-            <div class="form-group">
-                <label for="profile-first-name">First Name</label>
-                <input type="text" id="profile-first-name" name="first_name" value="<?php echo htmlspecialchars($user['first_name']); ?>">
-            </div>
+        <div class="modal-content">
+            <div class="close-modal">&times;</div>
+            <div class="modal-title">Cancel Appointment</div>
             
-            <div class="form-group">
-                <label for="profile-last-name">Last Name</label>
-                <input type="text" id="profile-last-name" name="last_name" value="<?php echo htmlspecialchars($user['last_name']); ?>">
-            </div>
-            
-            <div class="form-group">
-                <label for="profile-email">Email Address</label>
-                <input type="email" id="profile-email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>">
-            </div>
-            
-            <div class="form-group">
-                <label for="profile-phone">Phone Number</label>
-                <input type="tel" id="profile-phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>">
-            </div>
-            
-            <div class="form-group">
-                <label for="profile-password">Change Password</label>
-                <input type="password" id="profile-password" name="password" placeholder="New password">
-            </div>
-            
-            <div class="form-group">
-                <label for="profile-confirm-password">Confirm Password</label>
-                <input type="password" id="profile-confirm-password" name="confirm_password" placeholder="Confirm new password">
-            </div>
-            
-            <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
+            <p>Are you sure you want to cancel your appointment? A cancellation fee may apply if it's within 24 hours of your scheduled time.</p>
             
             <div class="modal-buttons">
-                <div class="modal-button confirm-button" id="save-profile">Save Changes</div>
-                <div class="modal-button cancel-button" id="cancel-profile">Cancel</div>
+                <div class="modal-button confirm-button" id="confirm-cancel">Yes, Cancel</div>
+                <div class="modal-button cancel-button" id="abort-cancel">No, Keep It</div>
             </div>
-        </form>
+        </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+    <!-- Profile Edit Modal -->
+    <div class="modal" id="profile-modal">
+        <div class="modal-content">
+            <div class="close-modal">&times;</div>
+            <div class="modal-title">Edit Profile</div>
+            
+            <form class="contact-form" id="profile-form" method="POST" action="update_profile.php">
+                <div class="form-group">
+                    <label for="profile-first-name">First Name</label>
+                    <input type="text" id="profile-first-name" name="first_name" value="<?php echo htmlspecialchars($user['first_name']); ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-last-name">Last Name</label>
+                    <input type="text" id="profile-last-name" name="last_name" value="<?php echo htmlspecialchars($user['last_name']); ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-email">Email Address</label>
+                    <input type="email" id="profile-email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-phone">Phone Number</label>
+                    <input type="tel" id="profile-phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-password">Change Password</label>
+                    <input type="password" id="profile-password" name="password" placeholder="New password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="profile-confirm-password">Confirm Password</label>
+                    <input type="password" id="profile-confirm-password" name="confirm_password" placeholder="Confirm new password">
+                </div>
+                
+                <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
+                
+                <div class="modal-buttons">
+                    <div class="modal-button confirm-button" id="save-profile">Save Changes</div>
+                    <div class="modal-buttons">
+                    <div class="modal-button confirm-button" id="save-profile">Save Changes</div>
+                    <div class="modal-button cancel-button" id="cancel-profile">Cancel</div>
+                </div>
+            </form>
+        </div>
+    </div>
 
-        // Navigation for header links
-document.querySelector('.nav-link').addEventListener('click', function() {
-    window.location.href = 'services.php';
-});
+    <script>
+   document.addEventListener('DOMContentLoaded', function() {
+       // Navigation for header links
+       document.querySelector('.nav-link').addEventListener('click', function() {
+           window.location.href = 'services.php';
+       });
 
-document.querySelector('.book-now').addEventListener('click', function() {
-    window.location.href = 'booking.php';
-});
+       document.querySelector('.book-now').addEventListener('click', function() {
+           window.location.href = 'booking.php';
+       });
 
-        // Tab switching functionality
-        const tabs = document.querySelectorAll('.tab');
-        const tabContents = document.querySelectorAll('.tab-content');
-        
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Remove active class from all tabs
-                tabs.forEach(t => t.classList.remove('active'));
-                
-                // Add active class to clicked tab
-                tab.classList.add('active');
-                
-                // Hide all tab contents
-                tabContents.forEach(content => content.classList.remove('active'));
-                
-                // Show the corresponding tab content
-                const tabId = tab.getAttribute('data-tab');
-                document.getElementById(`${tabId}-tab`).classList.add('active');
-            });
-        });
-        
-        // Menu item functionality
-        const menuItems = document.querySelectorAll('.menu-item');
-        
-        menuItems.forEach(item => {
-            item.addEventListener('click', () => {
-                // Remove active class from all menu items
-                menuItems.forEach(i => i.classList.remove('active'));
-                
-                // Add active class to clicked menu item
-                item.classList.add('active');
-                
-                // Handle menu actions
-                if (item.id === 'appointments-menu') {
-                    tabs[0].click(); // Activate the Upcoming tab
-                } else if (item.id === 'logout-menu') {
-                    // Logout functionality
-                    window.location.href = 'login.php?logout=1';
-                }
-            });
-        });
-        
-        // Modal functionality
-        const modals = document.querySelectorAll('.modal');
-        const closeButtons = document.querySelectorAll('.close-modal');
-        
-        // Close modals when clicking the close button
-        closeButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                modals.forEach(modal => {
-                    modal.style.display = 'none';
-                });
-            });
-        });
-        
-        // Close modals when clicking outside the modal content
-        window.addEventListener('click', (event) => {
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-        });
-        
-        // Reschedule button functionality
-        const rescheduleButtons = document.querySelectorAll('.reschedule-btn');
-        const rescheduleModal = document.getElementById('reschedule-modal');
-        
-        rescheduleButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                rescheduleModal.style.display = 'flex';
-                
-                // Set minimum date to tomorrow
-                const tomorrow = new Date();
-                tomorrow.setDate(tomorrow.getDate() + 1);
-                document.getElementById('new-date').min = tomorrow.toISOString().split('T')[0];
-            });
-        });
-        
-        // Cancel appointment button functionality
-        const cancelButtons = document.querySelectorAll('.cancel-btn');
-        const cancelModal = document.getElementById('cancel-modal');
-        
-        cancelButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                cancelModal.style.display = 'flex';
-            });
-        });
-        
-        // Edit profile button functionality
-        const editProfileBtn = document.getElementById('edit-profile-btn');
-        const profileModal = document.getElementById('profile-modal');
-        
-        editProfileBtn.addEventListener('click', () => {
-            profileModal.style.display = 'flex';
-        });
-        
-        // Modal confirmation handlers
-        document.getElementById('confirm-reschedule').addEventListener('click', function() {
-            const newDate = document.getElementById('new-date').value;
-            const newTime = document.getElementById('new-time').value;
-            
-            if (!newDate || !newTime) {
-                alert('Please select both a date and time for rescheduling.');
-                return;
-            }
-            
-            alert('Your appointment has been rescheduled successfully!');
-            rescheduleModal.style.display = 'none';
-            
-            // In a real app, this would send the data to the server and update the UI
-        });
-        
-        document.getElementById('cancel-reschedule').addEventListener('click', function() {
-            rescheduleModal.style.display = 'none';
-        });
-        
-        document.getElementById('confirm-cancel').addEventListener('click', function() {
-            alert('Your appointment has been cancelled.');
-            cancelModal.style.display = 'none';
-            
-            // In a real app, this would send the data to the server and update the UI
-        });
-        
-        document.getElementById('abort-cancel').addEventListener('click', function() {
-            cancelModal.style.display = 'none';
-        });
-        
-        // Profile edit form submission
-        document.getElementById('save-profile').addEventListener('click', function() {
-            const formElement = document.getElementById('profile-form');
-            const password = document.getElementById('profile-password').value;
-            const confirmPassword = document.getElementById('profile-confirm-password').value;
-            
-            if (password && password !== confirmPassword) {
-                alert('Passwords do not match.');
-                return;
-            }
-            
-            // Submit the form
-            formElement.submit();
-        });
-        
-        document.getElementById('cancel-profile').addEventListener('click', function() {
-            profileModal.style.display = 'none';
-        });
-    });
+       // Tab switching functionality
+       const tabs = document.querySelectorAll('.tab');
+       const tabContents = document.querySelectorAll('.tab-content');
+       
+       tabs.forEach(tab => {
+           tab.addEventListener('click', () => {
+               // Remove active class from all tabs
+               tabs.forEach(t => t.classList.remove('active'));
+               
+               // Add active class to clicked tab
+               tab.classList.add('active');
+               
+               // Hide all tab contents
+               tabContents.forEach(content => content.classList.remove('active'));
+               
+               // Show the corresponding tab content
+               const tabId = tab.getAttribute('data-tab');
+               document.getElementById(`${tabId}-tab`).classList.add('active');
+           });
+       });
+       
+       // Menu item functionality
+       const menuItems = document.querySelectorAll('.menu-item');
+       
+       menuItems.forEach(item => {
+           item.addEventListener('click', () => {
+               // Remove active class from all menu items
+               menuItems.forEach(i => i.classList.remove('active'));
+               
+               // Add active class to clicked menu item
+               item.classList.add('active');
+               
+               // Handle menu actions
+               if (item.id === 'appointments-menu') {
+                   tabs[0].click(); // Activate the Upcoming tab
+               } else if (item.id === 'logout-menu') {
+                   // Logout functionality
+                   window.location.href = 'members-lounge.php?logout=1';
+               }
+           });
+       });
+       
+       // Modal functionality
+       const modals = document.querySelectorAll('.modal');
+       const rescheduleModal = document.getElementById('reschedule-modal');
+       const cancelModal = document.getElementById('cancel-modal');
+       const profileModal = document.getElementById('profile-modal');
+       const closeButtons = document.querySelectorAll('.close-modal');
+       
+       // Close modals when clicking the close button
+       closeButtons.forEach(button => {
+           button.addEventListener('click', () => {
+               modals.forEach(modal => {
+                   modal.style.display = 'none';
+               });
+           });
+       });
+       
+       // Close modals when clicking outside the modal content
+       window.addEventListener('click', (event) => {
+           modals.forEach(modal => {
+               if (event.target === modal) {
+                   modal.style.display = 'none';
+               }
+           });
+       });
+       
+       // Cancel appointment button functionality
+       document.querySelectorAll('.cancel-btn').forEach(button => {
+           button.addEventListener('click', () => {
+               const appointmentId = button.getAttribute('data-id');
+               document.getElementById('confirm-cancel').setAttribute('data-id', appointmentId);
+               cancelModal.style.display = 'flex';
+           });
+       });
+       
+       // Cancel appointment confirmation
+       document.getElementById('confirm-cancel').addEventListener('click', function() {
+           const appointmentId = this.getAttribute('data-id');
+           
+           fetch('update_booking.php', {
+               method: 'POST',
+               headers: {
+                   'Content-Type': 'application/x-www-form-urlencoded',
+               },
+               body: 'action=cancel&booking_id=' + appointmentId
+           })
+           .then(response => response.json())
+           .then(data => {
+               if (data.success) {
+                   alert('Your appointment has been cancelled.');
+                   // Reload the page to show updated booking list
+                   window.location.reload();
+               } else {
+                   alert('Error: ' + data.message);
+               }
+               cancelModal.style.display = 'none';
+           })
+           .catch(error => {
+               console.error('Error:', error);
+               alert('An error occurred during cancellation.');
+               cancelModal.style.display = 'none';
+           });
+       });
+       
+       document.getElementById('abort-cancel').addEventListener('click', function() {
+           cancelModal.style.display = 'none';
+       });
+       
+       // Reschedule button functionality
+       document.querySelectorAll('.reschedule-btn').forEach(button => {
+           button.addEventListener('click', () => {
+               const appointmentId = button.getAttribute('data-id');
+               document.getElementById('confirm-reschedule').setAttribute('data-id', appointmentId);
+               rescheduleModal.style.display = 'flex';
+               
+               // Set minimum date to tomorrow
+               const tomorrow = new Date();
+               tomorrow.setDate(tomorrow.getDate() + 1);
+               document.getElementById('new-date').min = tomorrow.toISOString().split('T')[0];
+           });
+       });
+       
+       // Reschedule appointment confirmation
+       document.getElementById('confirm-reschedule').addEventListener('click', function() {
+           const appointmentId = this.getAttribute('data-id');
+           const newDate = document.getElementById('new-date').value;
+           const newTime = document.getElementById('new-time').value;
+           
+           if (!newDate || !newTime) {
+               alert('Please select both a date and time for rescheduling.');
+               return;
+           }
+           
+           fetch('update_booking.php', {
+               method: 'POST',
+               headers: {
+                   'Content-Type': 'application/x-www-form-urlencoded',
+               },
+               body: 'action=reschedule&booking_id=' + appointmentId + '&new_date=' + newDate + '&new_time=' + newTime
+           })
+           .then(response => response.json())
+           .then(data => {
+               if (data.success) {
+                   alert('Your appointment has been rescheduled successfully!');
+                   // Reload the page to show updated booking list
+                   window.location.reload();
+               } else {
+                   alert('Error: ' + data.message);
+               }
+               rescheduleModal.style.display = 'none';
+           })
+           .catch(error => {
+               console.error('Error:', error);
+               alert('An error occurred during rescheduling.');
+               rescheduleModal.style.display = 'none';
+           });
+       });
+       
+       document.getElementById('cancel-reschedule').addEventListener('click', function() {
+           rescheduleModal.style.display = 'none';
+       });
+       
+       // Book again functionality
+       document.querySelectorAll('.book-again-btn').forEach(button => {
+           button.addEventListener('click', () => {
+               const service = button.getAttribute('data-service');
+               window.location.href = 'booking.php?service=' + service;
+           });
+       });
+       
+       // Edit profile button functionality
+       const editProfileBtn = document.getElementById('edit-profile-btn');
+       
+       editProfileBtn.addEventListener('click', () => {
+           profileModal.style.display = 'flex';
+       });
+       
+       // Profile edit form submission
+       document.getElementById('save-profile').addEventListener('click', function() {
+           const formElement = document.getElementById('profile-form');
+           const password = document.getElementById('profile-password').value;
+           const confirmPassword = document.getElementById('profile-confirm-password').value;
+           
+           if (password && password !== confirmPassword) {
+               alert('Passwords do not match.');
+               return;
+           }
+           
+           // Submit the form
+           formElement.submit();
+       });
+       
+       document.getElementById('cancel-profile').addEventListener('click', function() {
+           profileModal.style.display = 'none';
+       });
+   });
 </script>
 </body>
 </html>
