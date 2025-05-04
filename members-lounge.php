@@ -590,6 +590,382 @@ mysqli_close($conn);
                 grid-column: span 1;
             }
         }
+        .messages-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .message-list {
+        max-height: 400px;
+        overflow-y: auto;
+        background-color: #f2e9e9;
+        border-radius: 12px;
+        padding: 15px;
+    }
+    
+    .message-item {
+        background-color: #ffffff;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .message-item:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+    
+    .message-subject {
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
+    .message-date {
+        color: #666;
+        font-size: 12px;
+    }
+    
+    .message-body {
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 10px;
+    }
+    
+    .message-sender {
+        font-size: 12px;
+        color: #888;
+        text-align: right;
+    }
+    
+    .message-compose {
+        background-color: #f2e9e9;
+        border-radius: 12px;
+        padding: 20px;
+    }
+    
+    .loading-messages {
+        text-align: center;
+        padding: 30px;
+        color: #888;
+    }
+    
+    .no-messages {
+        text-align: center;
+        padding: 40px 0;
+        color: #666;
+    }
+    
+    .message-item.from-salon {
+        background-color: #e0c5b7;
+    }
+    
+    .message-item.unread {
+        border-left: 3px solid #ae9389;
+    }
+    
+    .message-role {
+        display: inline-block;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 10px;
+        margin-left: 5px;
+        background-color: #f0f0f0;
+    }
+    
+    .message-role.salon {
+        background-color: #d9bbb0;
+    }
+
+    .message-attachments {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.attachment-preview {
+    width: 150px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+
+.attachment-image {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+}
+
+.attachment-name {
+    padding: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.attachment-file {
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.attachment-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #333;
+    text-decoration: none;
+}
+
+.attachment-icon {
+    font-size: 16px;
+}
+
+.attachment-note {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+input[type="file"] {
+    padding: 8px;
+    background-color: #fff;
+}
+
+/* Conversation styles */
+.conversation-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 600px;
+}
+
+.message-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    background-color: #f2e9e9;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-item {
+    max-width: 80%;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    border-radius: 18px;
+    position: relative;
+    word-wrap: break-word;
+}
+
+.message-item.from-salon {
+    align-self: flex-start;
+    background-color: #e0c5b7;
+    border-bottom-left-radius: 5px;
+}
+
+.message-item.from-user {
+    align-self: flex-end;
+    background-color: #d9bbb0;
+    border-bottom-right-radius: 5px;
+    color: #333;
+}
+
+.message-sender {
+    font-size: 12px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.message-content {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.message-time {
+    font-size: 10px;
+    color: #666;
+    text-align: right;
+    margin-top: 5px;
+}
+
+.message-subject {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.message-compose {
+    background-color: #f2e9e9;
+    border-radius: 0 0 12px 12px;
+    padding: 15px;
+    border-top: 1px solid #e0c5b7;
+}
+
+.message-input-container {
+    display: flex;
+    position: relative;
+}
+
+.message-input-container textarea {
+    flex: 1;
+    min-height: 50px;
+    max-height: 150px;
+    padding-right: 80px;
+    border-radius: 20px;
+    resize: none;
+}
+
+.message-actions {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.attachment-label {
+    cursor: pointer;
+    font-size: 20px;
+    color: #ae9389;
+}
+
+.send-button {
+    background-color: #ae9389;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.send-button i {
+    font-size: 16px;
+}
+
+.attachment-preview-container {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.attachment-preview {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.attachment-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.attachment-preview .remove-attachment {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.date-separator {
+    text-align: center;
+    margin: 15px 0;
+    position: relative;
+}
+
+.date-separator::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.date-separator::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.date-text {
+    background-color: #f2e9e9;
+    padding: 0 15px;
+    display: inline-block;
+    position: relative;
+    font-size: 12px;
+    color: #888;
+}
+
+.message-attachments {
+    margin-top: 8px;
+}
+
+.attachment-file {
+    background-color: rgba(255,255,255,0.3);
+    padding: 5px 10px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+}
+
+.attachment-name {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.loading-messages {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+}
+
+.no-messages {
+    text-align: center;
+    padding: 30px 0;
+    color: #666;
+}
     </style>
 </head>
 <body>
@@ -629,6 +1005,10 @@ mysqli_close($conn);
                         <div class="menu-icon">📅</div>
                         My Appointments
                     </div>
+                <div class="menu-item" id="messages-menu">
+                <div class="menu-icon">💬</div>
+                Messages
+            </div>
                     
                     <div class="menu-item" id="logout-menu">
                         <div class="menu-icon">↩️</div>
@@ -791,6 +1171,40 @@ mysqli_close($conn);
                             <?php endif; ?>
                         </div>
                     </div>
+                    <div class="tab-content" id="messages-tab">
+    <div class="section-title">Messages</div>
+    
+    <div class="conversation-container">
+        <div class="message-list" id="message-list">
+            <!-- Messages will be loaded here dynamically -->
+            <div class="loading-messages">Loading your conversation...</div>
+        </div>
+        
+        <div class="message-compose">
+            <form id="message-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <input type="text" id="message-subject" name="subject" placeholder="Subject (required for new conversations)" required>
+                </div>
+                
+                <div class="form-group message-input-container">
+                    <textarea id="message-content" name="content" placeholder="Type your message here..." required></textarea>
+                    <div class="message-actions">
+                        <label for="message-attachment" class="attachment-label">
+                            <i class="fa fa-paperclip"></i>
+                        </label>
+                        <input type="file" id="message-attachment" name="attachment" style="display: none;">
+                        <button type="submit" class="send-button" id="send-message">
+                            <i class="fa fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="attachment-note">You can attach images or documents up to 5MB.</p>
+                <div id="attachment-preview" class="attachment-preview-container"></div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
                 </div>
             </div>
         </div>
@@ -897,212 +1311,556 @@ mysqli_close($conn);
 
     <script>
    document.addEventListener('DOMContentLoaded', function() {
-       // Navigation for header links
-       document.querySelector('.nav-link').addEventListener('click', function() {
-           window.location.href = 'services.php';
-       });
+    // Navigation for header links
+    document.querySelector('.nav-link').addEventListener('click', function() {
+        window.location.href = 'services.php';
+    });
 
-       document.querySelector('.book-now').addEventListener('click', function() {
-           window.location.href = 'booking.php';
-       });
+    document.querySelector('.book-now').addEventListener('click', function() {
+        window.location.href = 'booking.php';
+    });
 
-       // Tab switching functionality
-       const tabs = document.querySelectorAll('.tab');
-       const tabContents = document.querySelectorAll('.tab-content');
-       
-       tabs.forEach(tab => {
-           tab.addEventListener('click', () => {
-               // Remove active class from all tabs
-               tabs.forEach(t => t.classList.remove('active'));
-               
-               // Add active class to clicked tab
-               tab.classList.add('active');
-               
-               // Hide all tab contents
-               tabContents.forEach(content => content.classList.remove('active'));
-               
-               // Show the corresponding tab content
-               const tabId = tab.getAttribute('data-tab');
-               document.getElementById(`${tabId}-tab`).classList.add('active');
-           });
-       });
-       
-       // Menu item functionality
-       const menuItems = document.querySelectorAll('.menu-item');
-       
-       menuItems.forEach(item => {
-           item.addEventListener('click', () => {
-               // Remove active class from all menu items
-               menuItems.forEach(i => i.classList.remove('active'));
-               
-               // Add active class to clicked menu item
-               item.classList.add('active');
-               
-               // Handle menu actions
-               if (item.id === 'appointments-menu') {
-                   tabs[0].click(); // Activate the Upcoming tab
-               } else if (item.id === 'logout-menu') {
-                   // Logout functionality
-                   window.location.href = 'members-lounge.php?logout=1';
-               }
-           });
-       });
-       
-       // Modal functionality
-       const modals = document.querySelectorAll('.modal');
-       const rescheduleModal = document.getElementById('reschedule-modal');
-       const cancelModal = document.getElementById('cancel-modal');
-       const profileModal = document.getElementById('profile-modal');
-       const closeButtons = document.querySelectorAll('.close-modal');
-       
-       // Close modals when clicking the close button
-       closeButtons.forEach(button => {
-           button.addEventListener('click', () => {
-               modals.forEach(modal => {
-                   modal.style.display = 'none';
-               });
-           });
-       });
-       
-       // Close modals when clicking outside the modal content
-       window.addEventListener('click', (event) => {
-           modals.forEach(modal => {
-               if (event.target === modal) {
-                   modal.style.display = 'none';
-               }
-           });
-       });
-       
-       // Cancel appointment button functionality
-       document.querySelectorAll('.cancel-btn').forEach(button => {
-           button.addEventListener('click', () => {
-               const appointmentId = button.getAttribute('data-id');
-               document.getElementById('confirm-cancel').setAttribute('data-id', appointmentId);
-               cancelModal.style.display = 'flex';
-           });
-       });
-       
-       // Cancel appointment confirmation
-       document.getElementById('confirm-cancel').addEventListener('click', function() {
-           const appointmentId = this.getAttribute('data-id');
-           
-           fetch('update_booking.php', {
-               method: 'POST',
-               headers: {
-                   'Content-Type': 'application/x-www-form-urlencoded',
-               },
-               body: 'action=cancel&booking_id=' + appointmentId
-           })
-           .then(response => response.json())
-           .then(data => {
-               if (data.success) {
-                   alert('Your appointment has been cancelled.');
-                   // Reload the page to show updated booking list
-                   window.location.reload();
-               } else {
-                   alert('Error: ' + data.message);
-               }
-               cancelModal.style.display = 'none';
-           })
-           .catch(error => {
-               console.error('Error:', error);
-               alert('An error occurred during cancellation.');
-               cancelModal.style.display = 'none';
-           });
-       });
-       
-       document.getElementById('abort-cancel').addEventListener('click', function() {
-           cancelModal.style.display = 'none';
-       });
-       
-       // Reschedule button functionality
-       document.querySelectorAll('.reschedule-btn').forEach(button => {
-           button.addEventListener('click', () => {
-               const appointmentId = button.getAttribute('data-id');
-               document.getElementById('confirm-reschedule').setAttribute('data-id', appointmentId);
-               rescheduleModal.style.display = 'flex';
-               
-               // Set minimum date to tomorrow
-               const tomorrow = new Date();
-               tomorrow.setDate(tomorrow.getDate() + 1);
-               document.getElementById('new-date').min = tomorrow.toISOString().split('T')[0];
-           });
-       });
-       
-       // Reschedule appointment confirmation
-       document.getElementById('confirm-reschedule').addEventListener('click', function() {
-           const appointmentId = this.getAttribute('data-id');
-           const newDate = document.getElementById('new-date').value;
-           const newTime = document.getElementById('new-time').value;
-           
-           if (!newDate || !newTime) {
-               alert('Please select both a date and time for rescheduling.');
-               return;
-           }
-           
-           fetch('update_booking.php', {
-               method: 'POST',
-               headers: {
-                   'Content-Type': 'application/x-www-form-urlencoded',
-               },
-               body: 'action=reschedule&booking_id=' + appointmentId + '&new_date=' + newDate + '&new_time=' + newTime
-           })
-           .then(response => response.json())
-           .then(data => {
-               if (data.success) {
-                   alert('Your appointment has been rescheduled successfully!');
-                   // Reload the page to show updated booking list
-                   window.location.reload();
-               } else {
-                   alert('Error: ' + data.message);
-               }
-               rescheduleModal.style.display = 'none';
-           })
-           .catch(error => {
-               console.error('Error:', error);
-               alert('An error occurred during rescheduling.');
-               rescheduleModal.style.display = 'none';
-           });
-       });
-       
-       document.getElementById('cancel-reschedule').addEventListener('click', function() {
-           rescheduleModal.style.display = 'none';
-       });
-       
-       // Book again functionality
-       document.querySelectorAll('.book-again-btn').forEach(button => {
-           button.addEventListener('click', () => {
-               const service = button.getAttribute('data-service');
-               window.location.href = 'booking.php?service=' + service;
-           });
-       });
-       
-       // Edit profile button functionality
-       const editProfileBtn = document.getElementById('edit-profile-btn');
-       
-       editProfileBtn.addEventListener('click', () => {
-           profileModal.style.display = 'flex';
-       });
-       
-       // Profile edit form submission
-       document.getElementById('save-profile').addEventListener('click', function() {
-           const formElement = document.getElementById('profile-form');
-           const password = document.getElementById('profile-password').value;
-           const confirmPassword = document.getElementById('profile-confirm-password').value;
-           
-           if (password && password !== confirmPassword) {
-               alert('Passwords do not match.');
-               return;
-           }
-           
-           // Submit the form
-           formElement.submit();
-       });
-       
-       document.getElementById('cancel-profile').addEventListener('click', function() {
-           profileModal.style.display = 'none';
-       });
-   });
+    // Tab switching functionality
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active class from all tabs
+            tabs.forEach(t => t.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            tab.classList.add('active');
+            
+            // Hide all tab contents
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Show the corresponding tab content
+            const tabId = tab.getAttribute('data-tab');
+            document.getElementById(`${tabId}-tab`).classList.add('active');
+        });
+    });
+    
+    // Menu item functionality
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    menuItems.forEach(item => {
+        item.addEventListener('click', () => {
+            // Remove active class from all menu items
+            menuItems.forEach(i => i.classList.remove('active'));
+            
+            // Add active class to clicked menu item
+            item.classList.add('active');
+            
+            // Handle menu actions
+            if (item.id === 'appointments-menu') {
+                // Show the appointment tabs navigation
+                document.querySelector('.tabs').style.display = 'flex';
+                
+                // Hide all tab contents
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // Show upcoming tab content
+                document.getElementById('upcoming-tab').classList.add('active');
+                
+                tabs[0].click(); // Activate the Upcoming tab
+            } else if (item.id === 'messages-menu') {
+                // Hide all tab contents
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // Hide the appointment tabs navigation
+                document.querySelector('.tabs').style.display = 'none';
+                
+                // Show messages tab content
+                document.getElementById('messages-tab').classList.add('active');
+                
+                // Load messages
+                loadMessages();
+            } else if (item.id === 'logout-menu') {
+                // Logout functionality
+                window.location.href = 'members-lounge.php?logout=1';
+            }
+        });
+    });
+    
+    // Modal functionality
+    const modals = document.querySelectorAll('.modal');
+    const rescheduleModal = document.getElementById('reschedule-modal');
+    const cancelModal = document.getElementById('cancel-modal');
+    const profileModal = document.getElementById('profile-modal');
+    const closeButtons = document.querySelectorAll('.close-modal');
+    
+    // Close modals when clicking the close button
+    closeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            modals.forEach(modal => {
+                modal.style.display = 'none';
+            });
+        });
+    });
+    
+    // Close modals when clicking outside the modal content
+    window.addEventListener('click', (event) => {
+        modals.forEach(modal => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+    
+    // Cancel appointment button functionality
+    document.querySelectorAll('.cancel-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const appointmentId = button.getAttribute('data-id');
+            document.getElementById('confirm-cancel').setAttribute('data-id', appointmentId);
+            cancelModal.style.display = 'flex';
+        });
+    });
+    
+    // Cancel appointment confirmation
+    document.getElementById('confirm-cancel').addEventListener('click', function() {
+        const appointmentId = this.getAttribute('data-id');
+        
+        fetch('update_booking.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'action=cancel&booking_id=' + appointmentId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Your appointment has been cancelled.');
+                // Reload the page to show updated booking list
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+            cancelModal.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred during cancellation.');
+            cancelModal.style.display = 'none';
+        });
+    });
+    
+    document.getElementById('abort-cancel').addEventListener('click', function() {
+        cancelModal.style.display = 'none';
+    });
+    
+    // Reschedule button functionality
+    document.querySelectorAll('.reschedule-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const appointmentId = button.getAttribute('data-id');
+            document.getElementById('confirm-reschedule').setAttribute('data-id', appointmentId);
+            rescheduleModal.style.display = 'flex';
+            
+            // Set minimum date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('new-date').min = tomorrow.toISOString().split('T')[0];
+        });
+    });
+    
+    // Reschedule appointment confirmation
+    document.getElementById('confirm-reschedule').addEventListener('click', function() {
+        const appointmentId = this.getAttribute('data-id');
+        const newDate = document.getElementById('new-date').value;
+        const newTime = document.getElementById('new-time').value;
+        
+        if (!newDate || !newTime) {
+            alert('Please select both a date and time for rescheduling.');
+            return;
+        }
+        
+        fetch('update_booking.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'action=reschedule&booking_id=' + appointmentId + '&new_date=' + newDate + '&new_time=' + newTime
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Your appointment has been rescheduled successfully!');
+                // Reload the page to show updated booking list
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+            rescheduleModal.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred during rescheduling.');
+            rescheduleModal.style.display = 'none';
+        });
+    });
+    
+    document.getElementById('cancel-reschedule').addEventListener('click', function() {
+        rescheduleModal.style.display = 'none';
+    });
+    
+    // Book again functionality
+    document.querySelectorAll('.book-again-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const service = button.getAttribute('data-service');
+            window.location.href = 'booking.php?service=' + service;
+        });
+    });
+    
+    // Edit profile button functionality
+    const editProfileBtn = document.getElementById('edit-profile-btn');
+    
+    editProfileBtn.addEventListener('click', () => {
+        profileModal.style.display = 'flex';
+    });
+    
+    // Profile edit form submission
+    document.getElementById('save-profile').addEventListener('click', function() {
+        const formElement = document.getElementById('profile-form');
+        const password = document.getElementById('profile-password').value;
+        const confirmPassword = document.getElementById('profile-confirm-password').value;
+        
+        if (password && password !== confirmPassword) {
+            alert('Passwords do not match.');
+            return;
+        }
+        
+        // Submit the form
+        formElement.submit();
+    });
+    
+    document.getElementById('cancel-profile').addEventListener('click', function() {
+        profileModal.style.display = 'none';
+    });
+    
+    // Handle message form submission
+    document.getElementById('message-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        const subject = document.getElementById('message-subject').value;
+        const content = document.getElementById('message-content').value;
+        const attachment = document.getElementById('message-attachment') ? document.getElementById('message-attachment').files[0] : null;
+        
+        if (!subject || !content) {
+            alert('Please fill out both subject and message fields');
+            return;
+        }
+        
+        sendMessage(subject, content, attachment);
+    });
+    
+    // Function to load messages from the server
+function loadMessages() {
+    const messageList = document.getElementById('message-list');
+    messageList.innerHTML = '<div class="loading-messages">Loading your conversation...</div>';
+    
+    fetch('chat.php?action=get_messages')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.messages.length === 0) {
+                    messageList.innerHTML = `
+                        <div class="no-messages">
+                            <div class="no-appointments-icon">💬</div>
+                            <p>You don't have any messages yet. Send a message to start a conversation.</p>
+                        </div>
+                    `;
+                } else {
+                    let messagesHTML = '';
+                    let currentDate = '';
+                    
+                    // Sort messages by date (oldest to newest)
+                    data.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                    
+                    data.messages.forEach(message => {
+                        // Format message date
+                        const messageDate = new Date(message.created_at);
+                        const today = new Date();
+                        const yesterday = new Date(today);
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        
+                        // Format date for display
+                        let dateStr;
+                        if (messageDate.toDateString() === today.toDateString()) {
+                            dateStr = 'Today';
+                        } else if (messageDate.toDateString() === yesterday.toDateString()) {
+                            dateStr = 'Yesterday';
+                        } else {
+                            dateStr = messageDate.toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric' 
+                            });
+                        }
+                        
+                        // Add date separator if day changes
+                        if (dateStr !== currentDate) {
+                            messagesHTML += `
+                                <div class="date-separator">
+                                    <span class="date-text">${dateStr}</span>
+                                </div>
+                            `;
+                            currentDate = dateStr;
+                        }
+                        
+                        const fromSalon = message.sender_type === 'salon';
+                        const messageTime = messageDate.toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        
+                        let attachmentsHTML = '';
+                        
+                        // Add attachments if present
+                        if (message.has_attachment && message.attachments && message.attachments.length > 0) {
+                            attachmentsHTML = '<div class="message-attachments">';
+                            
+                            message.attachments.forEach(attachment => {
+                                // Determine if it's an image or other file
+                                const isImage = ['image/jpeg', 'image/png', 'image/gif'].includes(attachment.file_type);
+                                
+                                if (isImage) {
+                                    attachmentsHTML += `
+                                        <div class="attachment-file">
+                                            <a href="${attachment.file_path}" target="_blank">
+                                                <img src="${attachment.file_path}" alt="${attachment.file_name}" class="attachment-image" style="max-width: 150px; max-height: 100px;">
+                                            </a>
+                                        </div>
+                                    `;
+                                } else {
+                                    // For non-image files
+                                    attachmentsHTML += `
+                                        <div class="attachment-file">
+                                            <a href="${attachment.file_path}" target="_blank" class="attachment-link">
+                                                <span class="attachment-icon">📎</span>
+                                                <span class="attachment-name">${attachment.file_name}</span>
+                                            </a>
+                                        </div>
+                                    `;
+                                }
+                            });
+                            
+                            attachmentsHTML += '</div>';
+                        }
+                        
+                        // Only show the subject on the first message of a conversation
+                        const showSubject = message.id === data.messages[0].id || 
+                                           (data.messages.indexOf(message) > 0 && 
+                                            data.messages[data.messages.indexOf(message) - 1].sender_type !== message.sender_type);
+                        
+                        const subjectHTML = showSubject && message.subject ? 
+                            `<div class="message-subject">${message.subject}</div>` : '';
+                        
+                        messagesHTML += `
+                            <div class="message-item ${fromSalon ? 'from-salon' : 'from-user'} ${message.read_status === 0 ? 'unread' : ''}" data-id="${message.id}">
+                                ${subjectHTML}
+                                <div class="message-content">${message.content}</div>
+                                ${attachmentsHTML}
+                                <div class="message-time">${messageTime}</div>
+                            </div>
+                        `;
+                    });
+                    
+                    messageList.innerHTML = messagesHTML;
+                    
+                    // Scroll to the bottom of the message list
+                    messageList.scrollTop = messageList.scrollHeight;
+                    
+                    // Mark messages as read when viewed
+                    document.querySelectorAll('.message-item.unread.from-salon').forEach(message => {
+                        const messageId = message.getAttribute('data-id');
+                        markMessageAsRead(messageId);
+                    });
+                    
+                    // Hide subject field if there are existing messages
+                    const subjectField = document.getElementById('message-subject');
+                    if (data.messages.length > 0) {
+                        subjectField.style.display = 'none';
+                    } else {
+                        subjectField.style.display = 'block';
+                    }
+                }
+            } else {
+                messageList.innerHTML = `
+                    <div class="no-messages">
+                        <p>Error loading messages: ${data.message || 'Unknown error'}</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            messageList.innerHTML = `
+                <div class="no-messages">
+                    <p>Error loading messages. Please try again later.</p>
+                </div>
+            `;
+        });
+}
+    // Function to send a new message
+    function sendMessage(subject, content, attachment) {
+        const messageForm = document.getElementById('message-form');
+        const sendButton = document.getElementById('send-message');
+        
+        // Disable form while sending
+        sendButton.disabled = true;
+        sendButton.textContent = 'Sending...';
+        
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('action', 'send_message');
+        formData.append('subject', subject);
+        formData.append('content', content);
+        
+        // Add file if selected
+        if (attachment) {
+            // Check file size (max 5MB)
+            if (attachment.size > 5 * 1024 * 1024) {
+                alert('File size exceeds 5MB limit. Please choose a smaller file.');
+                sendButton.disabled = false;
+                sendButton.textContent = 'Send Message';
+                return;
+            }
+            
+            formData.append('attachment', attachment);
+        }
+        
+        fetch('chat.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Clear form
+                document.getElementById('message-subject').value = '';
+                document.getElementById('message-content').value = '';
+                if (document.getElementById('message-attachment')) {
+                    document.getElementById('message-attachment').value = '';
+                }
+                
+                // Show success message
+                alert('Message sent successfully!');
+                
+                // Reload messages
+                loadMessages();
+            } else {
+                alert('Error: ' + data.message);
+            }
+            
+            // Re-enable form
+            sendButton.disabled = false;
+            sendButton.textContent = 'Send Message';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while sending your message. Please try again.');
+            
+            // Re-enable form
+            sendButton.disabled = false;
+            sendButton.textContent = 'Send Message';
+        });
+    }
+    
+    // Function to mark a message as read
+    function markMessageAsRead(messageId) {
+        fetch('chat.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'action=mark_read&message_id=' + messageId
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Message marked as read:', messageId);
+            }
+        })
+        .catch(error => {
+            console.error('Error marking message as read:', error);
+        });
+    }
+});
+
+// Add this to your DOMContentLoaded event listener
+const attachmentInput = document.getElementById('message-attachment');
+const attachmentPreview = document.getElementById('attachment-preview');
+
+attachmentInput.addEventListener('change', function() {
+    attachmentPreview.innerHTML = '';
+    
+    if (this.files.length > 0) {
+        const file = this.files[0];
+        
+        // Check file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert('File size exceeds 5MB limit. Please choose a smaller file.');
+            this.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        
+        // Create preview element
+        const previewElement = document.createElement('div');
+        previewElement.className = 'attachment-preview';
+        
+        // Remove button
+        const removeButton = document.createElement('div');
+        removeButton.className = 'remove-attachment';
+        removeButton.innerHTML = '×';
+        removeButton.addEventListener('click', function() {
+            attachmentInput.value = '';
+            attachmentPreview.innerHTML = '';
+        });
+        
+        if (file.type.startsWith('image/')) {
+            // For image files
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                previewElement.appendChild(img);
+                previewElement.appendChild(removeButton);
+                attachmentPreview.appendChild(previewElement);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // For other files
+            const fileIcon = document.createElement('div');
+            fileIcon.className = 'file-icon';
+            fileIcon.innerHTML = '📄';
+            fileIcon.style.fontSize = '40px';
+            fileIcon.style.display = 'flex';
+            fileIcon.style.alignItems = 'center';
+            fileIcon.style.justifyContent = 'center';
+            fileIcon.style.height = '100%';
+            
+            const fileName = document.createElement('div');
+            fileName.className = 'file-name';
+            fileName.textContent = file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name;
+            fileName.style.position = 'absolute';
+            fileName.style.bottom = '0';
+            fileName.style.left = '0';
+            fileName.style.right = '0';
+            fileName.style.textAlign = 'center';
+            fileName.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            fileName.style.color = 'white';
+            fileName.style.padding = '3px';
+            fileName.style.fontSize = '10px';
+            
+            previewElement.appendChild(fileIcon);
+            previewElement.appendChild(fileName);
+            previewElement.appendChild(removeButton);
+            attachmentPreview.appendChild(previewElement);
+        }
+    }
+});
 </script>
 </body>
 </html>
