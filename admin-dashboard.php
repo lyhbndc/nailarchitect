@@ -10,7 +10,7 @@ if (!$conn) {
 $appointments_query = "SELECT b.*, u.first_name, u.last_name 
                        FROM bookings b 
                        LEFT JOIN users u ON b.user_id = u.id 
-                       WHERE b.date >= CURDATE() 
+                       WHERE b.date >= DATE_SUB(CURDATE(), INTERVAL 1 DAY) 
                        ORDER BY b.date ASC, b.time ASC";
 $appointments = mysqli_query($conn, $appointments_query);
 
@@ -511,7 +511,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
     </style>
 </head>
 <body>
-    <div class="sidebar">
+<div class="sidebar">
         <div class="logo-container">
             <div class="logo"></div>
             <div class="admin-title">Admin</div>
@@ -520,29 +520,29 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         <div class="nav-menu">
             <div class="menu-section">MAIN</div>
             
-            <div class="menu-item active">
+            <div class="menu-item active" onclick="window.location.href='admin-dashboard.php'">
                 <div class="menu-icon">📊</div>
                 <div class="menu-text">Dashboard</div>
             </div>
             
-            <div class="menu-item">
+            <div class="menu-item" onclick="window.location.href='admin-appointments.php'">
                 <div class="menu-icon">📅</div>
                 <div class="menu-text">Appointments</div>
             </div>
             
-            <div class="menu-item">
+            <div class="menu-item" onclick="window.location.href='admin-clients.php'">
                 <div class="menu-icon">👥</div>
                 <div class="menu-text">Clients</div>
             </div>
             
-            <div class="menu-item">
+            <div class="menu-item" onclick="window.location.href='admin-messages.php'">
                 <div class="menu-icon">💌</div>
                 <div class="menu-text">Messages</div>
             </div>
             
             <div class="menu-section">SYSTEM</div>
             
-            <div class="menu-item">
+            <div class="menu-item" onclick="window.location.href='logout.php'">
                 <div class="menu-icon">↩️</div>
                 <div class="menu-text">Logout</div>
             </div>

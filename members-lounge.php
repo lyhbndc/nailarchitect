@@ -1538,233 +1538,325 @@ input[type="file"] {
         profileModal.style.display = 'none';
     });
     
-    // Handle message form submission
-    document.getElementById('message-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        const subject = document.getElementById('message-subject').value;
-        const content = document.getElementById('message-content').value;
-        const attachment = document.getElementById('message-attachment') ? document.getElementById('message-attachment').files[0] : null;
-        
-        if (!subject || !content) {
-            alert('Please fill out both subject and message fields');
-            return;
-        }
-        
-        sendMessage(subject, content, attachment);
-    });
+    // File attachment preview handling
+    const attachmentInput = document.getElementById('message-attachment');
+    const attachmentPreview = document.getElementById('attachment-preview');
+    
+    if (attachmentInput) {
+        attachmentInput.addEventListener('change', function() {
+            attachmentPreview.innerHTML = '';
+            
+            if (this.files.length > 0) {
+                const file = this.files[0];
+                
+                // Check file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size exceeds 5MB limit. Please choose a smaller file.');
+                    this.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                // Create preview element
+                const previewElement = document.createElement('div');
+                previewElement.className = 'attachment-preview';
+                
+                // Remove button
+                const removeButton = document.createElement('div');
+                removeButton.className = 'remove-attachment';
+                removeButton.innerHTML = '×';
+                removeButton.addEventListener('click', function() {
+                    attachmentInput.value = '';
+                    attachmentPreview.innerHTML = '';
+                });
+                
+                if (file.type.startsWith('image/')) {
+                    // For image files
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        previewElement.appendChild(img);
+                        previewElement.appendChild(removeButton);
+                        attachmentPreview.appendChild(previewElement);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // For other files
+                    const fileIcon = document.createElement('div');
+                    fileIcon.className = 'file-icon';
+                    fileIcon.innerHTML = '📄';
+                    fileIcon.style.fontSize = '40px';
+                    fileIcon.style.display = 'flex';
+                    fileIcon.style.alignItems = 'center';
+                    fileIcon.style.justifyContent = 'center';
+                    fileIcon.style.height = '100%';
+                    
+                    const fileName = document.createElement('div');
+                    fileName.className = 'file-name';
+                    fileName.textContent = file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name;
+                    fileName.style.position = 'absolute';
+                    fileName.style.bottom = '0';
+                    fileName.style.left = '0';
+                    fileName.style.right = '0';
+                    fileName.style.textAlign = 'center';
+                    fileName.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                    fileName.style.color = 'white';
+                    fileName.style.padding = '3px';
+                    fileName.style.fontSize = '10px';
+                    
+                    previewElement.appendChild(fileIcon);
+                    previewElement.appendChild(fileName);
+                    previewElement.appendChild(removeButton);
+                    attachmentPreview.appendChild(previewElement);
+                }
+            }
+        });
+    }
+    
+    // IMPORTANT: Message form submission - FIXED VERSION
+    // Consolidated single form submission handler
+    const messageForm = document.getElementById('message-form');
+    if (messageForm) {
+        messageForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            console.log('Form submitted');
+            
+            const subject = document.getElementById('message-subject').value || "Re: Salon Conversation"; // Provide default subject
+            const content = document.getElementById('message-content').value;
+            const attachmentInput = document.getElementById('message-attachment');
+            const attachment = attachmentInput && attachmentInput.files.length > 0 ? attachmentInput.files[0] : null;
+            
+            if (!content) {
+                alert('Please enter a message');
+                return false;
+            }
+            
+            // Disable the button and show loading state
+            const sendButton = document.getElementById('send-message');
+            const originalHTML = sendButton.innerHTML;
+            sendButton.disabled = true;
+            sendButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+            
+            // Create FormData
+            const formData = new FormData();
+            formData.append('action', 'send_message');
+            formData.append('subject', subject);
+            formData.append('content', content);
+            
+            if (attachment) {
+                // Check file size (max 5MB)
+                if (attachment.size > 5 * 1024 * 1024) {
+                    alert('File size exceeds 5MB limit. Please choose a smaller file.');
+                    sendButton.disabled = false;
+                    sendButton.innerHTML = originalHTML;
+                    return false;
+                }
+                
+                formData.append('attachment', attachment);
+            }
+            
+            // Debug log to check form data
+            console.log('Sending message with subject:', subject);
+            console.log('Message content length:', content.length);
+            console.log('Has attachment:', attachment ? 'Yes' : 'No');
+            
+            // Send using fetch with explicit error handling
+            fetch('chat.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                if (data.success) {
+                    // Clear form
+                    document.getElementById('message-content').value = '';
+                    if (attachmentInput) {
+                        attachmentInput.value = '';
+                    }
+                    document.getElementById('attachment-preview').innerHTML = '';
+                    
+                    // Reload messages
+                    loadMessages();
+                } else {
+                    alert('Error: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while sending your message: ' + error.message);
+            })
+            .finally(() => {
+                // Always restore button regardless of success/failure
+                sendButton.disabled = false;
+                sendButton.innerHTML = originalHTML;
+            });
+            
+            return false;
+        });
+    }
     
     // Function to load messages from the server
-function loadMessages() {
-    const messageList = document.getElementById('message-list');
-    messageList.innerHTML = '<div class="loading-messages">Loading your conversation...</div>';
-    
-    fetch('chat.php?action=get_messages')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                if (data.messages.length === 0) {
-                    messageList.innerHTML = `
-                        <div class="no-messages">
-                            <div class="no-appointments-icon">💬</div>
-                            <p>You don't have any messages yet. Send a message to start a conversation.</p>
-                        </div>
-                    `;
-                } else {
-                    let messagesHTML = '';
-                    let currentDate = '';
-                    
-                    // Sort messages by date (oldest to newest)
-                    data.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                    
-                    data.messages.forEach(message => {
-                        // Format message date
-                        const messageDate = new Date(message.created_at);
-                        const today = new Date();
-                        const yesterday = new Date(today);
-                        yesterday.setDate(yesterday.getDate() - 1);
-                        
-                        // Format date for display
-                        let dateStr;
-                        if (messageDate.toDateString() === today.toDateString()) {
-                            dateStr = 'Today';
-                        } else if (messageDate.toDateString() === yesterday.toDateString()) {
-                            dateStr = 'Yesterday';
-                        } else {
-                            dateStr = messageDate.toLocaleDateString('en-US', { 
-                                year: 'numeric', 
-                                month: 'short', 
-                                day: 'numeric' 
-                            });
-                        }
-                        
-                        // Add date separator if day changes
-                        if (dateStr !== currentDate) {
-                            messagesHTML += `
-                                <div class="date-separator">
-                                    <span class="date-text">${dateStr}</span>
-                                </div>
-                            `;
-                            currentDate = dateStr;
-                        }
-                        
-                        const fromSalon = message.sender_type === 'salon';
-                        const messageTime = messageDate.toLocaleTimeString('en-US', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
-                        
-                        let attachmentsHTML = '';
-                        
-                        // Add attachments if present
-                        if (message.has_attachment && message.attachments && message.attachments.length > 0) {
-                            attachmentsHTML = '<div class="message-attachments">';
-                            
-                            message.attachments.forEach(attachment => {
-                                // Determine if it's an image or other file
-                                const isImage = ['image/jpeg', 'image/png', 'image/gif'].includes(attachment.file_type);
-                                
-                                if (isImage) {
-                                    attachmentsHTML += `
-                                        <div class="attachment-file">
-                                            <a href="${attachment.file_path}" target="_blank">
-                                                <img src="${attachment.file_path}" alt="${attachment.file_name}" class="attachment-image" style="max-width: 150px; max-height: 100px;">
-                                            </a>
-                                        </div>
-                                    `;
-                                } else {
-                                    // For non-image files
-                                    attachmentsHTML += `
-                                        <div class="attachment-file">
-                                            <a href="${attachment.file_path}" target="_blank" class="attachment-link">
-                                                <span class="attachment-icon">📎</span>
-                                                <span class="attachment-name">${attachment.file_name}</span>
-                                            </a>
-                                        </div>
-                                    `;
-                                }
-                            });
-                            
-                            attachmentsHTML += '</div>';
-                        }
-                        
-                        // Only show the subject on the first message of a conversation
-                        const showSubject = message.id === data.messages[0].id || 
-                                           (data.messages.indexOf(message) > 0 && 
-                                            data.messages[data.messages.indexOf(message) - 1].sender_type !== message.sender_type);
-                        
-                        const subjectHTML = showSubject && message.subject ? 
-                            `<div class="message-subject">${message.subject}</div>` : '';
-                        
-                        messagesHTML += `
-                            <div class="message-item ${fromSalon ? 'from-salon' : 'from-user'} ${message.read_status === 0 ? 'unread' : ''}" data-id="${message.id}">
-                                ${subjectHTML}
-                                <div class="message-content">${message.content}</div>
-                                ${attachmentsHTML}
-                                <div class="message-time">${messageTime}</div>
+    function loadMessages() {
+        const messageList = document.getElementById('message-list');
+        messageList.innerHTML = '<div class="loading-messages">Loading your conversation...</div>';
+        
+        fetch('chat.php?action=get_messages')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    if (data.messages.length === 0) {
+                        messageList.innerHTML = `
+                            <div class="no-messages">
+                                <div class="no-appointments-icon">💬</div>
+                                <p>You don't have any messages yet. Send a message to start a conversation.</p>
                             </div>
                         `;
-                    });
-                    
-                    messageList.innerHTML = messagesHTML;
-                    
-                    // Scroll to the bottom of the message list
-                    messageList.scrollTop = messageList.scrollHeight;
-                    
-                    // Mark messages as read when viewed
-                    document.querySelectorAll('.message-item.unread.from-salon').forEach(message => {
-                        const messageId = message.getAttribute('data-id');
-                        markMessageAsRead(messageId);
-                    });
-                    
-                    // Hide subject field if there are existing messages
-                    const subjectField = document.getElementById('message-subject');
-                    if (data.messages.length > 0) {
-                        subjectField.style.display = 'none';
                     } else {
-                        subjectField.style.display = 'block';
+                        let messagesHTML = '';
+                        let currentDate = '';
+                        
+                        // Sort messages by date (oldest to newest)
+                        data.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                        
+                        data.messages.forEach(message => {
+                            // Format message date
+                            const messageDate = new Date(message.created_at);
+                            const today = new Date();
+                            const yesterday = new Date(today);
+                            yesterday.setDate(yesterday.getDate() - 1);
+                            
+                            // Format date for display
+                            let dateStr;
+                            if (messageDate.toDateString() === today.toDateString()) {
+                                dateStr = 'Today';
+                            } else if (messageDate.toDateString() === yesterday.toDateString()) {
+                                dateStr = 'Yesterday';
+                            } else {
+                                dateStr = messageDate.toLocaleDateString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'short', 
+                                    day: 'numeric' 
+                                });
+                            }
+                            
+                            // Add date separator if day changes
+                            if (dateStr !== currentDate) {
+                                messagesHTML += `
+                                    <div class="date-separator">
+                                        <span class="date-text">${dateStr}</span>
+                                    </div>
+                                `;
+                                currentDate = dateStr;
+                            }
+                            
+                            const fromSalon = message.sender_type === 'salon';
+                            const messageTime = messageDate.toLocaleTimeString('en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            });
+                            
+                            let attachmentsHTML = '';
+                            
+                            // Add attachments if present
+                            if (message.has_attachment && message.attachments && message.attachments.length > 0) {
+                                attachmentsHTML = '<div class="message-attachments">';
+                                
+                                message.attachments.forEach(attachment => {
+                                    // Determine if it's an image or other file
+                                    const isImage = ['image/jpeg', 'image/png', 'image/gif'].includes(attachment.file_type);
+                                    
+                                    if (isImage) {
+                                        attachmentsHTML += `
+                                            <div class="attachment-file">
+                                                <a href="${attachment.file_path}" target="_blank">
+                                                    <img src="${attachment.file_path}" alt="${attachment.file_name}" class="attachment-image" style="max-width: 150px; max-height: 100px;">
+                                                </a>
+                                            </div>
+                                        `;
+                                    } else {
+                                        // For non-image files
+                                        attachmentsHTML += `
+                                            <div class="attachment-file">
+                                                <a href="${attachment.file_path}" target="_blank" class="attachment-link">
+                                                    <span class="attachment-icon">📎</span>
+                                                    <span class="attachment-name">${attachment.file_name}</span>
+                                                </a>
+                                            </div>
+                                        `;
+                                    }
+                                });
+                                
+                                attachmentsHTML += '</div>';
+                            }
+                            
+                            // Only show the subject on the first message of a conversation
+                            const showSubject = message.id === data.messages[0].id || 
+                                               (data.messages.indexOf(message) > 0 && 
+                                                data.messages[data.messages.indexOf(message) - 1].sender_type !== message.sender_type);
+                            
+                            const subjectHTML = showSubject && message.subject ? 
+                                `<div class="message-subject">${message.subject}</div>` : '';
+                            
+                            messagesHTML += `
+                                <div class="message-item ${fromSalon ? 'from-salon' : 'from-user'} ${message.read_status === 0 ? 'unread' : ''}" data-id="${message.id}">
+                                    ${subjectHTML}
+                                    <div class="message-content">${message.content}</div>
+                                    ${attachmentsHTML}
+                                    <div class="message-time">${messageTime}</div>
+                                </div>
+                            `;
+                        });
+                        
+                        messageList.innerHTML = messagesHTML;
+                        
+                        // Scroll to the bottom of the message list
+                        messageList.scrollTop = messageList.scrollHeight;
+                        
+                        // Mark messages as read when viewed
+                        document.querySelectorAll('.message-item.unread.from-salon').forEach(message => {
+                            const messageId = message.getAttribute('data-id');
+                            markMessageAsRead(messageId);
+                        });
+                        
+                        // Hide subject field if there are existing messages
+                        const subjectField = document.getElementById('message-subject');
+                        if (data.messages.length > 0) {
+                            subjectField.style.display = 'none';
+                            subjectField.removeAttribute('required');
+                        } else {
+                            subjectField.style.display = 'block';
+                            subjectField.setAttribute('required', 'required');
+                        }
                     }
+                } else {
+                    messageList.innerHTML = `
+                        <div class="no-messages">
+                            <p>Error loading messages: ${data.message || 'Unknown error'}</p>
+                        </div>
+                    `;
                 }
-            } else {
+            })
+            .catch(error => {
+                console.error('Error:', error);
                 messageList.innerHTML = `
                     <div class="no-messages">
-                        <p>Error loading messages: ${data.message || 'Unknown error'}</p>
+                        <p>Error loading messages. Please try again later.</p>
                     </div>
                 `;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            messageList.innerHTML = `
-                <div class="no-messages">
-                    <p>Error loading messages. Please try again later.</p>
-                </div>
-            `;
-        });
-}
-    // Function to send a new message
-    function sendMessage(subject, content, attachment) {
-        const messageForm = document.getElementById('message-form');
-        const sendButton = document.getElementById('send-message');
-        
-        // Disable form while sending
-        sendButton.disabled = true;
-        sendButton.textContent = 'Sending...';
-        
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('action', 'send_message');
-        formData.append('subject', subject);
-        formData.append('content', content);
-        
-        // Add file if selected
-        if (attachment) {
-            // Check file size (max 5MB)
-            if (attachment.size > 5 * 1024 * 1024) {
-                alert('File size exceeds 5MB limit. Please choose a smaller file.');
-                sendButton.disabled = false;
-                sendButton.textContent = 'Send Message';
-                return;
-            }
-            
-            formData.append('attachment', attachment);
-        }
-        
-        fetch('chat.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Clear form
-                document.getElementById('message-subject').value = '';
-                document.getElementById('message-content').value = '';
-                if (document.getElementById('message-attachment')) {
-                    document.getElementById('message-attachment').value = '';
-                }
-                
-                // Show success message
-                alert('Message sent successfully!');
-                
-                // Reload messages
-                loadMessages();
-            } else {
-                alert('Error: ' + data.message);
-            }
-            
-            // Re-enable form
-            sendButton.disabled = false;
-            sendButton.textContent = 'Send Message';
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while sending your message. Please try again.');
-            
-            // Re-enable form
-            sendButton.disabled = false;
-            sendButton.textContent = 'Send Message';
-        });
+            });
     }
     
     // Function to mark a message as read
@@ -1785,80 +1877,6 @@ function loadMessages() {
         .catch(error => {
             console.error('Error marking message as read:', error);
         });
-    }
-});
-
-// Add this to your DOMContentLoaded event listener
-const attachmentInput = document.getElementById('message-attachment');
-const attachmentPreview = document.getElementById('attachment-preview');
-
-attachmentInput.addEventListener('change', function() {
-    attachmentPreview.innerHTML = '';
-    
-    if (this.files.length > 0) {
-        const file = this.files[0];
-        
-        // Check file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-            alert('File size exceeds 5MB limit. Please choose a smaller file.');
-            this.value = '';
-            return;
-        }
-        
-        const reader = new FileReader();
-        
-        // Create preview element
-        const previewElement = document.createElement('div');
-        previewElement.className = 'attachment-preview';
-        
-        // Remove button
-        const removeButton = document.createElement('div');
-        removeButton.className = 'remove-attachment';
-        removeButton.innerHTML = '×';
-        removeButton.addEventListener('click', function() {
-            attachmentInput.value = '';
-            attachmentPreview.innerHTML = '';
-        });
-        
-        if (file.type.startsWith('image/')) {
-            // For image files
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                previewElement.appendChild(img);
-                previewElement.appendChild(removeButton);
-                attachmentPreview.appendChild(previewElement);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            // For other files
-            const fileIcon = document.createElement('div');
-            fileIcon.className = 'file-icon';
-            fileIcon.innerHTML = '📄';
-            fileIcon.style.fontSize = '40px';
-            fileIcon.style.display = 'flex';
-            fileIcon.style.alignItems = 'center';
-            fileIcon.style.justifyContent = 'center';
-            fileIcon.style.height = '100%';
-            
-            const fileName = document.createElement('div');
-            fileName.className = 'file-name';
-            fileName.textContent = file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name;
-            fileName.style.position = 'absolute';
-            fileName.style.bottom = '0';
-            fileName.style.left = '0';
-            fileName.style.right = '0';
-            fileName.style.textAlign = 'center';
-            fileName.style.backgroundColor = 'rgba(0,0,0,0.5)';
-            fileName.style.color = 'white';
-            fileName.style.padding = '3px';
-            fileName.style.fontSize = '10px';
-            
-            previewElement.appendChild(fileIcon);
-            previewElement.appendChild(fileName);
-            previewElement.appendChild(removeButton);
-            attachmentPreview.appendChild(previewElement);
-        }
     }
 });
 </script>

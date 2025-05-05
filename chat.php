@@ -1,6 +1,12 @@
 <?php
 // chat.php - handles user message functionality
 
+// Enable error logging for debugging
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
+error_log("Chat script executed");
+
 // Start session
 session_start();
 
@@ -13,12 +19,15 @@ if (!isset($_SESSION['user_id'])) {
 // Database connection
 $conn = mysqli_connect("localhost", "root", "", "nail_architect_db");
 if (!$conn) {
+    error_log("Database connection failed: " . mysqli_connect_error());
     echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . mysqli_connect_error()]);
     exit();
 }
 
 $user_id = $_SESSION['user_id'];
 $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : '';
+
+error_log("Action requested: $action by user ID: $user_id");
 
 switch ($action) {
     case 'get_messages':
@@ -84,20 +93,28 @@ switch ($action) {
             }
         }
         
+        error_log("Returning " . count($messages) . " messages to user");
         echo json_encode(['success' => true, 'messages' => $messages]);
         break;
         
     case 'send_message':
         // Validate input data
-        if (!isset($_POST['subject']) || !isset($_POST['content'])) {
-            echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+        if (!isset($_POST['content']) || empty($_POST['content'])) {
+            error_log("Missing content field in send_message request");
+            echo json_encode(['success' => false, 'message' => 'Message content is required']);
             exit();
         }
         
-        $subject = mysqli_real_escape_string($conn, $_POST['subject']);
+        // Provide a default subject if none is given
+        $subject = isset($_POST['subject']) && !empty($_POST['subject']) ? 
+                  mysqli_real_escape_string($conn, $_POST['subject']) : 
+                  "Re: Salon Conversation";
+        
         $content = mysqli_real_escape_string($conn, $_POST['content']);
         $current_time = date('Y-m-d H:i:s');
         $has_attachment = 0;
+        
+        error_log("Processing message: Subject: $subject, Content length: " . strlen($content));
         
         // Begin transaction for message and possible attachment
         mysqli_begin_transaction($conn);
@@ -119,6 +136,7 @@ switch ($action) {
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
                 
                 if (!$conn->query($create_table)) {
+                    error_log("Failed to create message_attachments table: " . $conn->error);
                     throw new Exception("Failed to create message_attachments table: " . $conn->error);
                 }
                 
@@ -128,6 +146,7 @@ switch ($action) {
                                FOREIGN KEY (`message_id`) REFERENCES `messages` (`id`) 
                                ON DELETE CASCADE;";
                 $conn->query($alter_table);
+                error_log("Created message_attachments table");
             }
             
             // Check if has_attachment column exists in messages table, add if not
@@ -137,8 +156,10 @@ switch ($action) {
                               ADD COLUMN `has_attachment` TINYINT(1) 
                               NOT NULL DEFAULT 0 AFTER `content`;";
                 if (!$conn->query($add_column)) {
+                    error_log("Failed to add has_attachment column: " . $conn->error);
                     throw new Exception("Failed to add has_attachment column: " . $conn->error);
                 }
+                error_log("Added has_attachment column to messages table");
             }
             
             // Insert message as sent by the user
@@ -149,10 +170,12 @@ switch ($action) {
             $stmt->bind_param("iissis", $user_id, $user_id, $subject, $content, $has_attachment, $current_time);
             
             if (!$stmt->execute()) {
+                error_log("Failed to insert message: " . $stmt->error);
                 throw new Exception("Failed to send message: " . $stmt->error);
             }
             
             $message_id = $stmt->insert_id;
+            error_log("Message inserted with ID: $message_id");
             
             // Handle file upload if present
             if (isset($_FILES['attachment']) && $_FILES['attachment']['error'] == 0) {
@@ -160,7 +183,11 @@ switch ($action) {
                 
                 // Create directory if it doesn't exist
                 if (!file_exists($upload_dir)) {
-                    mkdir($upload_dir, 0755, true);
+                    if (!mkdir($upload_dir, 0755, true)) {
+                        error_log("Failed to create upload directory: $upload_dir");
+                        throw new Exception("Failed to create upload directory");
+                    }
+                    error_log("Created upload directory: $upload_dir");
                 }
                 
                 $file_name = $_FILES['attachment']['name'];
@@ -168,12 +195,16 @@ switch ($action) {
                 $file_size = $_FILES['attachment']['size'];
                 $file_type = $_FILES['attachment']['type'];
                 
+                error_log("Processing attachment: $file_name, Size: $file_size, Type: $file_type");
+                
                 // Generate unique filename
                 $unique_name = uniqid() . '_' . $file_name;
                 $file_path = $upload_dir . $unique_name;
                 
                 // Move uploaded file
                 if (move_uploaded_file($file_tmp, $file_path)) {
+                    error_log("File uploaded successfully to: $file_path");
+                    
                     // Insert attachment record
                     $attach_query = "INSERT INTO message_attachments (message_id, file_name, file_path, file_size, file_type) 
                                      VALUES (?, ?, ?, ?, ?)";
@@ -182,6 +213,7 @@ switch ($action) {
                     $attach_stmt->bind_param("issis", $message_id, $file_name, $file_path, $file_size, $file_type);
                     
                     if (!$attach_stmt->execute()) {
+                        error_log("Failed to save attachment: " . $attach_stmt->error);
                         throw new Exception("Failed to save attachment: " . $attach_stmt->error);
                     }
                     
@@ -191,9 +223,11 @@ switch ($action) {
                     $update_stmt->bind_param("i", $message_id);
                     
                     if (!$update_stmt->execute()) {
+                        error_log("Failed to update message: " . $update_stmt->error);
                         throw new Exception("Failed to update message: " . $update_stmt->error);
                     }
                 } else {
+                    error_log("Failed to upload file from temp location: $file_tmp to $file_path");
                     throw new Exception("Failed to upload file");
                 }
             }
@@ -201,11 +235,13 @@ switch ($action) {
             // Commit transaction
             mysqli_commit($conn);
             
+            error_log("Message sent successfully");
             echo json_encode(['success' => true, 'message' => 'Message sent successfully']);
             
         } catch (Exception $e) {
             // Rollback transaction on error
             mysqli_rollback($conn);
+            error_log("Error in send_message: " . $e->getMessage());
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
         break;
@@ -229,6 +265,7 @@ switch ($action) {
         if ($stmt->execute()) {
             echo json_encode(['success' => true]);
         } else {
+            error_log("Failed to mark message as read: " . $stmt->error);
             echo json_encode(['success' => false, 'message' => 'Failed to mark message as read: ' . $stmt->error]);
         }
         break;

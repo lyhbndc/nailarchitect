@@ -24,7 +24,7 @@ if (isset($_POST['login'])) {
         $password = $_POST['password'];
 
         // Fetch user data from the database
-        $stmt = $conn->prepare("SELECT id, first_name, last_name, password FROM users WHERE email=?");
+        $stmt = $conn->prepare("SELECT id, first_name, last_name, password, is_verified FROM users WHERE email=?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -32,9 +32,14 @@ if (isset($_POST['login'])) {
         if ($result->num_rows === 1) {
             $row = $result->fetch_assoc();
             $hashedPassword = $row['password'];
+            $is_verified = $row['is_verified'];
 
+            // Check if the account is verified
+            if ($is_verified == 0) {
+                $error_message = "Please verify your email before logging in. Check your inbox for the verification link.";
+            } 
             // Verify the password
-            if (password_verify($password, $hashedPassword)) {
+            else if (password_verify($password, $hashedPassword)) {
                 // Set session variables
                 $_SESSION['user_id'] = $row['id'];
                 $_SESSION['user_name'] = $row['first_name'] . ' ' . $row['last_name'];
@@ -344,7 +349,7 @@ mysqli_close($conn);
                             <input type="password" id="password" name="password" required>
                             <i id="toggle-password-icon" class="fa fa-eye toggle-password" onclick="togglePassword()"></i>
                         </div>
-                        <div class="forgot-password" onclick="alert('Password reset functionality would open here')">Forgot password?</div>
+                        <div class="forgot-password" onclick="window.location.href='reset-password.php'">Forgot password?</div>
                     </div>
                     
                     <button type="submit" name="login" class="login-button">Sign In</button>
