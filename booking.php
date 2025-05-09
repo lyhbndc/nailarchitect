@@ -13,7 +13,7 @@ $user_phone = '';
 if ($logged_in) {
     // Get first letter for avatar
     $first_letter = substr($_SESSION['user_name'], 0, 1);
-    
+
     // Connect to database to get user info
     $conn = mysqli_connect("localhost", "root", "", "nail_architect_db");
     if ($conn) {
@@ -23,14 +23,14 @@ if ($logged_in) {
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
             $user_name = $user['first_name'] . ' ' . $user['last_name'];
             $user_email = $user['email'];
             $user_phone = $user['phone'];
         }
-        
+
         mysqli_close($conn);
     }
 }
@@ -38,6 +38,7 @@ if ($logged_in) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,33 +48,42 @@ if ($logged_in) {
     <title>Nail Architect - Booking Form</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: Poppins;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        html, body {
+
+        html,
+        body {
             height: 100%;
             margin: 0;
             padding: 0;
         }
-        
+
         body {
             background-color: #f2e9e9;
             padding: 20px;
             display: flex;
             flex-direction: column;
         }
-        
+
         .container {
-            max-width: 1200px;
+            max-width: 1500px;
             width: 100%;
             flex: 1;
             margin: 0 auto;
@@ -81,100 +91,55 @@ if ($logged_in) {
             flex-direction: column;
             gap: 15px;
         }
-        
+
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding-bottom: 15px;
         }
-        
-        .logo-container img {
-            height: 60px;
-        }
-        
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .nav-link {
-            cursor: pointer;
-            transition: opacity 0.3s;
-        }
-        
-        .nav-link:hover {
-            opacity: 0.7;
-        }
-        
-        .book-now {
-            padding: 8px 20px;
-            background-color: #e8d7d0;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .book-now:hover {
-            background-color: #d9bbb0;
-        }
-        
-        .login-icon {
-            cursor: pointer;
-        }
-        
-        .user-initial {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: #e0c5b7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
+
+
         .page-title {
             font-size: 24px;
             margin-bottom: 10px;
             animation: fadeIn 0.5s ease-out forwards;
         }
-        
+
         .page-subtitle {
             font-size: 16px;
             margin-bottom: 25px;
             color: #666;
             animation: fadeIn 0.6s ease-out forwards;
         }
-        
+
         .booking-form-container {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 30px;
             animation: fadeIn 0.7s ease-out forwards;
         }
-        
+
         .booking-form {
-            background-color: #e8d7d0;
+            background: linear-gradient(to right, rgb(237, 215, 215), #e8d7d0);
             border-radius: 15px;
             padding: 25px;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         label {
             display: block;
             margin-bottom: 8px;
             font-size: 14px;
             font-weight: bold;
         }
-        
-        input, textarea, select {
+
+        input,
+        textarea,
+        select {
             width: 100%;
             padding: 12px;
             border: none;
@@ -184,19 +149,21 @@ if ($logged_in) {
             font-size: 14px;
             transition: all 0.3s ease;
         }
-        
-        input:focus, textarea:focus, select:focus {
+
+        input:focus,
+        textarea:focus,
+        select:focus {
             outline: none;
             background-color: #ffffff;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
-        
+
         .service-options {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 10px;
         }
-        
+
         .service-option {
             position: relative;
             padding: 12px;
@@ -205,11 +172,11 @@ if ($logged_in) {
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .service-option:hover {
             background-color: #f8f0ed;
         }
-        
+
         .service-option input {
             position: absolute;
             opacity: 0;
@@ -217,7 +184,7 @@ if ($logged_in) {
             height: 0;
             width: 0;
         }
-        
+
         .service-option label {
             display: block;
             padding-left: 30px;
@@ -225,7 +192,7 @@ if ($logged_in) {
             font-weight: normal;
             margin-bottom: 0;
         }
-        
+
         .checkmark {
             position: absolute;
             top: 12px;
@@ -235,21 +202,21 @@ if ($logged_in) {
             background-color: #fff;
             border-radius: 50%;
         }
-        
-        .service-option input:checked ~ .checkmark {
+
+        .service-option input:checked~.checkmark {
             background-color: #d9bbb0;
         }
-        
+
         .checkmark:after {
             content: "";
             position: absolute;
             display: none;
         }
-        
-        .service-option input:checked ~ .checkmark:after {
+
+        .service-option input:checked~.checkmark:after {
             display: block;
         }
-        
+
         .service-option .checkmark:after {
             left: 7px;
             top: 3px;
@@ -259,13 +226,13 @@ if ($logged_in) {
             border-width: 0 2px 2px 0;
             transform: rotate(45deg);
         }
-        
+
         .service-price {
             float: right;
             font-size: 12px;
             color: #666;
         }
-        
+
         .upload-section {
             border: 2px dashed #c0c0c0;
             border-radius: 8px;
@@ -276,21 +243,21 @@ if ($logged_in) {
             position: relative;
             overflow: hidden;
         }
-        
+
         .upload-section:hover {
             border-color: #a0a0a0;
         }
-        
+
         .upload-icon {
             font-size: 24px;
             margin-bottom: 10px;
         }
-        
+
         .upload-text {
             margin-bottom: 15px;
             font-size: 14px;
         }
-        
+
         .file-input {
             position: absolute;
             top: 0;
@@ -300,7 +267,7 @@ if ($logged_in) {
             opacity: 0;
             cursor: pointer;
         }
-        
+
         .browse-button {
             display: inline-block;
             padding: 8px 16px;
@@ -310,18 +277,18 @@ if ($logged_in) {
             font-size: 14px;
             transition: all 0.3s ease;
         }
-        
+
         .browse-button:hover {
             background-color: #ae9389;
         }
-        
+
         .preview-container {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 15px;
         }
-        
+
         .preview-image {
             width: 80px;
             height: 80px;
@@ -329,14 +296,14 @@ if ($logged_in) {
             object-fit: cover;
             position: relative;
         }
-        
+
         .remove-image {
             position: absolute;
             top: -8px;
             right: -8px;
             width: 20px;
             height: 20px;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.5);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -345,36 +312,36 @@ if ($logged_in) {
             cursor: pointer;
             font-size: 12px;
         }
-        
+
         .date-time-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-        
+
         .sidebar {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        
+
         .payment-info {
-            background-color: #e8d7d0;
+            background: linear-gradient(to right, rgb(237, 215, 215), #e8d7d0);
             border-radius: 15px;
             padding: 25px;
         }
-        
+
         .info-title {
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 20px;
         }
-        
+
         .qr-container {
             text-align: center;
             margin: 20px 0;
         }
-        
+
         .qr-code {
             width: 180px;
             height: 180px;
@@ -386,48 +353,48 @@ if ($logged_in) {
             align-items: center;
             justify-content: center;
         }
-        
+
         .qr-code img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
             display: block;
         }
-        
+
         .qr-instructions {
             font-size: 14px;
             line-height: 1.5;
         }
-        
+
         .policy-box {
-            background-color: #e8d7d0;
+            background: linear-gradient(to right, rgb(237, 215, 215), #e8d7d0);
             border-radius: 15px;
             padding: 25px;
         }
-        
+
         .policy-content {
             font-size: 14px;
             line-height: 1.5;
             margin-bottom: 15px;
         }
-        
+
         .policy-checkbox {
             display: flex;
             align-items: flex-start;
             gap: 10px;
             margin-top: 15px;
         }
-        
+
         .policy-checkbox input {
             width: auto;
             margin-top: 3px;
         }
-        
+
         .policy-checkbox label {
             margin-bottom: 0;
             font-weight: normal;
         }
-        
+
         .submit-button {
             padding: 12px 24px;
             background-color: #d9bbb0;
@@ -441,12 +408,12 @@ if ($logged_in) {
             margin-top: 20px;
             font-weight: bold;
         }
-        
+
         .submit-button:hover {
             background-color: #ae9389;
             transform: translateY(-2px);
         }
-        
+
         .back-button {
             display: inline-block;
             margin-top: 30px;
@@ -456,7 +423,7 @@ if ($logged_in) {
             animation: fadeIn 0.9s ease-out forwards;
             color: #000;
         }
-        
+
         .back-button:after {
             content: '';
             position: absolute;
@@ -467,43 +434,45 @@ if ($logged_in) {
             background-color: #000;
             transition: width 0.6s ease;
         }
-        
+
         .back-button:hover:after {
             width: 100%;
         }
-        
+
         /* Responsive styles */
         @media (max-width: 1024px) {
             .booking-form-container {
                 grid-template-columns: 1fr;
             }
-            
+
             .sidebar {
                 flex-direction: row;
                 flex-wrap: wrap;
             }
-            
-            .payment-info, .policy-box {
+
+            .payment-info,
+            .policy-box {
                 flex: 1;
                 min-width: 300px;
             }
         }
-        
+
         @media (max-width: 768px) {
             .service-options {
                 grid-template-columns: 1fr;
             }
-            
+
             .date-time-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .sidebar {
                 flex-direction: column;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -524,13 +493,13 @@ if ($logged_in) {
                 <?php endif; ?>
             </div>
         </header>
-        
+
         <a href="index.php">
             <div class="back-button">← Back</div>
         </a>
         <div class="page-title">Book Your Appointment</div>
         <div class="page-subtitle">Complete the form below to schedule your visit</div>
-        
+
         <div class="booking-form-container">
             <div class="booking-form">
                 <form id="appointment-form" method="POST" action="process_booking.php" enctype="multipart/form-data">
@@ -538,17 +507,17 @@ if ($logged_in) {
                         <label for="name">Your Name</label>
                         <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($user_name); ?>" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="email">Email Address</label>
                         <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user_email); ?>" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
                         <input type="tel" id="phone" name="phone" value="<?php echo htmlspecialchars($user_phone); ?>" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Select Service</label>
                         <div class="service-options">
@@ -557,31 +526,31 @@ if ($logged_in) {
                                 <label for="service1">Soft Gel<span class="service-price">starts at P800</span></label>
                                 <span class="checkmark"></span>
                             </div>
-                            
+
                             <div class="service-option">
                                 <input type="radio" id="service2" name="service" value="press-ons">
                                 <label for="service2">Press Ons<span class="service-price">starts at P300</span></label>
                                 <span class="checkmark"></span>
                             </div>
-                            
+
                             <div class="service-option">
                                 <input type="radio" id="service3" name="service" value="builder-gel">
                                 <label for="service3">Builder Gel<span class="service-price">starts at P750</span></label>
                                 <span class="checkmark"></span>
                             </div>
-                            
+
                             <div class="service-option">
                                 <input type="radio" id="service4" name="service" value="menicure">
                                 <label for="service4">Menicure<span class="service-price">starts at P400</span></label>
                                 <span class="checkmark"></span>
                             </div>
-                            
+
                             <div class="service-option">
                                 <input type="radio" id="service5" name="service" value="removal-fill">
                                 <label for="service5">Removal/Fill<span class="service-price">starts at P150</span></label>
                                 <span class="checkmark"></span>
                             </div>
-                            
+
                             <div class="service-option">
                                 <input type="radio" id="service6" name="service" value="other">
                                 <label for="service6">Other Services<span class="service-price">price varies</span></label>
@@ -589,7 +558,7 @@ if ($logged_in) {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Nail Inspiration Images (Optional)</label>
                         <div class="upload-section" id="inspiration-upload">
@@ -600,14 +569,14 @@ if ($logged_in) {
                             <div class="preview-container" id="inspo-preview"></div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <div class="date-time-grid">
                             <div>
                                 <label for="date">Preferred Date</label>
                                 <input type="date" id="date" name="date" required>
                             </div>
-                            
+
                             <div>
                                 <label for="time">Preferred Time</label>
                                 <select id="time" name="time" required>
@@ -626,12 +595,12 @@ if ($logged_in) {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="notes">Special Requests or Notes</label>
                         <textarea id="notes" name="notes" rows="3"></textarea>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Upload Screenshot of the Payment</label>
                         <div class="upload-section" id="payment-upload">
@@ -642,30 +611,30 @@ if ($logged_in) {
                             <div class="preview-container" id="payment-preview"></div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group policy-checkbox">
                         <input type="checkbox" id="deposit-confirm" name="deposit-confirm" required>
                         <label for="deposit-confirm">I confirm that I have made the deposit payment via the QR code</label>
                     </div>
-                    
+
                     <div class="form-group policy-checkbox">
                         <input type="checkbox" id="policy-agree" name="policy-agree" required>
                         <label for="policy-agree">I have read and agree to the salon policies</label>
                     </div>
-                    
+
                     <?php if ($logged_in): ?>
                         <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
                     <?php endif; ?>
-                    
+
                     <button type="submit" class="submit-button">Book Appointment</button>
                 </form>
             </div>
-            
+
             <div class="sidebar">
                 <div class="payment-info">
                     <div class="info-title">Down Payment</div>
                     <p>A P500 deposit is required to secure your appointment. This amount will be deducted from your final bill.</p>
-                    
+
                     <div class="qr-container">
                         <div class="qr-code">
                             <img src="Assets/qr.png" alt="Payment QR Code">
@@ -675,7 +644,7 @@ if ($logged_in) {
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="policy-box">
                     <div class="info-title">Salon Policies</div>
                     <div class="policy-content">
@@ -687,7 +656,7 @@ if ($logged_in) {
             </div>
         </div>
     </div>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize date picker with current date + 1 day as minimum
@@ -696,81 +665,81 @@ if ($logged_in) {
             tomorrow.setDate(tomorrow.getDate() + 1);
             const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
             dateInput.setAttribute('min', tomorrowFormatted);
-            
+
             // Handle navigation
             const backButton = document.querySelector('.back-button');
             backButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 window.location.href = 'index.php';
             });
-            
+
             const servicesLink = document.querySelector('.nav-link');
             servicesLink.addEventListener('click', function() {
                 window.location.href = 'services.php';
             });
-            
+
             <?php if ($logged_in): ?>
-            const userInitial = document.querySelector('.user-initial');
-            userInitial.addEventListener('click', function() {
-                window.location.href = 'members-lounge.php';
-            });
+                const userInitial = document.querySelector('.user-initial');
+                userInitial.addEventListener('click', function() {
+                    window.location.href = 'members-lounge.php';
+                });
             <?php else: ?>
-            const loginIcon = document.querySelector('.login-icon');
-            loginIcon.addEventListener('click', function() {
-                window.location.href = 'login.php';
-            });
+                const loginIcon = document.querySelector('.login-icon');
+                loginIcon.addEventListener('click', function() {
+                    window.location.href = 'login.php';
+                });
             <?php endif; ?>
-            
+
             // Handle file uploads for inspiration images
             setupFileUpload('nail-inspo', 'inspo-preview', 'inspiration-upload', 3);
-            
+
             // Handle file upload for payment proof
             setupFileUpload('payment-proof', 'payment-preview', 'payment-upload', 1);
-            
+
             // Setup file upload functionality
             function setupFileUpload(inputId, previewId, areaId, maxFiles) {
                 const fileInput = document.getElementById(inputId);
                 const previewContainer = document.getElementById(previewId);
                 const uploadArea = document.getElementById(areaId);
-                
+
                 // Handle drag and drop
                 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                     uploadArea.addEventListener(eventName, preventDefaults, false);
                 });
-                
+
                 function preventDefaults(e) {
                     e.preventDefault();
                     e.stopPropagation();
                 }
-                
+
                 ['dragenter', 'dragover'].forEach(eventName => {
                     uploadArea.addEventListener(eventName, function() {
                         uploadArea.style.borderColor = '#a0a0a0';
                         uploadArea.style.backgroundColor = '#e5e5e5';
                     }, false);
                 });
-                
+
                 ['dragleave', 'drop'].forEach(eventName => {
                     uploadArea.addEventListener(eventName, function() {
                         uploadArea.style.borderColor = '#c0c0c0';
                         uploadArea.style.backgroundColor = '#f0f0f0';
                     }, false);
                 });
-                
+
                 uploadArea.addEventListener('drop', function(e) {
                     const dt = e.dataTransfer;
                     const files = dt.files;
                     handleFiles(files);
                 }, false);
-                
+
                 fileInput.addEventListener('change', function() {
                     handleFiles(this.files);
                 });
-                
+
                 function handleFiles(files) {
                     // Limit to max files
                     let validFiles = Array.from(files).slice(0, maxFiles);
-                    
+
                     // Clear existing previews if single file upload
                     if (maxFiles === 1) {
                         previewContainer.innerHTML = '';
@@ -779,42 +748,42 @@ if ($logged_in) {
                     else if (previewContainer.children.length + validFiles.length > maxFiles) {
                         previewContainer.innerHTML = '';
                     }
-                    
+
                     validFiles.forEach(file => {
                         if (!file.type.match('image.*')) {
                             return;
                         }
-                        
+
                         const reader = new FileReader();
-                        
+
                         reader.onload = function(e) {
                             const imagePreviewWrapper = document.createElement('div');
                             imagePreviewWrapper.style.position = 'relative';
-                            
+
                             const img = document.createElement('img');
                             img.classList.add('preview-image');
                             img.src = e.target.result;
-                            
+
                             const removeBtn = document.createElement('div');
                             removeBtn.classList.add('remove-image');
                             removeBtn.innerHTML = '×';
                             removeBtn.addEventListener('click', function() {
                                 imagePreviewWrapper.remove();
                             });
-                            
+
                             imagePreviewWrapper.appendChild(img);
                             imagePreviewWrapper.appendChild(removeBtn);
-                            
+
                             if (previewContainer.children.length < maxFiles) {
                                 previewContainer.appendChild(imagePreviewWrapper);
                             }
                         }
-                        
+
                         reader.readAsDataURL(file);
                     });
                 }
             }
-            
+
             // Form validation
             document.getElementById('appointment-form').addEventListener('submit', function(e) {
                 // Basic validation
@@ -827,7 +796,7 @@ if ($logged_in) {
                 const depositConfirm = document.getElementById('deposit-confirm').checked;
                 const policyAgree = document.getElementById('policy-agree').checked;
                 const paymentProof = document.getElementById('payment-proof').files.length > 0;
-                
+
                 if (!name || !email || !phone || !date || !time || !serviceSelected || !depositConfirm || !policyAgree || !paymentProof) {
                     e.preventDefault();
                     alert('Please fill in all required fields, upload payment proof, and confirm the policies.');
@@ -835,5 +804,7 @@ if ($logged_in) {
             });
         });
     </script>
+    <?php include 'chat-widget.php'; ?>
 </body>
+
 </html>

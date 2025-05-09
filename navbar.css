@@ -1,11 +1,12 @@
+
 .logo-container {
     display: flex;
     align-items: center;
 }
 
 .logo {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     overflow: hidden;
 }
 
@@ -24,12 +25,12 @@
 
 .nav-links {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     align-items: center;
 }
 
 .nav-link {
-    font-size: 14px;
+    font-size: 15px;
     cursor: pointer;
     transition: opacity 0.3s ease;
 }
@@ -39,10 +40,10 @@
 }
 
 .login-icon {
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
-    background-color: #e6a4a4;
+    background: linear-gradient(to right, #e6a4a4, #d98d8d);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -52,18 +53,51 @@
 }
 
 .login-icon:hover {
+    background: linear-gradient(to right, #d98d8d, #ce7878);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     opacity: 0.8;
 }
 .book-now {
-    padding: 8px 20px;
-    background-color: #D9BBB0;
-    border-radius: 20px;
+    padding: 10px 20px;
+    background: linear-gradient(to right, #e6a4a4, #d98d8d);
+    border-radius: 30px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 15px;
     transition: all 0.3s ease;
     white-space: nowrap;
-}
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+  }
 
-.book-now:hover {
-    background-color: #ae9389;
+  .book-now:hover {
+    background: linear-gradient(to right, #d98d8d, #ce7878);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  /* Mobile-specific styles */
+@media (max-width: 768px) {
+    /* Hide the services link in the navigation bar */
+    .nav-links .nav-link {
+        display: none;
+    }
+    
+    /* Make the remaining navigation items spread out better */
+    .nav-links {
+        justify-content: flex-end;
+        gap: 15px;
+    }
+}
+.user-initial {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(to right, #e6a4a4, #d98d8d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color:#472727; 
+    cursor: pointer;
 }

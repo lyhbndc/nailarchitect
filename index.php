@@ -19,6 +19,7 @@ if (isset($_GET['logout'])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,98 +29,188 @@ if (isset($_GET['logout'])) {
     <title>Nail Architect</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: Poppins;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        html, body {
+
+        html,
+        body {
             height: 100%;
             margin: 0;
             padding: 0;
+            overflow-y: auto;
         }
-        
+
+        /* Salon-themed Animated Background */
         body {
-            background-color: #F2E9E9;
+            background-color: #f8f0f0;
+            position: relative;
+            overflow-x: hidden;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            min-height: 100vh;
         }
-        
+
+        /* Keep existing background animations */
+        .background-pattern,
+        .swirl-pattern,
+        .polish-drips,
+        .gradient-overlay {
+            /* Keep original background styles */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Animated nail polish bottle background */
+        .background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 10% 20%, #f5d0d0 1px, transparent 8px),
+                radial-gradient(circle at 40% 70%, #e6a4a4 1px, transparent 6px),
+                radial-gradient(circle at 70% 30%, #d9bbb0 1px, transparent 10px),
+                radial-gradient(circle at 90% 85%, #e8d7d0 1px, transparent 7px);
+            background-size: 160px 160px;
+            opacity: 0.4;
+            z-index: -1;
+            animation: floatBubbles 45s linear infinite;
+        }
+
+        @keyframes floatBubbles {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 160px 160px;
+            }
+        }
+
+        /* Elegant swirls pattern */
+        .swirl-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 25% 25%, transparent 96%, #e6a4a4 97%, transparent 98%),
+                radial-gradient(circle at 75% 75%, transparent 96%, #d9bbb0 97%, transparent 98%),
+                radial-gradient(circle at 75% 25%, transparent 96%, #e8d7d0 97%, transparent 98%),
+                radial-gradient(circle at 25% 75%, transparent 96%, #e6a4a4 97%, transparent 98%);
+            background-size: 180px 180px;
+            opacity: 0.6;
+            z-index: -1;
+            animation: swirlMove 60s linear infinite;
+        }
+
+        @keyframes swirlMove {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 180px 180px;
+            }
+        }
+
+        /* Subtle polish drip effect */
+        .polish-drips {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(0deg, transparent 98.5%, #e6a4a4 98.5%, #e6a4a4 99%, transparent 99%),
+                linear-gradient(90deg, transparent 98.5%, #d9bbb0 98.5%, #d9bbb0 99%, transparent 99%);
+            background-size: 200px 100px;
+            opacity: 0.15;
+            z-index: -1;
+            animation: dripMove 90s linear infinite;
+        }
+
+        @keyframes dripMove {
+            0% {
+                background-position: 0 0;
+            }
+
+            100% {
+                background-position: 200px 100px;
+            }
+        }
+
+        /* Gradient overlay */
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #F2E9E9, #e6a4a4, #e8d7d0, #F2E9E9, #d9bbb0);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            opacity: 0.5;
+            z-index: -2;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
         .container {
-            max-width: 1200px;
+            max-width: 1500px;
             width: 100%;
             flex: 1;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
             gap: 15px;
+            position: relative;
+            z-index: 1;
         }
-        
+
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 15px;
+            padding-bottom: 25px;
             animation: fadeIn 0.5s ease-out forwards;
         }
-        
-        .logo-container img {
-            height: 60px;
-        }
-        
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .nav-link {
-            cursor: pointer;
-            transition: opacity 0.3s;
-        }
-        
-        .nav-link:hover {
-            opacity: 0.7;
-        }
-        
-        .book-now {
-            padding: 8px 20px;
-            background-color: #e8d7d0;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .book-now:hover {
-            background-color: #d9bbb0;
-        }
-        
-        .login-icon {
-            cursor: pointer;
-        }
-        
-        .user-initial {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: #e0c5b7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
+
         .grid {
             display: grid;
             grid-template-columns: repeat(12, 1fr);
@@ -128,184 +219,368 @@ if (isset($_GET['logout'])) {
             flex: 1;
             animation: fadeIn 0.6s ease-out forwards;
         }
-        
+
         .grid-item {
-            background-color: #e9e1de;
-            border-radius: 15px;
+            background-color: #f5dbdb;
+            border-radius: 12px;
             overflow: hidden;
             position: relative;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
         }
-        
+
         .grid-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
-        
+
         .main-card {
             grid-column: span 5;
             grid-row: span 7;
             min-height: 300px;
         }
-        
+
         .book-appointment {
             grid-column: 6 / span 7;
             grid-row: span 3;
             min-height: 150px;
-            background-color: #e6a4a4;
+            background-color: #f5dbdb;
         }
-        
+
         .gallery {
             grid-column: 6 / span 3;
             grid-row: 4 / span 4;
             min-height: 150px;
         }
-        
+
         .contact {
             grid-column: 9 / span 4;
             grid-row: 4 / span 4;
             min-height: 150px;
-            background-color: #e6a4a4;
+            background-color: #f5dbdb;
         }
-        
+
         .faq {
             grid-column: span 8;
             grid-row: 8 / span 5;
             min-height: 200px;
-            background-color: #c78c8c;
+            background-color: #f5dbdb;
         }
-        
+
         .visit-us {
             grid-column: 9 / span 4;
             grid-row: 8 / span 5;
             min-height: 200px;
         }
-        
+
         .grid-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            width: 65%;
+            /* Adjusted to not cover the entire container */
+            height: auto;
+            object-fit: contain;
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             z-index: 1;
         }
-        
+
+        /* Special handling for specific layouts */
+        .main-card .grid-img {
+            width: 75%;
+            height: auto;
+            left: 40%;
+            top: 60%;
+            transform: translateY(-50%);
+        }
+
+        .visit-us .grid-img {
+            width: 75%;
+            height: auto;
+            left: 40%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .book-appointment .grid-img {
+            width: 60%;
+            height: auto;
+            left: 30%;
+            top: 90%;
+            transform: translateY(-40%);
+        }
+
+        .gallery .grid-img {
+            width: 80%;
+            height: auto;
+            left: 35%;
+            top: 65%;
+            transform: translateY(-50%);
+
+        }
+
+        .contact .grid-img {
+            width: 60%;
+            height: auto;
+            left: 1%;
+            top: 60%;
+            transform: translateY(-50%);
+        }
+
+        .faq .grid-img {
+            width: 60%;
+            height: auto;
+            left: 20%;
+            transform: translate(-50%, -50%);
+        }
+
         .grid-content {
             position: relative;
             z-index: 2;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: center;
             height: 100%;
             color: #333;
         }
-        
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                to bottom,
-                rgba(217, 187, 176, 0) 0%,
-                rgba(217, 187, 176, 0.3) 50%,
-                rgba(217, 187, 176, 0.5) 75%,
-                rgba(217, 187, 176, 0.7) 100%
-            );
-            z-index: 1;
-        }
-        
+
         .grid-title {
-            font-weight: bold;
-            font-size: 14px;
+            font-weight: 600;
+            font-size: 20px;
             margin-bottom: 5px;
+            color: #333;
+            position: relative;
+            z-index: 5;
         }
-        
-        .light {
-            color: #F2E9E9;
+
+        /* Positioning text for different layouts to match the design */
+        .book-appointment .grid-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
         }
+
+        .gallery .grid-title {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .contact .grid-title {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .faq .grid-title {
+            position: absolute;
+            bottom: 170px;
+            right: 100px;
+        }
+
+        .visit-us .grid-title {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+        }
+
+        /* Main card special styling */
         .main-title {
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 22px;
+            font-weight: 600;
             line-height: 1.3;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            max-width: 50%;
         }
-        
+
         .card-action {
-            align-self: flex-end;
-            margin-top: auto;
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
             font-size: 14px;
             cursor: pointer;
-            position: relative;
             transition: all 0.3s ease;
         }
-        
+
+        .main-card {
+            background-color: #f5c7c7;
+        }
+
+        .book-appointment {
+            background-color: rgb(255, 194, 196);
+        }
+
+        .gallery {
+            background-color: #eb9c9d;
+        }
+
+        .contact {
+            background-color: #ffc5cb;
+        }
+
+        .faq {
+            background-color: #ffbcc2;
+        }
+
+        .visit-us {
+            background-color: #ffdbdc;
+        }
+
         /* Responsive styles */
         @media (max-width: 1024px) {
             .grid {
                 grid-template-rows: repeat(3, auto);
             }
-            
+
             .main-card {
                 grid-column: span 12;
             }
-            
+
             .book-appointment {
                 grid-column: span 12;
                 grid-row: 2 / span 1;
             }
-            
+
             .gallery {
                 grid-column: span 6;
                 grid-row: 3 / span 1;
             }
-            
+
             .contact {
                 grid-column: 7 / span 6;
                 grid-row: 3 / span 1;
             }
-            
+
             .faq {
                 grid-column: span 12;
                 grid-row: 4 / span 1;
             }
-            
+
             .visit-us {
                 grid-column: span 12;
                 grid-row: 5 / span 1;
             }
+
+            /* Responsive title positions for tablet */
+            .faq .grid-title {
+                bottom: 120px;
+                right: 50px;
+            }
+
+            .visit-us .grid-title {
+                bottom: 20px;
+                right: 20px;
+            }
         }
-        
+
         @media (max-width: 768px) {
             body {
                 overflow-y: auto;
                 height: auto;
+                min-height: 100vh;
             }
-            
+
             .container {
                 height: auto;
-                min-height: 100%;
+                min-height: auto;
             }
-            
+
             .grid {
                 display: flex;
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             .grid-item {
                 min-height: 200px;
             }
-            
+
             .main-card {
                 min-height: 250px;
+            }
+
+            /* Responsive title positions for mobile */
+            .main-title {
+                font-size: 20px;
+                max-width: 60%;
+            }
+
+            .grid-title {
+                font-size: 18px;
+            }
+
+            .book-appointment .grid-title,
+            .gallery .grid-title {
+                top: 15px;
+                left: 15px;
+            }
+
+            .contact .grid-title {
+                top: 20px;
+                right: 35px;
+            }
+
+            .faq .grid-title {
+                position: absolute;
+                top: 15px;
+                left: 200px;
+                bottom: auto;
+                right: auto;
+            }
+
+            .visit-us .grid-title {
+                position: absolute;
+                top: 15px;
+                left: 15px;
+                bottom: auto;
+                right: auto;
+            }
+
+            .card-action {
+                position: absolute;
+                top: 140px;
+                left: 20px;
+                bottom: auto;
+                right: auto;
+            }
+        }
+
+        /* Small mobile adjustments */
+        @media (max-width: 480px) {
+            .grid-item {
+                min-height: 180px;
+            }
+
+            .main-title {
+                font-size: 18px;
+                max-width: 70%;
+            }
+
+            .grid-title {
+                font-size: 16px;
+            }
+
+            /* Ensure we keep image positions but adjust titles */
+            .main-card .grid-img,
+            .book-appointment .grid-img,
+            .gallery .grid-img,
+            .contact .grid-img,
+            .faq .grid-img,
+            .visit-us .grid-img {
+                /* Keep original image positions */
             }
         }
     </style>
 </head>
+
 <body>
+    <div class="gradient-overlay"></div>
+    <div class="background-pattern"></div>
+    <div class="swirl-pattern"></div>
+    <div class="polish-drips"></div>
     <div class="container">
         <header>
             <div class="logo-container">
@@ -325,64 +600,56 @@ if (isset($_GET['logout'])) {
                 <?php endif; ?>
             </div>
         </header>
-        
+
         <div class="grid">
             <div class="grid-item main-card">
-                <img src="Assets/services.webp" alt="Colorful nails with rings" class="grid-img">
-                <div class="overlay"></div>
+                <img src="Assets/nailpolish.png" alt="Nail polish bottle" class="grid-img">
                 <div class="grid-content">
-                    <div>
-                        <div class="main-title">
-                            Your Nails,<br>
-                            Your Statement.
-                        </div>
+                    <div class="main-title">
+                        Your nails, your<br>
+                        statement
                     </div>
-                    <div class="card-action">> View Services</div>
+                    <div class="card-action">View Services</div>
                 </div>
             </div>
-            
+
             <div class="grid-item book-appointment">
-                <img src="Assets/book.jpg" alt="Elegant nail art" class="grid-img">
-                <div class="overlay"></div>
+                <img src="Assets/calendar.png" alt="Calendar or appointment book" class="grid-img">
                 <div class="grid-content">
-                    <div class="grid-title light">Book Appointment</div>
+                    <div class="grid-title">Book Appointment</div>
                 </div>
             </div>
-            
+
             <div class="grid-item gallery">
-                <img src="Assets/gallery.jpg" alt="Artistic nail designs" class="grid-img">
-                <div class="overlay"></div>
+                <img src="Assets/polaroid.png" alt="Vintage camera" class="grid-img">
                 <div class="grid-content">
-                    <div class="grid-title light">Gallery</div>
+                    <div class="grid-title">Gallery</div>
                 </div>
             </div>
-            
+
             <div class="grid-item contact">
-                <img src="Assets/contact.png" alt="Colorful nail art" class="grid-img">
-                <div class="overlay"></div>
+                <img src="Assets/send.png" alt="Envelope or contact icon" class="grid-img">
                 <div class="grid-content">
-                    <div class="grid-title light">Contact</div>
+                    <div class="grid-title">Contact</div>
                 </div>
             </div>
-            
+
             <div class="grid-item faq">
-                <img src="Assets/faq.jpg" alt="Close-up of lips and nails" class="grid-img">
-                <div class="overlay"></div>
+                <img src="Assets/hana.png" alt="Flower decorations" class="grid-img">
                 <div class="grid-content">
-                    <div class="grid-title light">Take A Matchmaking Quiz</div>
+                    <div class="grid-title">Take a<br>Matchmaking Quiz</div>
                 </div>
             </div>
-            
+
             <div class="grid-item visit-us">
-                <img src="Assets/visit.png" alt="Nail technician working" class="grid-img">
-                <div class="overlay"></div>
+                <img src="Assets/faqs.png" alt="Question mark icon" class="grid-img">
                 <div class="grid-content">
-                    <div class="grid-title light">FAQ</div>
+                    <div class="grid-title">FAQ</div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Handle navigation
@@ -390,12 +657,12 @@ if (isset($_GET['logout'])) {
             viewServices.addEventListener('click', function() {
                 window.location.href = 'services.php';
             });
-            
+
             const servicesLink = document.querySelector('.nav-link');
             servicesLink.addEventListener('click', function() {
                 window.location.href = 'services.php';
             });
-            
+
             const services = document.querySelector('.main-card');
             services.addEventListener('click', function() {
                 window.location.href = 'services.php';
@@ -405,44 +672,46 @@ if (isset($_GET['logout'])) {
             bookNow.addEventListener('click', function() {
                 window.location.href = 'booking.php';
             });
-            
+
             const bookAppointment = document.querySelector('.book-appointment');
             bookAppointment.addEventListener('click', function() {
                 window.location.href = 'booking.php';
             });
-            
+
             const gallery = document.querySelector('.gallery');
             gallery.addEventListener('click', function() {
                 window.location.href = 'gallery.php';
             });
-            
+
             const contact = document.querySelector('.contact');
             contact.addEventListener('click', function() {
-                window.location.href = 'contact.php';
+                window.location.href = 'get-in-touch-page.php';
             });
-            
+
             const faq = document.querySelector('.faq');
             faq.addEventListener('click', function() {
                 window.location.href = 'matchmaking.php';
             });
-            
+
             const visitUs = document.querySelector('.visit-us');
             visitUs.addEventListener('click', function() {
                 window.location.href = 'faq.php';
             });
-            
+
             <?php if ($logged_in): ?>
-            const userInitial = document.querySelector('.user-initial');
-            userInitial.addEventListener('click', function() {
-                window.location.href = 'members-lounge.php';
-            });
+                const userInitial = document.querySelector('.user-initial');
+                userInitial.addEventListener('click', function() {
+                    window.location.href = 'members-lounge.php';
+                });
             <?php else: ?>
-            const loginIcon = document.querySelector('.login-icon');
-            loginIcon.addEventListener('click', function() {
-                window.location.href = 'login.php';
-            });
+                const loginIcon = document.querySelector('.login-icon');
+                loginIcon.addEventListener('click', function() {
+                    window.location.href = 'login.php';
+                });
             <?php endif; ?>
         });
     </script>
+    <?php include 'chat-widget.php'; ?>
 </body>
+
 </html>
