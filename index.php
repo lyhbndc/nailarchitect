@@ -24,6 +24,7 @@ if (isset($_GET['logout'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="bg-gradient.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Nail Architect</title>
@@ -57,138 +58,11 @@ if (isset($_GET['logout'])) {
             overflow-y: auto;
         }
 
-        /* Salon-themed Animated Background */
         body {
-            background-color: #f8f0f0;
-            position: relative;
-            overflow-x: hidden;
+            background-color: #f2e9e9;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
-        }
-
-        /* Keep existing background animations */
-        .background-pattern,
-        .swirl-pattern,
-        .polish-drips,
-        .gradient-overlay {
-            /* Keep original background styles */
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        /* Animated nail polish bottle background */
-        .background-pattern {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: radial-gradient(circle at 10% 20%, #f5d0d0 1px, transparent 8px),
-                radial-gradient(circle at 40% 70%, #e6a4a4 1px, transparent 6px),
-                radial-gradient(circle at 70% 30%, #d9bbb0 1px, transparent 10px),
-                radial-gradient(circle at 90% 85%, #e8d7d0 1px, transparent 7px);
-            background-size: 160px 160px;
-            opacity: 0.4;
-            z-index: -1;
-            animation: floatBubbles 45s linear infinite;
-        }
-
-        @keyframes floatBubbles {
-            0% {
-                background-position: 0 0;
-            }
-
-            100% {
-                background-position: 160px 160px;
-            }
-        }
-
-        /* Elegant swirls pattern */
-        .swirl-pattern {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                radial-gradient(circle at 25% 25%, transparent 96%, #e6a4a4 97%, transparent 98%),
-                radial-gradient(circle at 75% 75%, transparent 96%, #d9bbb0 97%, transparent 98%),
-                radial-gradient(circle at 75% 25%, transparent 96%, #e8d7d0 97%, transparent 98%),
-                radial-gradient(circle at 25% 75%, transparent 96%, #e6a4a4 97%, transparent 98%);
-            background-size: 180px 180px;
-            opacity: 0.6;
-            z-index: -1;
-            animation: swirlMove 60s linear infinite;
-        }
-
-        @keyframes swirlMove {
-            0% {
-                background-position: 0 0;
-            }
-
-            100% {
-                background-position: 180px 180px;
-            }
-        }
-
-        /* Subtle polish drip effect */
-        .polish-drips {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                linear-gradient(0deg, transparent 98.5%, #e6a4a4 98.5%, #e6a4a4 99%, transparent 99%),
-                linear-gradient(90deg, transparent 98.5%, #d9bbb0 98.5%, #d9bbb0 99%, transparent 99%);
-            background-size: 200px 100px;
-            opacity: 0.15;
-            z-index: -1;
-            animation: dripMove 90s linear infinite;
-        }
-
-        @keyframes dripMove {
-            0% {
-                background-position: 0 0;
-            }
-
-            100% {
-                background-position: 200px 100px;
-            }
-        }
-
-        /* Gradient overlay */
-        .gradient-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(-45deg, #F2E9E9, #e6a4a4, #e8d7d0, #F2E9E9, #d9bbb0);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            opacity: 0.5;
-            z-index: -2;
-        }
-
-        @keyframes gradientBG {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
         }
 
         .container {
@@ -222,7 +96,7 @@ if (isset($_GET['logout'])) {
 
         .grid-item {
             background-color: #f5dbdb;
-            border-radius: 12px;
+            border-radius: 25px;
             overflow: hidden;
             position: relative;
             transition: all 0.3s ease;

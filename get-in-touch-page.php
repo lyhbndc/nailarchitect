@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="bg-gradient.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
     <title>Nail Architect - Get in Touch</title>
     <style>
@@ -82,7 +83,7 @@
         }
 
         .contact-form-container {
-            background-color: #e8d7d0;
+            background-color: rgb(224, 184, 184);
             border-radius: 15px;
             padding: 30px;
         }
@@ -111,7 +112,7 @@
             border: none;
             border-radius: 8px;
             background-color: #f2e9e9;
-            font-family: 'Courier New', monospace;
+            font-family: Poppins;
             font-size: 14px;
             transition: all 0.3s ease;
         }
@@ -131,8 +132,7 @@
 
         .submit-button {
             padding: 12px 24px;
-            background-color: #d9bbb0;
-            border: none;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             border-radius: 30px;
             cursor: pointer;
             font-size: 16px;
@@ -149,7 +149,8 @@
         }
 
         .contact-info {
-            background-color: #e8d7d0;
+            background-color: rgb(224, 184, 184);
+            border: none;
             border-radius: 15px;
             padding: 30px;
         }
@@ -197,7 +198,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: #d9bbb0;
+            background-color: rgb(158, 91, 91);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -270,6 +271,10 @@
 </head>
 
 <body>
+    <div class="gradient-overlay"></div>
+    <div class="background-pattern"></div>
+    <div class="swirl-pattern"></div>
+    <div class="polish-drips"></div>
     <div class="container">
         <header>
             <div class="logo-container">

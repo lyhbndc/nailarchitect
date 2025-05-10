@@ -43,6 +43,7 @@ if ($logged_in) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="bg-gradient.css">
     <link rel="icon" type="image/png" href="Assets/favicon1.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Nail Architect - Booking Form</title>
@@ -121,7 +122,7 @@ if ($logged_in) {
         }
 
         .booking-form {
-            background: linear-gradient(to right, rgb(237, 215, 215), #e8d7d0);
+            background-color: rgb(224, 184, 184);
             border-radius: 15px;
             padding: 25px;
         }
@@ -145,7 +146,7 @@ if ($logged_in) {
             border: none;
             border-radius: 8px;
             background-color: #f2e9e9;
-            font-family: 'Courier New', monospace;
+            font-family: Poppins;
             font-size: 14px;
             transition: all 0.3s ease;
         }
@@ -367,7 +368,7 @@ if ($logged_in) {
         }
 
         .policy-box {
-            background: linear-gradient(to right, rgb(237, 215, 215), #e8d7d0);
+            background-color: rgb(238, 205, 205);
             border-radius: 15px;
             padding: 25px;
         }
@@ -397,7 +398,7 @@ if ($logged_in) {
 
         .submit-button {
             padding: 12px 24px;
-            background-color: #d9bbb0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             border: none;
             border-radius: 30px;
             cursor: pointer;
@@ -474,6 +475,10 @@ if ($logged_in) {
 </head>
 
 <body>
+    <div class="gradient-overlay"></div>
+    <div class="background-pattern"></div>
+    <div class="swirl-pattern"></div>
+    <div class="polish-drips"></div>
     <div class="container">
         <header>
             <div class="logo-container">

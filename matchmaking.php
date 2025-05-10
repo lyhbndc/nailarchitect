@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="bg-gradient.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
     <title>Nail Architect - Matchmaking Quiz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -145,6 +146,10 @@
 </head>
 
 <body>
+    <div class="gradient-overlay"></div>
+    <div class="background-pattern"></div>
+    <div class="swirl-pattern"></div>
+    <div class="polish-drips"></div>
     <div class="container">
         <header>
             <div class="logo-container">

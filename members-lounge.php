@@ -74,42 +74,53 @@ mysqli_close($conn);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="bg-gradient.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Nail Architect - Members Lounge</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: Poppins;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        html, body {
+
+        html,
+        body {
             height: 100%;
             margin: 0;
             padding: 0;
         }
-        
+
         body {
             background-color: #f2e9e9;
             padding: 20px;
             display: flex;
             flex-direction: column;
         }
-        
+
         .container {
-            max-width: 1200px;
+            max-width: 1500px;
             width: 100%;
             flex: 1;
             margin: 0 auto;
@@ -117,80 +128,48 @@ mysqli_close($conn);
             flex-direction: column;
             gap: 15px;
         }
-        
+
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding-bottom: 15px;
         }
-        
-        .logo-container img {
-            height: 60px;
-        }
-        
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .nav-link {
-            cursor: pointer;
-        }
-        
-        .book-now {
-            padding: 8px 20px;
-            background-color: #e8d7d0;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-        
-        .user-initial {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: #e0c5b7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
+
+
         .page-title {
             font-size: 24px;
             margin-bottom: 10px;
             animation: fadeIn 0.5s ease-out forwards;
         }
-        
+
         .page-subtitle {
             font-size: 16px;
             margin-bottom: 25px;
             color: #666;
             animation: fadeIn 0.6s ease-out forwards;
         }
-        
+
         .member-content {
             display: grid;
             grid-template-columns: 1fr 2fr;
             gap: 30px;
             animation: fadeIn 0.7s ease-out forwards;
         }
-        
+
         .sidebar {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        
+
         .profile-card {
             background-color: #e8d7d0;
             border-radius: 15px;
             padding: 25px;
             text-align: center;
         }
-        
+
         .avatar {
             width: 100px;
             height: 100px;
@@ -203,25 +182,25 @@ mysqli_close($conn);
             font-size: 36px;
             font-weight: bold;
         }
-        
+
         .profile-name {
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 10px;
         }
-        
+
         .profile-email {
             font-size: 14px;
             color: #666;
             margin-bottom: 10px;
         }
-        
+
         .profile-phone {
             font-size: 14px;
             color: #666;
             margin-bottom: 20px;
         }
-        
+
         .action-button {
             padding: 8px 16px;
             border-radius: 20px;
@@ -231,23 +210,23 @@ mysqli_close($conn);
             background-color: #d9bbb0;
             display: inline-block;
         }
-        
+
         .action-button:hover {
             background-color: #ae9389;
         }
-        
+
         .menu-card {
             background-color: #e8d7d0;
             border-radius: 15px;
             padding: 20px;
         }
-        
+
         .menu-title {
             font-size: 16px;
             font-weight: bold;
             margin-bottom: 15px;
         }
-        
+
         .menu-item {
             padding: 12px 15px;
             border-radius: 8px;
@@ -258,28 +237,28 @@ mysqli_close($conn);
             gap: 10px;
             margin-bottom: 8px;
         }
-        
+
         .menu-item:hover {
             background-color: #d9bbb0;
         }
-        
+
         .menu-item.active {
             background-color: #ae9389;
             font-weight: bold;
         }
-        
+
         .menu-icon {
             font-size: 18px;
             width: 20px;
             text-align: center;
         }
-        
+
         .main-content {
             background-color: #e8d7d0;
             border-radius: 15px;
             padding: 30px;
         }
-        
+
         .section-title {
             font-size: 20px;
             font-weight: bold;
@@ -287,101 +266,101 @@ mysqli_close($conn);
             border-bottom: 1px solid #c0c0c0;
             padding-bottom: 10px;
         }
-        
+
         .appointments-list {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
-        
+
         .appointment-card {
             background-color: #f2e9e9;
             border-radius: 12px;
             padding: 20px;
             transition: all 0.3s ease;
         }
-        
+
         .appointment-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
-        
+
         .appointment-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 15px;
         }
-        
+
         .appointment-service {
             font-weight: bold;
             font-size: 16px;
         }
-        
+
         .appointment-status {
             padding: 5px 10px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
         }
-        
+
         .status-confirmed {
             background-color: #c8e6c9;
             color: #2e7d32;
         }
-        
+
         .status-pending {
             background-color: #fff9c4;
             color: #f57f17;
         }
-        
+
         .status-completed {
             background-color: #e0e0e0;
             color: #616161;
         }
-        
+
         .status-cancelled {
             background-color: #ffcdd2;
             color: #c62828;
         }
-        
+
         .appointment-details {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 15px;
             margin-bottom: 15px;
         }
-        
+
         .detail-item {
             display: flex;
             flex-direction: column;
             gap: 5px;
         }
-        
+
         .detail-label {
             font-size: 12px;
             color: #666;
         }
-        
+
         .detail-value {
             font-size: 14px;
         }
-        
+
         .appointment-actions {
             display: flex;
             gap: 10px;
         }
-        
+
         .tab-container {
             margin-bottom: 30px;
         }
-        
+
         .tabs {
             display: flex;
             gap: 5px;
             margin-bottom: 20px;
         }
-        
+
         .tab {
             padding: 10px 20px;
             border-radius: 8px 8px 0 0;
@@ -390,42 +369,44 @@ mysqli_close($conn);
             transition: all 0.3s ease;
             color: #fff;
         }
-        
+
         .tab.active {
             background-color: #f0f0f0;
             font-weight: bold;
             color: #333;
         }
-        
+
         .tab-content {
             display: none;
         }
-        
+
         .tab-content.active {
             display: block;
         }
-        
+
         .contact-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         .form-group.full-width {
             grid-column: span 2;
         }
-        
+
         label {
             display: block;
             margin-bottom: 8px;
             font-size: 14px;
         }
-        
-        input, textarea, select {
+
+        input,
+        textarea,
+        select {
             width: 100%;
             padding: 12px;
             border: none;
@@ -435,17 +416,19 @@ mysqli_close($conn);
             font-size: 14px;
             transition: all 0.3s ease;
         }
-        
-        input:focus, textarea:focus, select:focus {
+
+        input:focus,
+        textarea:focus,
+        select:focus {
             outline: none;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
-        
+
         textarea {
             min-height: 120px;
             resize: vertical;
         }
-        
+
         .submit-button {
             padding: 12px 24px;
             background-color: #c0c0c0;
@@ -459,23 +442,23 @@ mysqli_close($conn);
             margin-top: 20px;
             font-weight: bold;
         }
-        
+
         .submit-button:hover {
             background-color: #b0b0b0;
             transform: translateY(-2px);
         }
-        
+
         .no-appointments {
             text-align: center;
             padding: 40px 0;
             color: #666;
         }
-        
+
         .no-appointments-icon {
             font-size: 36px;
             margin-bottom: 20px;
         }
-        
+
         .modal {
             display: none;
             position: fixed;
@@ -488,7 +471,7 @@ mysqli_close($conn);
             justify-content: center;
             align-items: center;
         }
-        
+
         .modal-content {
             background-color: #e8d7d0;
             border-radius: 15px;
@@ -497,14 +480,14 @@ mysqli_close($conn);
             width: 90%;
             position: relative;
         }
-        
+
         .modal-title {
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 20px;
             text-align: center;
         }
-        
+
         .close-modal {
             position: absolute;
             top: 15px;
@@ -519,22 +502,23 @@ mysqli_close($conn);
             border-radius: 50%;
             background-color: #d9bbb0;
         }
-        
+
         .close-modal:hover {
             background-color: #ae9389;
         }
-        
-        .date-picker, .time-picker {
+
+        .date-picker,
+        .time-picker {
             margin-bottom: 20px;
         }
-        
+
         .modal-buttons {
             display: flex;
             justify-content: space-between;
             gap: 15px;
             margin-top: 30px;
         }
-        
+
         .modal-button {
             padding: 10px 20px;
             border-radius: 25px;
@@ -544,433 +528,439 @@ mysqli_close($conn);
             text-align: center;
             transition: all 0.3s ease;
         }
-        
+
         .confirm-button {
             background-color: #d9bbb0;
         }
-        
+
         .confirm-button:hover {
             background-color: #ae9389;
         }
-        
+
         .cancel-button {
             background-color: #d9bbb0;
         }
-        
+
         .cancel-button:hover {
             background-color: #ae9389;
         }
-        
+
         /* Responsive styles */
         @media (max-width: 1024px) {
             .member-content {
                 grid-template-columns: 1fr;
             }
-            
+
             .sidebar {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
             }
         }
-        
+
         @media (max-width: 768px) {
             .sidebar {
                 grid-template-columns: 1fr;
             }
-            
+
             .appointment-details {
                 grid-template-columns: 1fr;
             }
-            
+
             .contact-form {
                 grid-template-columns: 1fr;
             }
-            
+
             .form-group.full-width {
                 grid-column: span 1;
             }
         }
+
         .messages-container {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .message-list {
-        max-height: 400px;
-        overflow-y: auto;
-        background-color: #f2e9e9;
-        border-radius: 12px;
-        padding: 15px;
-    }
-    
-    .message-item {
-        background-color: #ffffff;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 15px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
-    }
-    
-    .message-item:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    
-    .message-header {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-    }
-    
-    .message-subject {
-        font-weight: bold;
-        font-size: 16px;
-    }
-    
-    .message-date {
-        color: #666;
-        font-size: 12px;
-    }
-    
-    .message-body {
-        font-size: 14px;
-        line-height: 1.5;
-        margin-bottom: 10px;
-    }
-    
-    .message-sender {
-        font-size: 12px;
-        color: #888;
-        text-align: right;
-    }
-    
-    .message-compose {
-        background-color: #f2e9e9;
-        border-radius: 12px;
-        padding: 20px;
-    }
-    
-    .loading-messages {
-        text-align: center;
-        padding: 30px;
-        color: #888;
-    }
-    
-    .no-messages {
-        text-align: center;
-        padding: 40px 0;
-        color: #666;
-    }
-    
-    .message-item.from-salon {
-        background-color: #e0c5b7;
-    }
-    
-    .message-item.unread {
-        border-left: 3px solid #ae9389;
-    }
-    
-    .message-role {
-        display: inline-block;
-        font-size: 10px;
-        padding: 2px 6px;
-        border-radius: 10px;
-        margin-left: 5px;
-        background-color: #f0f0f0;
-    }
-    
-    .message-role.salon {
-        background-color: #d9bbb0;
-    }
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-    .message-attachments {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
+        .message-list {
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #f2e9e9;
+            border-radius: 12px;
+            padding: 15px;
+        }
 
-.attachment-preview {
-    width: 150px;
-    border-radius: 8px;
-    overflow: hidden;
-    background-color: #f0f0f0;
-}
+        .message-item {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
 
-.attachment-image {
-    width: 100%;
-    height: 100px;
-    object-fit: cover;
-    display: block;
-}
+        .message-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
 
-.attachment-name {
-    padding: 5px;
-    font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-align: center;
-}
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
 
-.attachment-file {
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    padding: 10px;
-}
+        .message-subject {
+            font-weight: bold;
+            font-size: 16px;
+        }
 
-.attachment-link {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    color: #333;
-    text-decoration: none;
-}
+        .message-date {
+            color: #666;
+            font-size: 12px;
+        }
 
-.attachment-icon {
-    font-size: 16px;
-}
+        .message-body {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
 
-.attachment-note {
-    font-size: 12px;
-    color: #666;
-    margin-top: 5px;
-}
+        .message-sender {
+            font-size: 12px;
+            color: #888;
+            text-align: right;
+        }
 
-input[type="file"] {
-    padding: 8px;
-    background-color: #fff;
-}
+        .message-compose {
+            background-color: #f2e9e9;
+            border-radius: 12px;
+            padding: 20px;
+        }
 
-/* Conversation styles */
-.conversation-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    max-height: 600px;
-}
+        .loading-messages {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+        }
 
-.message-list {
-    flex: 1;
-    overflow-y: auto;
-    padding: 15px;
-    background-color: #f2e9e9;
-    border-radius: 12px 12px 0 0;
-    display: flex;
-    flex-direction: column;
-}
+        .no-messages {
+            text-align: center;
+            padding: 40px 0;
+            color: #666;
+        }
 
-.message-item {
-    max-width: 80%;
-    margin-bottom: 10px;
-    padding: 10px 15px;
-    border-radius: 18px;
-    position: relative;
-    word-wrap: break-word;
-}
+        .message-item.from-salon {
+            background-color: #e0c5b7;
+        }
 
-.message-item.from-salon {
-    align-self: flex-start;
-    background-color: #e0c5b7;
-    border-bottom-left-radius: 5px;
-}
+        .message-item.unread {
+            border-left: 3px solid #ae9389;
+        }
 
-.message-item.from-user {
-    align-self: flex-end;
-    background-color: #d9bbb0;
-    border-bottom-right-radius: 5px;
-    color: #333;
-}
+        .message-role {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            margin-left: 5px;
+            background-color: #f0f0f0;
+        }
 
-.message-sender {
-    font-size: 12px;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
+        .message-role.salon {
+            background-color: #d9bbb0;
+        }
 
-.message-content {
-    font-size: 14px;
-    line-height: 1.5;
-}
+        .message-attachments {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
 
-.message-time {
-    font-size: 10px;
-    color: #666;
-    text-align: right;
-    margin-top: 5px;
-}
+        .attachment-preview {
+            width: 150px;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
 
-.message-subject {
-    font-weight: bold;
-    font-size: 14px;
-    margin-bottom: 5px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-}
+        .attachment-image {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            display: block;
+        }
 
-.message-compose {
-    background-color: #f2e9e9;
-    border-radius: 0 0 12px 12px;
-    padding: 15px;
-    border-top: 1px solid #e0c5b7;
-}
+        .attachment-name {
+            padding: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+        }
 
-.message-input-container {
-    display: flex;
-    position: relative;
-}
+        .attachment-file {
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            padding: 10px;
+        }
 
-.message-input-container textarea {
-    flex: 1;
-    min-height: 50px;
-    max-height: 150px;
-    padding-right: 80px;
-    border-radius: 20px;
-    resize: none;
-}
+        .attachment-link {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #333;
+            text-decoration: none;
+        }
 
-.message-actions {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
+        .attachment-icon {
+            font-size: 16px;
+        }
 
-.attachment-label {
-    cursor: pointer;
-    font-size: 20px;
-    color: #ae9389;
-}
+        .attachment-note {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
 
-.send-button {
-    background-color: #ae9389;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        input[type="file"] {
+            padding: 8px;
+            background-color: #fff;
+        }
 
-.send-button i {
-    font-size: 16px;
-}
+        /* Conversation styles */
+        .conversation-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-height: 600px;
+        }
 
-.attachment-preview-container {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
+        .message-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            background-color: #f2e9e9;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            flex-direction: column;
+        }
 
-.attachment-preview {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    background-color: #f0f0f0;
-    border-radius: 8px;
-    overflow: hidden;
-}
+        .message-item {
+            max-width: 80%;
+            margin-bottom: 10px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+        }
 
-.attachment-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+        .message-item.from-salon {
+            align-self: flex-start;
+            background-color: #e0c5b7;
+            border-bottom-left-radius: 5px;
+        }
 
-.attachment-preview .remove-attachment {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background-color: rgba(0,0,0,0.5);
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
+        .message-item.from-user {
+            align-self: flex-end;
+            background-color: #d9bbb0;
+            border-bottom-right-radius: 5px;
+            color: #333;
+        }
 
-.date-separator {
-    text-align: center;
-    margin: 15px 0;
-    position: relative;
-}
+        .message-sender {
+            font-size: 12px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
 
-.date-separator::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    width: 40%;
-    height: 1px;
-    background-color: #ddd;
-}
+        .message-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
 
-.date-separator::after {
-    content: '';
-    position: absolute;
-    right: 0;
-    top: 50%;
-    width: 40%;
-    height: 1px;
-    background-color: #ddd;
-}
+        .message-time {
+            font-size: 10px;
+            color: #666;
+            text-align: right;
+            margin-top: 5px;
+        }
 
-.date-text {
-    background-color: #f2e9e9;
-    padding: 0 15px;
-    display: inline-block;
-    position: relative;
-    font-size: 12px;
-    color: #888;
-}
+        .message-subject {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
 
-.message-attachments {
-    margin-top: 8px;
-}
+        .message-compose {
+            background-color: #f2e9e9;
+            border-radius: 0 0 12px 12px;
+            padding: 15px;
+            border-top: 1px solid #e0c5b7;
+        }
 
-.attachment-file {
-    background-color: rgba(255,255,255,0.3);
-    padding: 5px 10px;
-    border-radius: 12px;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12px;
-}
+        .message-input-container {
+            display: flex;
+            position: relative;
+        }
 
-.attachment-name {
-    max-width: 150px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+        .message-input-container textarea {
+            flex: 1;
+            min-height: 50px;
+            max-height: 150px;
+            padding-right: 80px;
+            border-radius: 20px;
+            resize: none;
+        }
 
-.loading-messages {
-    text-align: center;
-    padding: 20px;
-    color: #888;
-}
+        .message-actions {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.no-messages {
-    text-align: center;
-    padding: 30px 0;
-    color: #666;
-}
+        .attachment-label {
+            cursor: pointer;
+            font-size: 20px;
+            color: #ae9389;
+        }
+
+        .send-button {
+            background-color: #ae9389;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-button i {
+            font-size: 16px;
+        }
+
+        .attachment-preview-container {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .attachment-preview {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .attachment-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .attachment-preview .remove-attachment {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .date-separator {
+            text-align: center;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .date-separator::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background-color: #ddd;
+        }
+
+        .date-separator::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background-color: #ddd;
+        }
+
+        .date-text {
+            background-color: #f2e9e9;
+            padding: 0 15px;
+            display: inline-block;
+            position: relative;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .message-attachments {
+            margin-top: 8px;
+        }
+
+        .attachment-file {
+            background-color: rgba(255, 255, 255, 0.3);
+            padding: 5px 10px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+        }
+
+        .attachment-name {
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .loading-messages {
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+
+        .no-messages {
+            text-align: center;
+            padding: 30px 0;
+            color: #666;
+        }
     </style>
 </head>
+
 <body>
+    <div class="gradient-overlay"></div>
+    <div class="background-pattern"></div>
+    <div class="swirl-pattern"></div>
+    <div class="polish-drips"></div>
     <div class="container">
-       <header>
+        <header>
             <div class="logo-container">
                 <div class="logo">
                     <a href="index.php">
@@ -984,10 +974,10 @@ input[type="file"] {
                 <div class="user-initial"><?php echo $first_letter; ?></div>
             </div>
         </header>
-        
+
         <div class="page-title">Welcome, <?php echo $user['first_name']; ?>!</div>
         <div class="page-subtitle">Manage your appointments and account information</div>
-        
+
         <div class="member-content">
             <div class="sidebar">
                 <div class="profile-card">
@@ -997,36 +987,36 @@ input[type="file"] {
                     <div class="profile-phone"><?php echo $user['phone']; ?></div>
                     <div class="action-button" id="edit-profile-btn">Edit Profile</div>
                 </div>
-                
+
                 <div class="menu-card">
                     <div class="menu-title">Account Menu</div>
-                    
+
                     <div class="menu-item active" id="appointments-menu">
                         <div class="menu-icon">📅</div>
                         My Appointments
                     </div>
-                <div class="menu-item" id="messages-menu">
-                <div class="menu-icon">💬</div>
-                Messages
-            </div>
-                    
+                    <div class="menu-item" id="messages-menu">
+                        <div class="menu-icon">💬</div>
+                        Messages
+                    </div>
+
                     <div class="menu-item" id="logout-menu">
                         <div class="menu-icon">↩️</div>
                         Logout
                     </div>
                 </div>
             </div>
-            
+
             <div class="main-content">
                 <div class="tab-container">
                     <div class="tabs">
                         <div class="tab active" data-tab="upcoming">Upcoming</div>
                         <div class="tab" data-tab="past">Past</div>
                     </div>
-                    
+
                     <div class="tab-content active" id="upcoming-tab">
                         <div class="section-title">Upcoming Appointments</div>
-                        
+
                         <div class="appointments-list" id="upcoming-appointments">
                             <?php if (empty($upcoming_bookings)): ?>
                                 <div class="no-appointments">
@@ -1039,69 +1029,69 @@ input[type="file"] {
                                     <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
                                         <div class="appointment-header">
                                             <div class="appointment-service">
-                                                <?php 
+                                                <?php
                                                 // Format service name
                                                 $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
-                                                echo $service_name; 
+                                                echo $service_name;
                                                 ?>
                                             </div>
                                             <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
                                                 <?php echo ucfirst($booking['status']); ?>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="appointment-details">
                                             <div class="detail-item">
                                                 <div class="detail-label">Date</div>
                                                 <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
                                             </div>
-                                            
+
                                             <div class="detail-item">
                                                 <div class="detail-label">Time</div>
                                                 <div class="detail-value">
-                                                    <?php 
+                                                    <?php
                                                     // Format time (12-hour format)
-                                                    echo date('g:i A', strtotime($booking['time'])); 
+                                                    echo date('g:i A', strtotime($booking['time']));
                                                     ?>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="detail-item">
                                                 <div class="detail-label">Duration</div>
                                                 <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
                                             </div>
-                                            
+
                                             <div class="detail-item">
                                                 <div class="detail-label">Technician</div>
                                                 <div class="detail-value"><?php echo $booking['technician']; ?></div>
                                             </div>
-                                            
+
                                             <div class="detail-item">
                                                 <div class="detail-label">Price</div>
                                                 <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
                                             </div>
-                                            
+
                                             <div class="detail-item">
-    <div class="detail-label">Reference</div>
-    <div class="detail-value">#NAI-<?php echo $booking['reference_id']; ?></div>
-</div>
+                                                <div class="detail-label">Reference</div>
+                                                <div class="detail-value">#NAI-<?php echo $booking['reference_id']; ?></div>
+                                            </div>
                                         </div>
-                                        
+
                                         <?php if ($booking['status'] != 'cancelled'): ?>
-                                        <div class="appointment-actions">
-                                            <div class="action-button reschedule-btn" data-id="<?php echo $booking['id']; ?>">Reschedule</div>
-                                            <div class="action-button cancel-btn" data-id="<?php echo $booking['id']; ?>">Cancel</div>
-                                        </div>
+                                            <div class="appointment-actions">
+                                                <div class="action-button reschedule-btn" data-id="<?php echo $booking['id']; ?>">Reschedule</div>
+                                                <div class="action-button cancel-btn" data-id="<?php echo $booking['id']; ?>">Cancel</div>
+                                            </div>
                                         <?php endif; ?>
                                     </div>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
                     </div>
-                    
+
                     <div class="tab-content" id="past-tab">
                         <div class="section-title">Past Appointments</div>
-                        
+
                         <div class="appointments-list" id="past-appointments">
                             <?php if (empty($past_bookings)): ?>
                                 <div class="no-appointments">
@@ -1113,58 +1103,58 @@ input[type="file"] {
                                     <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
                                         <div class="appointment-header">
                                             <div class="appointment-service">
-                                                <?php 
+                                                <?php
                                                 // Format service name
                                                 $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
-                                                echo $service_name; 
+                                                echo $service_name;
                                                 ?>
                                             </div>
                                             <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
                                                 <?php echo ucfirst($booking['status']); ?>
                                             </div>
                                         </div>
-                                        
+
                                         <div class="appointment-details">
                                             <div class="detail-item">
                                                 <div class="detail-label">Date</div>
                                                 <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
                                             </div>
-                                            
+
                                             <div class="detail-item">
                                                 <div class="detail-label">Time</div>
                                                 <div class="detail-value">
-                                                    <?php 
+                                                    <?php
                                                     // Format time (12-hour format)
-                                                    echo date('g:i A', strtotime($booking['time'])); 
+                                                    echo date('g:i A', strtotime($booking['time']));
                                                     ?>
                                                 </div>
                                             </div>
-                                            
+
                                             <div class="detail-item">
                                                 <div class="detail-label">Duration</div>
                                                 <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
                                             </div>
-                                            
+
                                             <div class="detail-item">
                                                 <div class="detail-label">Technician</div>
                                                 <div class="detail-value"><?php echo $booking['technician']; ?></div>
                                             </div>
-                                            
+
                                             <div class="detail-item">
                                                 <div class="detail-label">Price</div>
                                                 <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
                                             </div>
-                                            
+
                                             <div class="detail-item">
-    <div class="detail-label">Reference</div>
-    <div class="detail-value">#NAI-<?php echo $booking['reference_id']; ?></div>
-</div>
+                                                <div class="detail-label">Reference</div>
+                                                <div class="detail-value">#NAI-<?php echo $booking['reference_id']; ?></div>
+                                            </div>
                                         </div>
-                                        
+
                                         <?php if ($booking['status'] == 'completed'): ?>
-                                        <div class="appointment-actions">
-                                            <div class="action-button book-again-btn" data-service="<?php echo $booking['service']; ?>">Book Again</div>
-                                        </div>
+                                            <div class="appointment-actions">
+                                                <div class="action-button book-again-btn" data-service="<?php echo $booking['service']; ?>">Book Again</div>
+                                            </div>
                                         <?php endif; ?>
                                     </div>
                                 <?php endforeach; ?>
@@ -1172,55 +1162,55 @@ input[type="file"] {
                         </div>
                     </div>
                     <div class="tab-content" id="messages-tab">
-    <div class="section-title">Messages</div>
-    
-    <div class="conversation-container">
-        <div class="message-list" id="message-list">
-            <!-- Messages will be loaded here dynamically -->
-            <div class="loading-messages">Loading your conversation...</div>
-        </div>
-        
-        <div class="message-compose">
-            <form id="message-form" enctype="multipart/form-data">
-                <div class="form-group">
-                    <input type="text" id="message-subject" name="subject" placeholder="Subject (required for new conversations)" required>
-                </div>
-                
-                <div class="form-group message-input-container">
-                    <textarea id="message-content" name="content" placeholder="Type your message here..." required></textarea>
-                    <div class="message-actions">
-                        <label for="message-attachment" class="attachment-label">
-                            <i class="fa fa-paperclip"></i>
-                        </label>
-                        <input type="file" id="message-attachment" name="attachment" style="display: none;">
-                        <button type="submit" class="send-button" id="send-message">
-                            <i class="fa fa-paper-plane"></i>
-                        </button>
+                        <div class="section-title">Messages</div>
+
+                        <div class="conversation-container">
+                            <div class="message-list" id="message-list">
+                                <!-- Messages will be loaded here dynamically -->
+                                <div class="loading-messages">Loading your conversation...</div>
+                            </div>
+
+                            <div class="message-compose">
+                                <form id="message-form" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <input type="text" id="message-subject" name="subject" placeholder="Subject (required for new conversations)" required>
+                                    </div>
+
+                                    <div class="form-group message-input-container">
+                                        <textarea id="message-content" name="content" placeholder="Type your message here..." required></textarea>
+                                        <div class="message-actions">
+                                            <label for="message-attachment" class="attachment-label">
+                                                <i class="fa fa-paperclip"></i>
+                                            </label>
+                                            <input type="file" id="message-attachment" name="attachment" style="display: none;">
+                                            <button type="submit" class="send-button" id="send-message">
+                                                <i class="fa fa-paper-plane"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <p class="attachment-note">You can attach images or documents up to 5MB.</p>
+                                    <div id="attachment-preview" class="attachment-preview-container"></div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <p class="attachment-note">You can attach images or documents up to 5MB.</p>
-                <div id="attachment-preview" class="attachment-preview-container"></div>
-            </form>
-        </div>
-    </div>
-</div>
-</div>
                 </div>
             </div>
         </div>
     </div>
-    
+    </div>
+
     <!-- Reschedule Modal -->
     <div class="modal" id="reschedule-modal">
         <div class="modal-content">
             <div class="close-modal">&times;</div>
             <div class="modal-title">Reschedule Appointment</div>
-            
+
             <div class="date-picker">
                 <label for="new-date">Select New Date</label>
                 <input type="date" id="new-date" required>
             </div>
-            
+
             <div class="time-picker">
                 <label for="new-time">Select New Time</label>
                 <select id="new-time" required>
@@ -1237,22 +1227,22 @@ input[type="file"] {
                     <option value="18:00">6:00 PM</option>
                 </select>
             </div>
-            
+
             <div class="modal-buttons">
                 <div class="modal-button confirm-button" id="confirm-reschedule">Confirm</div>
                 <div class="modal-button cancel-button" id="cancel-reschedule">Cancel</div>
             </div>
         </div>
     </div>
-    
-   <!-- Cancel Modal -->
-   <div class="modal" id="cancel-modal">
+
+    <!-- Cancel Modal -->
+    <div class="modal" id="cancel-modal">
         <div class="modal-content">
             <div class="close-modal">&times;</div>
             <div class="modal-title">Cancel Appointment</div>
-            
+
             <p>Are you sure you want to cancel your appointment? A cancellation fee may apply if it's within 24 hours of your scheduled time.</p>
-            
+
             <div class="modal-buttons">
                 <div class="modal-button confirm-button" id="confirm-cancel">Yes, Cancel</div>
                 <div class="modal-button cancel-button" id="abort-cancel">No, Keep It</div>
@@ -1265,530 +1255,530 @@ input[type="file"] {
         <div class="modal-content">
             <div class="close-modal">&times;</div>
             <div class="modal-title">Edit Profile</div>
-            
+
             <form class="contact-form" id="profile-form" method="POST" action="update_profile.php">
                 <div class="form-group">
                     <label for="profile-first-name">First Name</label>
                     <input type="text" id="profile-first-name" name="first_name" value="<?php echo htmlspecialchars($user['first_name']); ?>">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="profile-last-name">Last Name</label>
                     <input type="text" id="profile-last-name" name="last_name" value="<?php echo htmlspecialchars($user['last_name']); ?>">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="profile-email">Email Address</label>
                     <input type="email" id="profile-email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="profile-phone">Phone Number</label>
                     <input type="tel" id="profile-phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="profile-password">Change Password</label>
                     <input type="password" id="profile-password" name="password" placeholder="New password">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="profile-confirm-password">Confirm Password</label>
                     <input type="password" id="profile-confirm-password" name="confirm_password" placeholder="Confirm new password">
                 </div>
-                
+
                 <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
-                
+
                 <div class="modal-buttons">
                     <div class="modal-button confirm-button" id="save-profile">Save Changes</div>
                     <div class="modal-buttons">
-                    <div class="modal-button confirm-button" id="save-profile">Save Changes</div>
-                    <div class="modal-button cancel-button" id="cancel-profile">Cancel</div>
-                </div>
+                        <div class="modal-button confirm-button" id="save-profile">Save Changes</div>
+                        <div class="modal-button cancel-button" id="cancel-profile">Cancel</div>
+                    </div>
             </form>
         </div>
     </div>
 
     <script>
-   document.addEventListener('DOMContentLoaded', function() {
-    // Navigation for header links
-    document.querySelector('.nav-link').addEventListener('click', function() {
-        window.location.href = 'services.php';
-    });
-
-    document.querySelector('.book-now').addEventListener('click', function() {
-        window.location.href = 'booking.php';
-    });
-
-    // Tab switching functionality
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-    
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            // Remove active class from all tabs
-            tabs.forEach(t => t.classList.remove('active'));
-            
-            // Add active class to clicked tab
-            tab.classList.add('active');
-            
-            // Hide all tab contents
-            tabContents.forEach(content => content.classList.remove('active'));
-            
-            // Show the corresponding tab content
-            const tabId = tab.getAttribute('data-tab');
-            document.getElementById(`${tabId}-tab`).classList.add('active');
-        });
-    });
-    
-    // Menu item functionality
-    const menuItems = document.querySelectorAll('.menu-item');
-    
-    menuItems.forEach(item => {
-        item.addEventListener('click', () => {
-            // Remove active class from all menu items
-            menuItems.forEach(i => i.classList.remove('active'));
-            
-            // Add active class to clicked menu item
-            item.classList.add('active');
-            
-            // Handle menu actions
-            if (item.id === 'appointments-menu') {
-                // Show the appointment tabs navigation
-                document.querySelector('.tabs').style.display = 'flex';
-                
-                // Hide all tab contents
-                tabContents.forEach(content => content.classList.remove('active'));
-                
-                // Show upcoming tab content
-                document.getElementById('upcoming-tab').classList.add('active');
-                
-                tabs[0].click(); // Activate the Upcoming tab
-            } else if (item.id === 'messages-menu') {
-                // Hide all tab contents
-                tabContents.forEach(content => content.classList.remove('active'));
-                
-                // Hide the appointment tabs navigation
-                document.querySelector('.tabs').style.display = 'none';
-                
-                // Show messages tab content
-                document.getElementById('messages-tab').classList.add('active');
-                
-                // Load messages
-                loadMessages();
-            } else if (item.id === 'logout-menu') {
-                // Logout functionality
-                window.location.href = 'members-lounge.php?logout=1';
-            }
-        });
-    });
-    
-    // Modal functionality
-    const modals = document.querySelectorAll('.modal');
-    const rescheduleModal = document.getElementById('reschedule-modal');
-    const cancelModal = document.getElementById('cancel-modal');
-    const profileModal = document.getElementById('profile-modal');
-    const closeButtons = document.querySelectorAll('.close-modal');
-    
-    // Close modals when clicking the close button
-    closeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            modals.forEach(modal => {
-                modal.style.display = 'none';
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation for header links
+            document.querySelector('.nav-link').addEventListener('click', function() {
+                window.location.href = 'services.php';
             });
-        });
-    });
-    
-    // Close modals when clicking outside the modal content
-    window.addEventListener('click', (event) => {
-        modals.forEach(modal => {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    });
-    
-    // Cancel appointment button functionality
-    document.querySelectorAll('.cancel-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const appointmentId = button.getAttribute('data-id');
-            document.getElementById('confirm-cancel').setAttribute('data-id', appointmentId);
-            cancelModal.style.display = 'flex';
-        });
-    });
-    
-    // Cancel appointment confirmation
-    document.getElementById('confirm-cancel').addEventListener('click', function() {
-        const appointmentId = this.getAttribute('data-id');
-        
-        fetch('update_booking.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'action=cancel&booking_id=' + appointmentId
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Your appointment has been cancelled.');
-                // Reload the page to show updated booking list
-                window.location.reload();
-            } else {
-                alert('Error: ' + data.message);
-            }
-            cancelModal.style.display = 'none';
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred during cancellation.');
-            cancelModal.style.display = 'none';
-        });
-    });
-    
-    document.getElementById('abort-cancel').addEventListener('click', function() {
-        cancelModal.style.display = 'none';
-    });
-    
-    // Reschedule button functionality
-    document.querySelectorAll('.reschedule-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const appointmentId = button.getAttribute('data-id');
-            document.getElementById('confirm-reschedule').setAttribute('data-id', appointmentId);
-            rescheduleModal.style.display = 'flex';
-            
-            // Set minimum date to tomorrow
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            document.getElementById('new-date').min = tomorrow.toISOString().split('T')[0];
-        });
-    });
-    
-    // Reschedule appointment confirmation
-    document.getElementById('confirm-reschedule').addEventListener('click', function() {
-        const appointmentId = this.getAttribute('data-id');
-        const newDate = document.getElementById('new-date').value;
-        const newTime = document.getElementById('new-time').value;
-        
-        if (!newDate || !newTime) {
-            alert('Please select both a date and time for rescheduling.');
-            return;
-        }
-        
-        fetch('update_booking.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'action=reschedule&booking_id=' + appointmentId + '&new_date=' + newDate + '&new_time=' + newTime
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Your appointment has been rescheduled successfully!');
-                // Reload the page to show updated booking list
-                window.location.reload();
-            } else {
-                alert('Error: ' + data.message);
-            }
-            rescheduleModal.style.display = 'none';
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred during rescheduling.');
-            rescheduleModal.style.display = 'none';
-        });
-    });
-    
-    document.getElementById('cancel-reschedule').addEventListener('click', function() {
-        rescheduleModal.style.display = 'none';
-    });
-    
-    // Book again functionality
-    document.querySelectorAll('.book-again-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const service = button.getAttribute('data-service');
-            window.location.href = 'booking.php?service=' + service;
-        });
-    });
-    
-    // Edit profile button functionality
-    const editProfileBtn = document.getElementById('edit-profile-btn');
-    
-    editProfileBtn.addEventListener('click', () => {
-        profileModal.style.display = 'flex';
-    });
-    
-    // Profile edit form submission
-    document.getElementById('save-profile').addEventListener('click', function() {
-        const formElement = document.getElementById('profile-form');
-        const password = document.getElementById('profile-password').value;
-        const confirmPassword = document.getElementById('profile-confirm-password').value;
-        
-        if (password && password !== confirmPassword) {
-            alert('Passwords do not match.');
-            return;
-        }
-        
-        // Submit the form
-        formElement.submit();
-    });
-    
-    document.getElementById('cancel-profile').addEventListener('click', function() {
-        profileModal.style.display = 'none';
-    });
-    
-    // File attachment preview handling
-    const attachmentInput = document.getElementById('message-attachment');
-    const attachmentPreview = document.getElementById('attachment-preview');
-    
-    if (attachmentInput) {
-        attachmentInput.addEventListener('change', function() {
-            attachmentPreview.innerHTML = '';
-            
-            if (this.files.length > 0) {
-                const file = this.files[0];
-                
-                // Check file size (max 5MB)
-                if (file.size > 5 * 1024 * 1024) {
-                    alert('File size exceeds 5MB limit. Please choose a smaller file.');
-                    this.value = '';
+
+            document.querySelector('.book-now').addEventListener('click', function() {
+                window.location.href = 'booking.php';
+            });
+
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+
+                    // Hide all tab contents
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Show the corresponding tab content
+                    const tabId = tab.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                });
+            });
+
+            // Menu item functionality
+            const menuItems = document.querySelectorAll('.menu-item');
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Remove active class from all menu items
+                    menuItems.forEach(i => i.classList.remove('active'));
+
+                    // Add active class to clicked menu item
+                    item.classList.add('active');
+
+                    // Handle menu actions
+                    if (item.id === 'appointments-menu') {
+                        // Show the appointment tabs navigation
+                        document.querySelector('.tabs').style.display = 'flex';
+
+                        // Hide all tab contents
+                        tabContents.forEach(content => content.classList.remove('active'));
+
+                        // Show upcoming tab content
+                        document.getElementById('upcoming-tab').classList.add('active');
+
+                        tabs[0].click(); // Activate the Upcoming tab
+                    } else if (item.id === 'messages-menu') {
+                        // Hide all tab contents
+                        tabContents.forEach(content => content.classList.remove('active'));
+
+                        // Hide the appointment tabs navigation
+                        document.querySelector('.tabs').style.display = 'none';
+
+                        // Show messages tab content
+                        document.getElementById('messages-tab').classList.add('active');
+
+                        // Load messages
+                        loadMessages();
+                    } else if (item.id === 'logout-menu') {
+                        // Logout functionality
+                        window.location.href = 'members-lounge.php?logout=1';
+                    }
+                });
+            });
+
+            // Modal functionality
+            const modals = document.querySelectorAll('.modal');
+            const rescheduleModal = document.getElementById('reschedule-modal');
+            const cancelModal = document.getElementById('cancel-modal');
+            const profileModal = document.getElementById('profile-modal');
+            const closeButtons = document.querySelectorAll('.close-modal');
+
+            // Close modals when clicking the close button
+            closeButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    modals.forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                });
+            });
+
+            // Close modals when clicking outside the modal content
+            window.addEventListener('click', (event) => {
+                modals.forEach(modal => {
+                    if (event.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            });
+
+            // Cancel appointment button functionality
+            document.querySelectorAll('.cancel-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const appointmentId = button.getAttribute('data-id');
+                    document.getElementById('confirm-cancel').setAttribute('data-id', appointmentId);
+                    cancelModal.style.display = 'flex';
+                });
+            });
+
+            // Cancel appointment confirmation
+            document.getElementById('confirm-cancel').addEventListener('click', function() {
+                const appointmentId = this.getAttribute('data-id');
+
+                fetch('update_booking.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'action=cancel&booking_id=' + appointmentId
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Your appointment has been cancelled.');
+                            // Reload the page to show updated booking list
+                            window.location.reload();
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                        cancelModal.style.display = 'none';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred during cancellation.');
+                        cancelModal.style.display = 'none';
+                    });
+            });
+
+            document.getElementById('abort-cancel').addEventListener('click', function() {
+                cancelModal.style.display = 'none';
+            });
+
+            // Reschedule button functionality
+            document.querySelectorAll('.reschedule-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const appointmentId = button.getAttribute('data-id');
+                    document.getElementById('confirm-reschedule').setAttribute('data-id', appointmentId);
+                    rescheduleModal.style.display = 'flex';
+
+                    // Set minimum date to tomorrow
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    document.getElementById('new-date').min = tomorrow.toISOString().split('T')[0];
+                });
+            });
+
+            // Reschedule appointment confirmation
+            document.getElementById('confirm-reschedule').addEventListener('click', function() {
+                const appointmentId = this.getAttribute('data-id');
+                const newDate = document.getElementById('new-date').value;
+                const newTime = document.getElementById('new-time').value;
+
+                if (!newDate || !newTime) {
+                    alert('Please select both a date and time for rescheduling.');
                     return;
                 }
-                
-                const reader = new FileReader();
-                
-                // Create preview element
-                const previewElement = document.createElement('div');
-                previewElement.className = 'attachment-preview';
-                
-                // Remove button
-                const removeButton = document.createElement('div');
-                removeButton.className = 'remove-attachment';
-                removeButton.innerHTML = '×';
-                removeButton.addEventListener('click', function() {
-                    attachmentInput.value = '';
-                    attachmentPreview.innerHTML = '';
-                });
-                
-                if (file.type.startsWith('image/')) {
-                    // For image files
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        previewElement.appendChild(img);
-                        previewElement.appendChild(removeButton);
-                        attachmentPreview.appendChild(previewElement);
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    // For other files
-                    const fileIcon = document.createElement('div');
-                    fileIcon.className = 'file-icon';
-                    fileIcon.innerHTML = '📄';
-                    fileIcon.style.fontSize = '40px';
-                    fileIcon.style.display = 'flex';
-                    fileIcon.style.alignItems = 'center';
-                    fileIcon.style.justifyContent = 'center';
-                    fileIcon.style.height = '100%';
-                    
-                    const fileName = document.createElement('div');
-                    fileName.className = 'file-name';
-                    fileName.textContent = file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name;
-                    fileName.style.position = 'absolute';
-                    fileName.style.bottom = '0';
-                    fileName.style.left = '0';
-                    fileName.style.right = '0';
-                    fileName.style.textAlign = 'center';
-                    fileName.style.backgroundColor = 'rgba(0,0,0,0.5)';
-                    fileName.style.color = 'white';
-                    fileName.style.padding = '3px';
-                    fileName.style.fontSize = '10px';
-                    
-                    previewElement.appendChild(fileIcon);
-                    previewElement.appendChild(fileName);
-                    previewElement.appendChild(removeButton);
-                    attachmentPreview.appendChild(previewElement);
-                }
-            }
-        });
-    }
-    
-    // IMPORTANT: Message form submission - FIXED VERSION
-    // Consolidated single form submission handler
-    const messageForm = document.getElementById('message-form');
-    if (messageForm) {
-        messageForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Form submitted');
-            
-            const subject = document.getElementById('message-subject').value || "Re: Salon Conversation"; // Provide default subject
-            const content = document.getElementById('message-content').value;
-            const attachmentInput = document.getElementById('message-attachment');
-            const attachment = attachmentInput && attachmentInput.files.length > 0 ? attachmentInput.files[0] : null;
-            
-            if (!content) {
-                alert('Please enter a message');
-                return false;
-            }
-            
-            // Disable the button and show loading state
-            const sendButton = document.getElementById('send-message');
-            const originalHTML = sendButton.innerHTML;
-            sendButton.disabled = true;
-            sendButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
-            
-            // Create FormData
-            const formData = new FormData();
-            formData.append('action', 'send_message');
-            formData.append('subject', subject);
-            formData.append('content', content);
-            
-            if (attachment) {
-                // Check file size (max 5MB)
-                if (attachment.size > 5 * 1024 * 1024) {
-                    alert('File size exceeds 5MB limit. Please choose a smaller file.');
-                    sendButton.disabled = false;
-                    sendButton.innerHTML = originalHTML;
-                    return false;
-                }
-                
-                formData.append('attachment', attachment);
-            }
-            
-            // Debug log to check form data
-            console.log('Sending message with subject:', subject);
-            console.log('Message content length:', content.length);
-            console.log('Has attachment:', attachment ? 'Yes' : 'No');
-            
-            // Send using fetch with explicit error handling
-            fetch('chat.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Response data:', data);
-                if (data.success) {
-                    // Clear form
-                    document.getElementById('message-content').value = '';
-                    if (attachmentInput) {
-                        attachmentInput.value = '';
-                    }
-                    document.getElementById('attachment-preview').innerHTML = '';
-                    
-                    // Reload messages
-                    loadMessages();
-                } else {
-                    alert('Error: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while sending your message: ' + error.message);
-            })
-            .finally(() => {
-                // Always restore button regardless of success/failure
-                sendButton.disabled = false;
-                sendButton.innerHTML = originalHTML;
+
+                fetch('update_booking.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'action=reschedule&booking_id=' + appointmentId + '&new_date=' + newDate + '&new_time=' + newTime
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Your appointment has been rescheduled successfully!');
+                            // Reload the page to show updated booking list
+                            window.location.reload();
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                        rescheduleModal.style.display = 'none';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred during rescheduling.');
+                        rescheduleModal.style.display = 'none';
+                    });
             });
-            
-            return false;
-        });
-    }
-    
-    // Function to load messages from the server
-    function loadMessages() {
-        const messageList = document.getElementById('message-list');
-        messageList.innerHTML = '<div class="loading-messages">Loading your conversation...</div>';
-        
-        fetch('chat.php?action=get_messages')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
+
+            document.getElementById('cancel-reschedule').addEventListener('click', function() {
+                rescheduleModal.style.display = 'none';
+            });
+
+            // Book again functionality
+            document.querySelectorAll('.book-again-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const service = button.getAttribute('data-service');
+                    window.location.href = 'booking.php?service=' + service;
+                });
+            });
+
+            // Edit profile button functionality
+            const editProfileBtn = document.getElementById('edit-profile-btn');
+
+            editProfileBtn.addEventListener('click', () => {
+                profileModal.style.display = 'flex';
+            });
+
+            // Profile edit form submission
+            document.getElementById('save-profile').addEventListener('click', function() {
+                const formElement = document.getElementById('profile-form');
+                const password = document.getElementById('profile-password').value;
+                const confirmPassword = document.getElementById('profile-confirm-password').value;
+
+                if (password && password !== confirmPassword) {
+                    alert('Passwords do not match.');
+                    return;
                 }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    if (data.messages.length === 0) {
-                        messageList.innerHTML = `
+
+                // Submit the form
+                formElement.submit();
+            });
+
+            document.getElementById('cancel-profile').addEventListener('click', function() {
+                profileModal.style.display = 'none';
+            });
+
+            // File attachment preview handling
+            const attachmentInput = document.getElementById('message-attachment');
+            const attachmentPreview = document.getElementById('attachment-preview');
+
+            if (attachmentInput) {
+                attachmentInput.addEventListener('change', function() {
+                    attachmentPreview.innerHTML = '';
+
+                    if (this.files.length > 0) {
+                        const file = this.files[0];
+
+                        // Check file size (max 5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('File size exceeds 5MB limit. Please choose a smaller file.');
+                            this.value = '';
+                            return;
+                        }
+
+                        const reader = new FileReader();
+
+                        // Create preview element
+                        const previewElement = document.createElement('div');
+                        previewElement.className = 'attachment-preview';
+
+                        // Remove button
+                        const removeButton = document.createElement('div');
+                        removeButton.className = 'remove-attachment';
+                        removeButton.innerHTML = '×';
+                        removeButton.addEventListener('click', function() {
+                            attachmentInput.value = '';
+                            attachmentPreview.innerHTML = '';
+                        });
+
+                        if (file.type.startsWith('image/')) {
+                            // For image files
+                            reader.onload = function(e) {
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                previewElement.appendChild(img);
+                                previewElement.appendChild(removeButton);
+                                attachmentPreview.appendChild(previewElement);
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            // For other files
+                            const fileIcon = document.createElement('div');
+                            fileIcon.className = 'file-icon';
+                            fileIcon.innerHTML = '📄';
+                            fileIcon.style.fontSize = '40px';
+                            fileIcon.style.display = 'flex';
+                            fileIcon.style.alignItems = 'center';
+                            fileIcon.style.justifyContent = 'center';
+                            fileIcon.style.height = '100%';
+
+                            const fileName = document.createElement('div');
+                            fileName.className = 'file-name';
+                            fileName.textContent = file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name;
+                            fileName.style.position = 'absolute';
+                            fileName.style.bottom = '0';
+                            fileName.style.left = '0';
+                            fileName.style.right = '0';
+                            fileName.style.textAlign = 'center';
+                            fileName.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                            fileName.style.color = 'white';
+                            fileName.style.padding = '3px';
+                            fileName.style.fontSize = '10px';
+
+                            previewElement.appendChild(fileIcon);
+                            previewElement.appendChild(fileName);
+                            previewElement.appendChild(removeButton);
+                            attachmentPreview.appendChild(previewElement);
+                        }
+                    }
+                });
+            }
+
+            // IMPORTANT: Message form submission - FIXED VERSION
+            // Consolidated single form submission handler
+            const messageForm = document.getElementById('message-form');
+            if (messageForm) {
+                messageForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Form submitted');
+
+                    const subject = document.getElementById('message-subject').value || "Re: Salon Conversation"; // Provide default subject
+                    const content = document.getElementById('message-content').value;
+                    const attachmentInput = document.getElementById('message-attachment');
+                    const attachment = attachmentInput && attachmentInput.files.length > 0 ? attachmentInput.files[0] : null;
+
+                    if (!content) {
+                        alert('Please enter a message');
+                        return false;
+                    }
+
+                    // Disable the button and show loading state
+                    const sendButton = document.getElementById('send-message');
+                    const originalHTML = sendButton.innerHTML;
+                    sendButton.disabled = true;
+                    sendButton.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+
+                    // Create FormData
+                    const formData = new FormData();
+                    formData.append('action', 'send_message');
+                    formData.append('subject', subject);
+                    formData.append('content', content);
+
+                    if (attachment) {
+                        // Check file size (max 5MB)
+                        if (attachment.size > 5 * 1024 * 1024) {
+                            alert('File size exceeds 5MB limit. Please choose a smaller file.');
+                            sendButton.disabled = false;
+                            sendButton.innerHTML = originalHTML;
+                            return false;
+                        }
+
+                        formData.append('attachment', attachment);
+                    }
+
+                    // Debug log to check form data
+                    console.log('Sending message with subject:', subject);
+                    console.log('Message content length:', content.length);
+                    console.log('Has attachment:', attachment ? 'Yes' : 'No');
+
+                    // Send using fetch with explicit error handling
+                    fetch('chat.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => {
+                            console.log('Response status:', response.status);
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok: ' + response.status);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Response data:', data);
+                            if (data.success) {
+                                // Clear form
+                                document.getElementById('message-content').value = '';
+                                if (attachmentInput) {
+                                    attachmentInput.value = '';
+                                }
+                                document.getElementById('attachment-preview').innerHTML = '';
+
+                                // Reload messages
+                                loadMessages();
+                            } else {
+                                alert('Error: ' + (data.message || 'Unknown error'));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while sending your message: ' + error.message);
+                        })
+                        .finally(() => {
+                            // Always restore button regardless of success/failure
+                            sendButton.disabled = false;
+                            sendButton.innerHTML = originalHTML;
+                        });
+
+                    return false;
+                });
+            }
+
+            // Function to load messages from the server
+            function loadMessages() {
+                const messageList = document.getElementById('message-list');
+                messageList.innerHTML = '<div class="loading-messages">Loading your conversation...</div>';
+
+                fetch('chat.php?action=get_messages')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            if (data.messages.length === 0) {
+                                messageList.innerHTML = `
                             <div class="no-messages">
                                 <div class="no-appointments-icon">💬</div>
                                 <p>You don't have any messages yet. Send a message to start a conversation.</p>
                             </div>
                         `;
-                    } else {
-                        let messagesHTML = '';
-                        let currentDate = '';
-                        
-                        // Sort messages by date (oldest to newest)
-                        data.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                        
-                        data.messages.forEach(message => {
-                            // Format message date
-                            const messageDate = new Date(message.created_at);
-                            const today = new Date();
-                            const yesterday = new Date(today);
-                            yesterday.setDate(yesterday.getDate() - 1);
-                            
-                            // Format date for display
-                            let dateStr;
-                            if (messageDate.toDateString() === today.toDateString()) {
-                                dateStr = 'Today';
-                            } else if (messageDate.toDateString() === yesterday.toDateString()) {
-                                dateStr = 'Yesterday';
                             } else {
-                                dateStr = messageDate.toLocaleDateString('en-US', { 
-                                    year: 'numeric', 
-                                    month: 'short', 
-                                    day: 'numeric' 
-                                });
-                            }
-                            
-                            // Add date separator if day changes
-                            if (dateStr !== currentDate) {
-                                messagesHTML += `
+                                let messagesHTML = '';
+                                let currentDate = '';
+
+                                // Sort messages by date (oldest to newest)
+                                data.messages.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+                                data.messages.forEach(message => {
+                                    // Format message date
+                                    const messageDate = new Date(message.created_at);
+                                    const today = new Date();
+                                    const yesterday = new Date(today);
+                                    yesterday.setDate(yesterday.getDate() - 1);
+
+                                    // Format date for display
+                                    let dateStr;
+                                    if (messageDate.toDateString() === today.toDateString()) {
+                                        dateStr = 'Today';
+                                    } else if (messageDate.toDateString() === yesterday.toDateString()) {
+                                        dateStr = 'Yesterday';
+                                    } else {
+                                        dateStr = messageDate.toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        });
+                                    }
+
+                                    // Add date separator if day changes
+                                    if (dateStr !== currentDate) {
+                                        messagesHTML += `
                                     <div class="date-separator">
                                         <span class="date-text">${dateStr}</span>
                                     </div>
                                 `;
-                                currentDate = dateStr;
-                            }
-                            
-                            const fromSalon = message.sender_type === 'salon';
-                            const messageTime = messageDate.toLocaleTimeString('en-US', {
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            });
-                            
-                            let attachmentsHTML = '';
-                            
-                            // Add attachments if present
-                            if (message.has_attachment && message.attachments && message.attachments.length > 0) {
-                                attachmentsHTML = '<div class="message-attachments">';
-                                
-                                message.attachments.forEach(attachment => {
-                                    // Determine if it's an image or other file
-                                    const isImage = ['image/jpeg', 'image/png', 'image/gif'].includes(attachment.file_type);
-                                    
-                                    if (isImage) {
-                                        attachmentsHTML += `
+                                        currentDate = dateStr;
+                                    }
+
+                                    const fromSalon = message.sender_type === 'salon';
+                                    const messageTime = messageDate.toLocaleTimeString('en-US', {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    });
+
+                                    let attachmentsHTML = '';
+
+                                    // Add attachments if present
+                                    if (message.has_attachment && message.attachments && message.attachments.length > 0) {
+                                        attachmentsHTML = '<div class="message-attachments">';
+
+                                        message.attachments.forEach(attachment => {
+                                            // Determine if it's an image or other file
+                                            const isImage = ['image/jpeg', 'image/png', 'image/gif'].includes(attachment.file_type);
+
+                                            if (isImage) {
+                                                attachmentsHTML += `
                                             <div class="attachment-file">
                                                 <a href="${attachment.file_path}" target="_blank">
                                                     <img src="${attachment.file_path}" alt="${attachment.file_name}" class="attachment-image" style="max-width: 150px; max-height: 100px;">
                                                 </a>
                                             </div>
                                         `;
-                                    } else {
-                                        // For non-image files
-                                        attachmentsHTML += `
+                                            } else {
+                                                // For non-image files
+                                                attachmentsHTML += `
                                             <div class="attachment-file">
                                                 <a href="${attachment.file_path}" target="_blank" class="attachment-link">
                                                     <span class="attachment-icon">📎</span>
@@ -1796,21 +1786,21 @@ input[type="file"] {
                                                 </a>
                                             </div>
                                         `;
+                                            }
+                                        });
+
+                                        attachmentsHTML += '</div>';
                                     }
-                                });
-                                
-                                attachmentsHTML += '</div>';
-                            }
-                            
-                            // Only show the subject on the first message of a conversation
-                            const showSubject = message.id === data.messages[0].id || 
-                                               (data.messages.indexOf(message) > 0 && 
-                                                data.messages[data.messages.indexOf(message) - 1].sender_type !== message.sender_type);
-                            
-                            const subjectHTML = showSubject && message.subject ? 
-                                `<div class="message-subject">${message.subject}</div>` : '';
-                            
-                            messagesHTML += `
+
+                                    // Only show the subject on the first message of a conversation
+                                    const showSubject = message.id === data.messages[0].id ||
+                                        (data.messages.indexOf(message) > 0 &&
+                                            data.messages[data.messages.indexOf(message) - 1].sender_type !== message.sender_type);
+
+                                    const subjectHTML = showSubject && message.subject ?
+                                        `<div class="message-subject">${message.subject}</div>` : '';
+
+                                    messagesHTML += `
                                 <div class="message-item ${fromSalon ? 'from-salon' : 'from-user'} ${message.read_status === 0 ? 'unread' : ''}" data-id="${message.id}">
                                     ${subjectHTML}
                                     <div class="message-content">${message.content}</div>
@@ -1818,67 +1808,68 @@ input[type="file"] {
                                     <div class="message-time">${messageTime}</div>
                                 </div>
                             `;
-                        });
-                        
-                        messageList.innerHTML = messagesHTML;
-                        
-                        // Scroll to the bottom of the message list
-                        messageList.scrollTop = messageList.scrollHeight;
-                        
-                        // Mark messages as read when viewed
-                        document.querySelectorAll('.message-item.unread.from-salon').forEach(message => {
-                            const messageId = message.getAttribute('data-id');
-                            markMessageAsRead(messageId);
-                        });
-                        
-                        // Hide subject field if there are existing messages
-                        const subjectField = document.getElementById('message-subject');
-                        if (data.messages.length > 0) {
-                            subjectField.style.display = 'none';
-                            subjectField.removeAttribute('required');
+                                });
+
+                                messageList.innerHTML = messagesHTML;
+
+                                // Scroll to the bottom of the message list
+                                messageList.scrollTop = messageList.scrollHeight;
+
+                                // Mark messages as read when viewed
+                                document.querySelectorAll('.message-item.unread.from-salon').forEach(message => {
+                                    const messageId = message.getAttribute('data-id');
+                                    markMessageAsRead(messageId);
+                                });
+
+                                // Hide subject field if there are existing messages
+                                const subjectField = document.getElementById('message-subject');
+                                if (data.messages.length > 0) {
+                                    subjectField.style.display = 'none';
+                                    subjectField.removeAttribute('required');
+                                } else {
+                                    subjectField.style.display = 'block';
+                                    subjectField.setAttribute('required', 'required');
+                                }
+                            }
                         } else {
-                            subjectField.style.display = 'block';
-                            subjectField.setAttribute('required', 'required');
-                        }
-                    }
-                } else {
-                    messageList.innerHTML = `
+                            messageList.innerHTML = `
                         <div class="no-messages">
                             <p>Error loading messages: ${data.message || 'Unknown error'}</p>
                         </div>
                     `;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                messageList.innerHTML = `
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        messageList.innerHTML = `
                     <div class="no-messages">
                         <p>Error loading messages. Please try again later.</p>
                     </div>
                 `;
-            });
-    }
-    
-    // Function to mark a message as read
-    function markMessageAsRead(messageId) {
-        fetch('chat.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'action=mark_read&message_id=' + messageId
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Message marked as read:', messageId);
+                    });
             }
-        })
-        .catch(error => {
-            console.error('Error marking message as read:', error);
+
+            // Function to mark a message as read
+            function markMessageAsRead(messageId) {
+                fetch('chat.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: 'action=mark_read&message_id=' + messageId
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Message marked as read:', messageId);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error marking message as read:', error);
+                    });
+            }
         });
-    }
-});
-</script>
+    </script>
 </body>
+
 </html>
