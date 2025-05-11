@@ -16,12 +16,14 @@ require 'phpmailer/src/PHPMailer.php';
 require 'phpmailer/src/SMTP.php';
 
 // Function to generate a verification token
-function generateVerificationToken($length = 32) {
+function generateVerificationToken($length = 32)
+{
     return bin2hex(random_bytes($length / 2));
 }
 
 // Function to send verification email
-function sendVerificationEmail($email, $firstname, $token) {
+function sendVerificationEmail($email, $firstname, $token)
+{
     $mail = new PHPMailer(true);
     try {
         $mail->isSMTP();
@@ -35,10 +37,10 @@ function sendVerificationEmail($email, $firstname, $token) {
         $mail->addAddress($email);
         $mail->isHTML(true);
         $mail->Subject = 'Verify Your Nail Architect Account';
-        
+
         // Create verification link (use your actual domain)
         $verificationLink = 'localhost/nailarchitect/verify.php?email=' . urlencode($email) . '&token=' . $token;
-        
+
         // HTML Email Body
         $mail->Body = '
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e8d7d0; border-radius: 10px;">
@@ -61,10 +63,10 @@ function sendVerificationEmail($email, $firstname, $token) {
                 <p>123 Nail Street, Beauty District, Marikina City</p>
             </div>
         </div>';
-        
+
         // Plain text alternative
         $mail->AltBody = "Hello $firstname,\n\nPlease verify your email by clicking this link: $verificationLink\n\nThank you,\nNail Architect Team";
-        
+
         $mail->send();
         return true;
     } catch (Exception $e) {
@@ -74,23 +76,25 @@ function sendVerificationEmail($email, $firstname, $token) {
 
 // Handle signup form submission
 if (isset($_POST['signup'])) {
-    if (isset($_POST['first_name'], $_POST['last_name'], $_POST['email'], $_POST['phone'], $_POST['password']) && 
-        !empty($_POST['first_name']) && !empty($_POST['last_name']) && !empty($_POST['email']) && 
-        !empty($_POST['phone']) && !empty($_POST['password'])) {
+    if (
+        isset($_POST['first_name'], $_POST['last_name'], $_POST['email'], $_POST['phone'], $_POST['password']) &&
+        !empty($_POST['first_name']) && !empty($_POST['last_name']) && !empty($_POST['email']) &&
+        !empty($_POST['phone']) && !empty($_POST['password'])
+    ) {
 
         $firstname = mysqli_real_escape_string($conn, $_POST['first_name']);
         $lastname = mysqli_real_escape_string($conn, $_POST['last_name']);
         $email = mysqli_real_escape_string($conn, $_POST['email']);
         $phone = mysqli_real_escape_string($conn, $_POST['phone']);
         $password = $_POST['password'];
-        
+
         // Hash the password
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
-        
+
         // Check if the email already exists
         $check_email_query = "SELECT * FROM users WHERE email = '$email'";
         $email_result = mysqli_query($conn, $check_email_query);
-        
+
         if (mysqli_num_rows($email_result) > 0) {
             echo "<script>
             if (confirm('Email already exists. Would you like to log in instead?')) {
@@ -101,7 +105,7 @@ if (isset($_POST['signup'])) {
             // Generate verification token
             $token = generateVerificationToken();
             $expiry = date('Y-m-d H:i:s', strtotime('+24 hours'));
-            
+
             // Insert data into the users table with verified status = 0 (unverified)
             $query = "INSERT INTO users (first_name, last_name, email, phone, password, verification_token, token_expiry, is_verified) 
                       VALUES ('$firstname', '$lastname', '$email', '$phone', '$hashedPassword', '$token', '$expiry', 0)";
@@ -112,7 +116,7 @@ if (isset($_POST['signup'])) {
                 if (sendVerificationEmail($email, $firstname, $token)) {
                     // Set session variable to display message on the next page
                     $_SESSION['verification_email_sent'] = true;
-                    
+
                     // Redirect to verification pending page
                     echo "<script>
                         window.location.href = 'verification-pending.php';
@@ -138,6 +142,7 @@ mysqli_close($conn);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -147,31 +152,40 @@ mysqli_close($conn);
     <title>Nail Architect - Sign Up</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: Poppins, sans-serif;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
-        html, body {
+
+        html,
+        body {
             height: 100%;
             margin: 0;
             padding: 0;
         }
-        
+
         body {
             background-color: #F2E9E9;
             padding: 20px;
             display: flex;
             flex-direction: column;
         }
-        
+
         .container {
             max-width: 1200px;
             width: 100%;
@@ -180,35 +194,35 @@ mysqli_close($conn);
             display: flex;
             flex-direction: column;
         }
-        
+
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding-bottom: 15px;
         }
-        
+
         .logo-container img {
             height: 60px;
         }
-        
+
         .nav-links {
             display: flex;
             align-items: center;
             gap: 20px;
         }
-        
+
         .nav-link {
             cursor: pointer;
         }
-        
+
         .book-now {
             padding: 8px 20px;
             background-color: #e8d7d0;
             border-radius: 20px;
             cursor: pointer;
         }
-        
+
         .signup-container {
             display: flex;
             flex-direction: column;
@@ -218,7 +232,7 @@ mysqli_close($conn);
             animation: fadeIn 0.6s ease-out forwards;
             padding: 20px 0;
         }
-        
+
         .signup-form-container {
             background-color: #e8d7d0;
             border-radius: 15px;
@@ -228,34 +242,35 @@ mysqli_close($conn);
             animation: fadeIn 0.7s ease-out forwards;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         }
-        
+
         .signup-title {
             font-size: 24px;
             font-weight: bold;
             margin-bottom: 30px;
             text-align: center;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         .form-row {
             display: flex;
             gap: 15px;
         }
-        
+
         .form-row .form-group {
             flex: 1;
         }
-        
+
         label {
             display: block;
             margin-bottom: 8px;
             font-size: 14px;
         }
-        
-        input, select {
+
+        input,
+        select {
             width: 100%;
             padding: 12px;
             border: none;
@@ -265,19 +280,20 @@ mysqli_close($conn);
             font-size: 14px;
             transition: all 0.3s ease;
         }
-        
-        input:focus, select:focus {
+
+        input:focus,
+        select:focus {
             outline: none;
             background-color: #ffffff;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
-        
+
         .password-input-container {
             position: relative;
             display: flex;
             align-items: center;
         }
-        
+
         .toggle-password {
             position: absolute;
             right: 12px;
@@ -287,17 +303,18 @@ mysqli_close($conn);
             user-select: none;
             transition: color 0.3s ease;
         }
-        
+
         .toggle-password:hover {
             color: #333;
         }
-        
-        .password-strength, .match-status {
+
+        .password-strength,
+        .match-status {
             font-size: 12px;
             margin-top: 5px;
             display: block;
         }
-        
+
         .terms-container {
             display: flex;
             align-items: flex-start;
@@ -305,12 +322,12 @@ mysqli_close($conn);
             margin: 20px 0;
             font-size: 13px;
         }
-        
+
         .terms-container input {
             width: auto;
             margin-top: 4px;
         }
-        
+
         .signup-button {
             padding: 12px 24px;
             background-color: #d9bbb0;
@@ -324,28 +341,28 @@ mysqli_close($conn);
             margin-top: 20px;
             font-weight: bold;
         }
-        
+
         .signup-button:hover {
             background-color: #ae9389;
             transform: translateY(-2px);
         }
-        
+
         .login-link {
             text-align: center;
             margin-top: 30px;
             font-size: 14px;
         }
-        
+
         .login-text {
             cursor: pointer;
             font-weight: bold;
             transition: opacity 0.3s ease;
         }
-        
+
         .login-text:hover {
             opacity: 0.7;
         }
-        
+
         .back-button {
             display: inline-block;
             margin-top: 30px;
@@ -355,7 +372,7 @@ mysqli_close($conn);
             animation: fadeIn 0.8s ease-out forwards;
             align-self: center;
         }
-        
+
         .back-button:after {
             content: '';
             position: absolute;
@@ -366,17 +383,17 @@ mysqli_close($conn);
             background-color: #000;
             transition: width 0.3s ease;
         }
-        
+
         .back-button:hover:after {
             width: 100%;
         }
-        
+
         .password-requirements {
             font-size: 12px;
             color: #666;
             margin-top: 5px;
         }
-        
+
         /* Footer styles */
         footer {
             background-color: #333;
@@ -384,7 +401,7 @@ mysqli_close($conn);
             padding: 20px 0;
             margin-top: 40px;
         }
-        
+
         .footer-content {
             max-width: 1200px;
             margin: 0 auto;
@@ -392,98 +409,102 @@ mysqli_close($conn);
             flex-wrap: wrap;
             justify-content: space-between;
         }
-        
+
         .footer-section {
             flex: 1;
             min-width: 200px;
             margin-bottom: 20px;
             padding: 0 15px;
         }
-        
+
         .footer-section h3 {
             margin-bottom: 15px;
             font-size: 18px;
         }
-        
+
         .footer-section ul {
             list-style: none;
             padding: 0;
         }
-        
+
         .footer-section ul li {
             margin-bottom: 8px;
         }
-        
+
         .footer-section a {
             color: #ddd;
             text-decoration: none;
             transition: color 0.3s;
         }
-        
+
         .footer-section a:hover {
             color: white;
         }
-        
+
         .footer-bottom {
             text-align: center;
             padding-top: 20px;
             border-top: 1px solid #444;
             margin-top: 20px;
         }
-        
+
         /* Responsive styles */
         @media (max-width: 768px) {
             .signup-form-container {
                 padding: 30px 20px;
             }
-            
+
             .form-row {
                 flex-direction: column;
                 gap: 0;
             }
-            
+
             .footer-section {
                 flex: 100%;
             }
         }
 
         .password-strength-meter {
-        height: 4px;
-        width: 100%;
-        background-color: #e0e0e0;
-        margin-top: 8px;
-        border-radius: 2px;
-        overflow: hidden;
-    }
-    
-    .password-strength-meter-bar {
-        height: 100%;
-        width: 0;
-        transition: width 0.3s ease, background-color 0.3s ease;
-    }
-    
-    .strength-weak .password-strength-meter-bar {
-        width: 33.33%;
-        background-color: #f44336; /* Red */
-    }
-    
-    .strength-medium .password-strength-meter-bar {
-        width: 66.66%;
-        background-color: #ff9800; /* Orange */
-    }
-    
-    .strength-strong .password-strength-meter-bar {
-        width: 100%;
-        background-color: #4caf50; /* Green */
-    }
-    
-    .strength-text {
-        font-size: 12px;
-        margin-top: 5px;
-        display: block;
-    }
+            height: 4px;
+            width: 100%;
+            background-color: #e0e0e0;
+            margin-top: 8px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .password-strength-meter-bar {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .strength-weak .password-strength-meter-bar {
+            width: 33.33%;
+            background-color: #f44336;
+            /* Red */
+        }
+
+        .strength-medium .password-strength-meter-bar {
+            width: 66.66%;
+            background-color: #ff9800;
+            /* Orange */
+        }
+
+        .strength-strong .password-strength-meter-bar {
+            width: 100%;
+            background-color: #4caf50;
+            /* Green */
+        }
+
+        .strength-text {
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -500,35 +521,35 @@ mysqli_close($conn);
                 <div class="login-icon"></div>
             </div>
         </header>
-        
+
         <div class="signup-container">
             <div class="signup-form-container">
                 <div class="signup-title">Create Account</div>
-                
+
                 <form id="signup-form" method="POST" action="">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="first-name">First Name</label>
                             <input type="text" id="first-name" name="first_name" required>
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="last-name">Last Name</label>
                             <input type="text" id="last-name" name="last_name" required>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="email">Email Address</label>
                         <input type="email" id="email" name="email" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" required>
+                        <input type="tel" id="phone" name="phone" pattern="[0-9]{11}" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                     </div>
-                    
-                                        <div class="form-group">
+
+                    <div class="form-group">
                         <label for="password">Password</label>
                         <div class="password-input-container">
                             <input type="password" id="password" name="password" required oninput="checkPasswordStrength()">
@@ -542,7 +563,7 @@ mysqli_close($conn);
                             Password must be at least 8 characters with uppercase, lowercase, and number
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="confirm-password">Confirm Password</label>
                         <div class="password-input-container">
@@ -551,160 +572,134 @@ mysqli_close($conn);
                         </div>
                         <span id="match-status" class="match-status"></span>
                     </div>
-                    
+
                     <div class="terms-container">
                         <input type="checkbox" id="terms" name="terms" required>
                         <label for="terms">I agree to the Terms of Service and Privacy Policy</label>
                     </div>
-                    
+
                     <button type="submit" name="signup" class="signup-button">Create Account</button>
                 </form>
-                
+
                 <div class="login-link">
                     Already have an account? <span class="login-text" onclick="window.location.href='login.php'">Sign In</span>
                 </div>
             </div>
-            
+
             <div class="back-button" onclick="window.location.href='index.php'">← Back to Home</div>
         </div>
     </div>
-    
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Nail Architect</h3>
-                <p>Your destination for premium nail care and beauty services.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="index.php">Home</a></li>
-                    <li><a href="services.php">Services</a></li>
-                    <li><a href="#">Booking</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact Us</h3>
-                <p>123 Nail Street, Beauty District<br>
-                Phone: (123) 456-7890<br>
-                Email: info@nailarchitect.com</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Nail Architect. All rights reserved.</p>
-        </div>
-    </footer>
-    
+
     <script>
-    function togglePasswordVisibility(fieldId, iconId) {
-        const passwordField = document.getElementById(fieldId);
-        const toggleIcon = document.getElementById(iconId);
-        
-        if (passwordField.type === 'password') {
-            passwordField.type = 'text';
-            toggleIcon.classList.remove('fa-eye');
-            toggleIcon.classList.add('fa-eye-slash');
-        } else {
-            passwordField.type = 'password';
-            toggleIcon.classList.remove('fa-eye-slash');
-            toggleIcon.classList.add('fa-eye');
-        }
-    }
-    
-    function checkPasswordStrength() {
-    const password = document.getElementById('password').value;
-    const strengthIndicator = document.getElementById('password-strength');
-    const meterBar = document.getElementById('password-strength-meter-bar');
-    const meterContainer = document.getElementById('password-strength-meter');
-    
-    // Remove all strength classes
-    meterContainer.classList.remove('strength-weak', 'strength-medium', 'strength-strong');
-    
-    if (!password) {
-        strengthIndicator.textContent = '';
-        meterContainer.style.display = 'none'; // Hide the meter when empty
-        return;
-    }
-    
-    // Show the meter when user is typing
-    meterContainer.style.display = 'block';
-    
-    let strength = 'Weak';
-    let strengthClass = 'strength-weak';
-    let textColor = '#f44336'; // Red color for weak
-    
-    // Basic checks
-    const hasMinLength = password.length >= 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumbers = /\d/.test(password);
-    const hasSpecialChars = /[^A-Za-z0-9]/.test(password);
-    
-    // Determine strength
-    if (hasMinLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChars) {
-        strength = 'Strong';
-        strengthClass = 'strength-strong';
-        textColor = '#4caf50'; // Green color for strong
-    } else if (hasMinLength && 
-              ((hasUpperCase && hasLowerCase && hasNumbers) || 
-               (hasUpperCase && hasLowerCase && hasSpecialChars) ||
-               (hasLowerCase && hasNumbers && hasSpecialChars))) {
-        strength = 'Medium';
-        strengthClass = 'strength-medium';
-        textColor = '#ff9800'; // Orange color for medium
-    }
-    
-    // Update UI
-    strengthIndicator.textContent = `Password strength: ${strength}`;
-    strengthIndicator.style.color = textColor; // Set text color
-    meterContainer.classList.add(strengthClass);
-}
+        function togglePasswordVisibility(fieldId, iconId) {
+            const passwordField = document.getElementById(fieldId);
+            const toggleIcon = document.getElementById(iconId);
 
-    function checkPasswordMatch() {
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-        const matchStatus = document.getElementById('match-status');
-
-        if (!confirmPassword) {
-            matchStatus.textContent = '';
-            return;
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
         }
 
-        if (password === confirmPassword) {
-            matchStatus.textContent = 'Passwords match';
-            matchStatus.style.color = 'green';
-        } else {
-            matchStatus.textContent = 'Passwords do not match';
-            matchStatus.style.color = 'red';
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthIndicator = document.getElementById('password-strength');
+            const meterBar = document.getElementById('password-strength-meter-bar');
+            const meterContainer = document.getElementById('password-strength-meter');
+
+            // Remove all strength classes
+            meterContainer.classList.remove('strength-weak', 'strength-medium', 'strength-strong');
+
+            if (!password) {
+                strengthIndicator.textContent = '';
+                meterContainer.style.display = 'none'; // Hide the meter when empty
+                return;
+            }
+
+            // Show the meter when user is typing
+            meterContainer.style.display = 'block';
+
+            let strength = 'Weak';
+            let strengthClass = 'strength-weak';
+            let textColor = '#f44336'; // Red color for weak
+
+            // Basic checks
+            const hasMinLength = password.length >= 8;
+            const hasUpperCase = /[A-Z]/.test(password);
+            const hasLowerCase = /[a-z]/.test(password);
+            const hasNumbers = /\d/.test(password);
+            const hasSpecialChars = /[^A-Za-z0-9]/.test(password);
+
+            // Determine strength
+            if (hasMinLength && hasUpperCase && hasLowerCase && hasNumbers && hasSpecialChars) {
+                strength = 'Strong';
+                strengthClass = 'strength-strong';
+                textColor = '#4caf50'; // Green color for strong
+            } else if (hasMinLength &&
+                ((hasUpperCase && hasLowerCase && hasNumbers) ||
+                    (hasUpperCase && hasLowerCase && hasSpecialChars) ||
+                    (hasLowerCase && hasNumbers && hasSpecialChars))) {
+                strength = 'Medium';
+                strengthClass = 'strength-medium';
+                textColor = '#ff9800'; // Orange color for medium
+            }
+
+            // Update UI
+            strengthIndicator.textContent = `Password strength: ${strength}`;
+            strengthIndicator.style.color = textColor; // Set text color
+            meterContainer.classList.add(strengthClass);
         }
-    }
-    
-    document.getElementById('signup-form').addEventListener('submit', function(e) {
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-        const terms = document.getElementById('terms').checked;
-        
-        if (password !== confirmPassword) {
-            e.preventDefault();
-            alert('Passwords do not match');
-            return;
+
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const matchStatus = document.getElementById('match-status');
+
+            if (!confirmPassword) {
+                matchStatus.textContent = '';
+                return;
+            }
+
+            if (password === confirmPassword) {
+                matchStatus.textContent = 'Passwords match';
+                matchStatus.style.color = 'green';
+            } else {
+                matchStatus.textContent = 'Passwords do not match';
+                matchStatus.style.color = 'red';
+            }
         }
-        
-        if (!terms) {
-            e.preventDefault();
-            alert('You must agree to the Terms of Service');
-            return;
-        }
-        
-        // Password validation
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-        if (!passwordRegex.test(password)) {
-            e.preventDefault();
-            alert('Password must be at least 8 characters with uppercase, lowercase, and number');
-            return;
-        }
-    });
-</script>
+
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const terms = document.getElementById('terms').checked;
+
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match');
+                return;
+            }
+
+            if (!terms) {
+                e.preventDefault();
+                alert('You must agree to the Terms of Service');
+                return;
+            }
+
+            // Password validation
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+            if (!passwordRegex.test(password)) {
+                e.preventDefault();
+                alert('Password must be at least 8 characters with uppercase, lowercase, and number');
+                return;
+            }
+        });
+    </script>
 </body>
+
 </html>

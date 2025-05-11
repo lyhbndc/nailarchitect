@@ -32,29 +32,33 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nail Architect - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Poppins;
+            font-family: 'Poppins', sans-serif;
         }
         
         body {
             background-color: #F2E9E9;
-            padding: 20px;
+            padding: 0;
         }
         
         .sidebar {
             width: 250px;
-            background-color:#E8D7D0;
+            background-color: #E8D7D0;
             height: 100vh;
             padding: 25px 0;
             position: fixed;
             overflow-y: auto;
             left: 0;
             top: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
         }
         
         .logo-container {
@@ -71,6 +75,10 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             background-color: #e0c5b7;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .logo::after {
@@ -86,7 +94,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         
         .admin-title {
             margin-left: 15px;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 18px;
         }
         
@@ -100,6 +108,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             font-size: 12px;
             color: #666;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .menu-item {
@@ -109,6 +118,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            border-left: 4px solid transparent;
         }
         
         .menu-item:hover {
@@ -117,20 +127,11 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         
         .menu-item.active {
             background-color: #D9BBB0;
-        }
-        
-        .menu-item.active::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
-            background-color: #333;
+            border-left-color: #333;
         }
         
         .menu-icon {
-            width: 20px;
+            width: 24px;
             margin-right: 10px;
             text-align: center;
             font-size: 16px;
@@ -138,17 +139,33 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         
         .menu-text {
             font-size: 14px;
+            font-weight: 500;
         }
         
         .content-wrapper {
             margin-left: 250px;
             padding: 25px;
+            padding-top: 80px;
+        }
+        
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 250px;
+            right: 0;
+            height: 60px;
+            background-color: #E8D7D0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 99;
         }
         
         .page-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 600;
         }
         
         .dashboard-grid {
@@ -163,22 +180,43 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             border-radius: 15px;
             padding: 20px;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
         }
         
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.08);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background-color: rgba(255, 255, 255, 0.4);
         }
         
         .stat-title {
             font-size: 14px;
             color: #666;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         
         .stat-value {
             font-size: 28px;
-            font-weight: bold;
+            font-weight: 600;
             margin-bottom: 8px;
         }
         
@@ -197,11 +235,39 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             color: #c62828;
         }
         
+        .chart-container {
+            background-color: #E8D7D0;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
         .content-section {
             background-color: #E8D7D0;
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
         
         .section-header {
@@ -213,7 +279,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         
         .section-title {
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 600;
         }
         
         .section-controls {
@@ -223,11 +289,14 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         
         .control-button {
             padding: 8px 16px;
-            border-radius: 20px;
+            border-radius: 8px;
             background-color: #D9BBB0;
-            font-size: 12px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .control-button:hover {
@@ -247,10 +316,11 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             transition: all 0.3s ease;
             font-size: 14px;
             position: relative;
+            font-weight: 500;
         }
         
         .tab.active {
-            font-weight: bold;
+            font-weight: 600;
         }
         
         .tab.active::after {
@@ -279,6 +349,8 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             font-size: 12px;
             color: #666;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
         }
         
         .appointments-table td {
@@ -295,7 +367,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 500;
             display: inline-block;
         }
         
@@ -325,69 +397,76 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         }
         
         .action-button {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 12px;
-            background-color: #e0e0e0;
+            font-size: 14px;
+            background-color: rgba(255,255,255,0.5);
         }
         
         .action-button:hover {
-            background-color: #c0c0c0;
+            transform: translateY(-2px);
+            background-color: rgba(255,255,255,0.8);
         }
         
         .view-button {
-            background-color: #bbdefb;
             color: #1565c0;
         }
         
-        .edit-button {
-            background-color: #fff9c4;
-            color: #f57f17;
+        .approve-button {
+            color: #2e7d32;
         }
         
-        .cancel-button {
-            background-color: #ffcdd2;
+        .reject-button {
             color: #c62828;
         }
         
-        .image-button {
-            background-color: #c8e6c9;
-            color: #2e7d32;
+        .complete-button {
+            color: #616161;
         }
         
         .details-panel {
             display: none;
             margin-top: 10px;
             padding: 15px;
-            background-color: #f0f0f0;
+            background-color: #F2E9E9;
             border-radius: 8px;
         }
         
         .details-panel-header {
-            font-weight: bold;
+            font-weight: 600;
             margin-bottom: 10px;
             font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .details-content {
+            margin-top: 10px;
         }
         
         .details-panel-actions {
             display: flex;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         
         .details-panel-action {
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.3s ease;
-            background-color: #d9bbb0;
+            background-color: #D9BBB0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .details-panel-action:hover {
@@ -416,6 +495,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
         
         .modal-header {
@@ -423,18 +503,18 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            padding-bottom: 10px;
+            padding-bottom: 15px;
             border-bottom: 1px solid #e0e0e0;
         }
         
         .modal-title {
             font-size: 20px;
-            font-weight: bold;
+            font-weight: 600;
         }
         
         .close-modal {
-            width: 30px;
-            height: 30px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             background-color: #e0e0e0;
             display: flex;
@@ -446,7 +526,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         }
         
         .close-modal:hover {
-            background-color: #c0c0c0;
+            background-color: #D9BBB0;
         }
         
         .image-gallery {
@@ -461,6 +541,11 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .image-item:hover {
+            transform: scale(1.02);
         }
         
         .image-item img {
@@ -469,6 +554,33 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             display: block;
         }
         
+        .quick-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .quick-stat {
+            background-color: rgba(255, 255, 255, 0.3);
+            padding: 12px 15px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .quick-stat-title {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .quick-stat-value {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        /* Responsive Media Queries */
         @media (max-width: 1200px) {
             .dashboard-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -478,10 +590,15 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         @media (max-width: 992px) {
             .sidebar {
                 width: 80px;
+                z-index: 1000;
             }
             
             .content-wrapper {
                 margin-left: 80px;
+            }
+            
+            .top-bar {
+                left: 80px;
             }
             
             .admin-title, .menu-text, .menu-section {
@@ -507,13 +624,51 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .top-bar {
+                padding: 0 15px;
+            }
+            
+            .content-wrapper {
+                padding: 15px;
+                padding-top: 70px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .section-controls {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .appointments-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stat-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .image-gallery {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-<div class="sidebar">
+    <div class="sidebar">
         <div class="logo-container">
-            <div class="logo"></div>
+            <div class="logo">
+                <i class="fas fa-spa" style="font-size: 22px; z-index: 1;"></i>
+            </div>
             <div class="admin-title">Admin</div>
         </div>
         
@@ -521,60 +676,91 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             <div class="menu-section">MAIN</div>
             
             <div class="menu-item active" onclick="window.location.href='admin-dashboard.php'">
-                <div class="menu-icon">📊</div>
+                <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
                 <div class="menu-text">Dashboard</div>
             </div>
             
             <div class="menu-item" onclick="window.location.href='admin-appointments.php'">
-                <div class="menu-icon">📅</div>
+                <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
                 <div class="menu-text">Appointments</div>
             </div>
             
             <div class="menu-item" onclick="window.location.href='admin-clients.php'">
-                <div class="menu-icon">👥</div>
+                <div class="menu-icon"><i class="fas fa-users"></i></div>
                 <div class="menu-text">Clients</div>
             </div>
             
             <div class="menu-item" onclick="window.location.href='admin-messages.php'">
-                <div class="menu-icon">💌</div>
+                <div class="menu-icon"><i class="fas fa-envelope"></i></div>
                 <div class="menu-text">Messages</div>
             </div>
             
             <div class="menu-section">SYSTEM</div>
             
+            <div class="menu-item" onclick="window.location.href='admin-backup.php'">
+                <div class="menu-icon"><i class="fas fa-database"></i></div>
+                <div class="menu-text">Backup & Restore</div>
+            </div>
+            
             <div class="menu-item" onclick="window.location.href='logout.php'">
-                <div class="menu-icon">↩️</div>
+                <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
                 <div class="menu-text">Logout</div>
             </div>
         </div>
     </div>
     
-    <div class="content-wrapper">
+    <div class="top-bar">
         <div class="page-title">Dashboard</div>
-        
+    </div>
+    
+    <div class="content-wrapper">
         <div class="dashboard-grid">
             <div class="stat-card">
-                <div class="stat-title">Total Appointments</div>
-                <div class="stat-value"><?php echo $total_appointments; ?></div>
-                <div class="stat-change change-positive">↑ 12% from last month</div>
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-title">Total Appointments</div>
+                        <div class="stat-value"><?php echo $total_appointments; ?></div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
             </div>
             
             <div class="stat-card">
-                <div class="stat-title">Appointments Today</div>
-                <div class="stat-value"><?php echo $appointments_today; ?></div>
-                <div class="stat-change change-positive">↑ 5% from yesterday</div>
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-title">Appointments Today</div>
+                        <div class="stat-value"><?php echo $appointments_today; ?></div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                </div>
             </div>
             
             <div class="stat-card">
-                <div class="stat-title">Pending Appointments</div>
-                <div class="stat-value"><?php echo $pending_appointments; ?></div>
-                <div class="stat-change change-negative">↑ 8% from last week</div>
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-title">Pending Appointments</div>
+                        <div class="stat-value"><?php echo $pending_appointments; ?></div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                </div>
             </div>
             
             <div class="stat-card">
-                <div class="stat-title">Total Revenue</div>
-                <div class="stat-value">$<?php echo number_format($total_revenue, 0); ?></div>
-                <div class="stat-change change-positive">↑ 15% from last month</div>
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-title">Total Revenue</div>
+                        <div class="stat-value">₱<?php echo number_format($total_revenue); ?></div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -583,8 +769,12 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                 <div class="section-title">Upcoming Appointments</div>
                 
                 <div class="section-controls">
-                    <div class="control-button">Export</div>
-                    <div class="control-button">New Appointment</div>
+                    <div class="control-button" id="refresh-btn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </div>
+                    <div class="control-button export-btn">
+                        <i class="fas fa-file-export"></i> Export
+                    </div>
                 </div>
             </div>
             
@@ -623,9 +813,9 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                                 <td>
                                     <?php 
                                     if ($appointment['user_id']) {
-                                        echo $appointment['first_name'] . ' ' . $appointment['last_name'];
+                                        echo htmlspecialchars($appointment['first_name'] . ' ' . $appointment['last_name']);
                                     } else {
-                                        echo $appointment['name']; 
+                                        echo htmlspecialchars($appointment['name']); 
                                     }
                                     ?>
                                 </td>
@@ -633,7 +823,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                                     <?php 
                                     // Format service name
                                     $service_name = ucfirst(str_replace('-', ' ', $appointment['service']));
-                                    echo $service_name; 
+                                    echo htmlspecialchars($service_name); 
                                     ?>
                                 </td>
                                 <td>
@@ -648,33 +838,82 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                                     </span>
                                 </td>
                                 <td>
-                                    #NAI-<?php echo $appointment['reference_id']; ?>
+                                    <?php 
+                                    if (!empty($appointment['reference_id'])) {
+                                        echo "#" . htmlspecialchars($appointment['reference_id']); 
+                                    } else {
+                                        echo "<span style='color: #c62828;'>No Ref</span>";
+                                    }
+                                    ?>
                                 </td>
                                 <td class="action-cell">
-                                    <div class="action-button view-button" title="View Details" data-id="<?php echo $appointment['id']; ?>">👁️</div>
-                                    <div class="action-button edit-button" title="Edit">✏️</div>
+                                    <div class="action-button view-button" title="View Details" data-id="<?php echo $appointment['id']; ?>">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
                                     
-                                    <?php if ($appointment['status'] != 'cancelled'): ?>
-                                        <div class="action-button cancel-button" title="Cancel">✖️</div>
+                                    <?php if ($appointment['status'] == 'pending'): ?>
+                                        <div class="action-button approve-button" title="Approve" data-id="<?php echo $appointment['id']; ?>">
+                                            <i class="fas fa-check"></i>
+                                        </div>
+                                        <div class="action-button reject-button" title="Reject" data-id="<?php echo $appointment['id']; ?>">
+                                            <i class="fas fa-times"></i>
+                                        </div>
+                                    <?php elseif ($appointment['status'] == 'confirmed'): ?>
+                                        <div class="action-button complete-button" title="Mark as Completed" data-id="<?php echo $appointment['id']; ?>">
+                                            <i class="fas fa-check-double"></i>
+                                        </div>
                                     <?php endif; ?>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="6" class="details-panel" id="details-<?php echo $appointment['id']; ?>">
                                     <div class="details-panel-header">
-                                        Appointment Details for #NAI-<?php echo $appointment['reference_id']; ?>
+                                        <div>Appointment #<?php echo htmlspecialchars($appointment['reference_id'] ?? 'N/A'); ?></div>
+                                        <div class="details-close" style="cursor: pointer;" onclick="document.getElementById('details-<?php echo $appointment['id']; ?>').style.display='none'">
+                                            <i class="fas fa-times"></i>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <strong>Notes:</strong> <?php echo $appointment['notes'] ? $appointment['notes'] : 'No notes provided'; ?>
+                                    <div class="details-content">
+                                        <div class="quick-stats">
+                                            <div class="quick-stat">
+                                                <div class="quick-stat-title">Service</div>
+                                                <div class="quick-stat-value"><?php echo ucfirst(str_replace('-', ' ', $appointment['service'])); ?></div>
+                                            </div>
+                                            
+                                            <div class="quick-stat">
+                                                <div class="quick-stat-title">Price</div>
+                                                <div class="quick-stat-value">₱<?php echo number_format($appointment['price']); ?></div>
+                                            </div>
+                                            
+                                            <div class="quick-stat">
+                                                <div class="quick-stat-title">Phone</div>
+                                                <div class="quick-stat-value"><?php echo htmlspecialchars($appointment['phone']); ?></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="margin-top: 15px;">
+                                            <strong>Notes:</strong> 
+                                            <p style="margin-top: 5px; padding: 10px; background-color: rgba(255,255,255,0.3); border-radius: 8px;">
+                                                <?php echo $appointment['notes'] ? htmlspecialchars($appointment['notes']) : 'No notes provided'; ?>
+                                            </p>
+                                        </div>
                                     </div>
                                     <div class="details-panel-actions">
                                         <?php if ($has_images): ?>
-                                            <div class="details-panel-action show-inspo" data-id="<?php echo $appointment['id']; ?>">View Inspiration Images</div>
+                                            <div class="details-panel-action show-inspo" data-id="<?php echo $appointment['id']; ?>">
+                                                <i class="fas fa-images"></i> View Inspiration
+                                            </div>
                                         <?php endif; ?>
                                         
                                         <?php if ($has_payment): ?>
-                                            <div class="details-panel-action show-payment" data-id="<?php echo $appointment['id']; ?>">View Payment Proof</div>
+                                            <div class="details-panel-action show-payment" data-id="<?php echo $appointment['id']; ?>">
+                                                <i class="fas fa-receipt"></i> View Payment
+                                            </div>
                                         <?php endif; ?>
+                                        
+                                        <div class="details-panel-action" onclick="window.location.href='send-reminder.php?id=<?php echo $appointment['id']; ?>'">
+                                            <i class="fas fa-bell"></i> Send Reminder
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -694,7 +933,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">Inspiration Images</div>
-                <div class="close-modal">&times;</div>
+                <div class="close-modal"><i class="fas fa-times"></i></div>
             </div>
             <div class="image-gallery" id="inspo-gallery">
                 <!-- Images will be loaded here -->
@@ -707,7 +946,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title">Payment Proof</div>
-                <div class="close-modal">&times;</div>
+                <div class="close-modal"><i class="fas fa-times"></i></div>
             </div>
             <div class="image-gallery" id="payment-gallery">
                 <!-- Payment images will be loaded here -->
@@ -794,6 +1033,123 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                 });
             });
             
+            // Approve button functionality
+            document.querySelectorAll('.approve-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to approve this appointment?')) {
+                        const appointmentId = button.getAttribute('data-id');
+                        updateAppointmentStatus(appointmentId, 'confirmed');
+                    }
+                });
+            });
+
+            // Reject button functionality
+            document.querySelectorAll('.reject-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to reject this appointment?')) {
+                        const appointmentId = button.getAttribute('data-id');
+                        updateAppointmentStatus(appointmentId, 'cancelled');
+                    }
+                });
+            });
+
+            // Complete button functionality
+            document.querySelectorAll('.complete-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    if (confirm('Are you sure you want to mark this appointment as completed?')) {
+                        const appointmentId = button.getAttribute('data-id');
+                        updateAppointmentStatus(appointmentId, 'completed');
+                    }
+                });
+            });
+
+            // Function to update appointment status
+            function updateAppointmentStatus(id, status) {
+                // Create form data
+                const formData = new FormData();
+                formData.append('id', id);
+                formData.append('status', status);
+                
+                // Show loading state
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.style.position = 'fixed';
+                loadingOverlay.style.top = '0';
+                loadingOverlay.style.left = '0';
+                loadingOverlay.style.width = '100%';
+                loadingOverlay.style.height = '100%';
+                loadingOverlay.style.backgroundColor = 'rgba(0,0,0,0.3)';
+                loadingOverlay.style.display = 'flex';
+                loadingOverlay.style.alignItems = 'center';
+                loadingOverlay.style.justifyContent = 'center';
+                loadingOverlay.style.zIndex = '9999';
+                loadingOverlay.innerHTML = '<div style="background: white; padding: 20px; border-radius: 10px;"><i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i> Updating...</div>';
+                document.body.appendChild(loadingOverlay);
+                
+                // Send AJAX request
+                fetch('update-appointment-status.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Remove loading overlay
+                    document.body.removeChild(loadingOverlay);
+                    
+                    if (data.success) {
+                        // Show success message
+                        const successMessage = document.createElement('div');
+                        successMessage.style.position = 'fixed';
+                        successMessage.style.top = '20px';
+                        successMessage.style.left = '50%';
+                        successMessage.style.transform = 'translateX(-50%)';
+                        successMessage.style.padding = '15px 25px';
+                        successMessage.style.backgroundColor = '#4caf50';
+                        successMessage.style.color = 'white';
+                        successMessage.style.borderRadius = '5px';
+                        successMessage.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
+                        successMessage.style.zIndex = '9999';
+                        successMessage.innerHTML = '<i class="fas fa-check-circle" style="margin-right: 10px;"></i> Appointment status updated successfully!';
+                        document.body.appendChild(successMessage);
+                        
+                        // Remove message after 3 seconds and reload page
+                        setTimeout(() => {
+                            document.body.removeChild(successMessage);
+                            window.location.reload();
+                        }, 2000);
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    // Remove loading overlay
+                    document.body.removeChild(loadingOverlay);
+                    
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the appointment status.');
+                });
+            }
+
+            // Export button functionality
+            document.querySelector('.export-btn').addEventListener('click', () => {
+                // Get the active tab to use as filter
+                const activeTab = document.querySelector('.tab.active');
+                const status = activeTab.getAttribute('data-tab');
+                
+                // Redirect to export script with filter
+                window.location.href = 'export-appointments.php?status=' + status;
+            });
+            
+            // Refresh button functionality
+            document.getElementById('refresh-btn').addEventListener('click', () => {
+                const refreshBtn = document.getElementById('refresh-btn');
+                refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+                refreshBtn.style.pointerEvents = 'none';
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            });
+            
             // Inspiration images modal functionality
             const inspoModal = document.getElementById('inspo-modal');
             const inspoGallery = document.getElementById('inspo-gallery');
@@ -804,7 +1160,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                     const appointmentId = button.getAttribute('data-id');
                     
                     // Clear gallery
-                    inspoGallery.innerHTML = 'Loading...';
+                    inspoGallery.innerHTML = '<div style="text-align: center; width: 100%;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
                     
                     // Show modal
                     inspoModal.style.display = 'flex';
@@ -823,17 +1179,18 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                                     const img = document.createElement('img');
                                     img.src = image;
                                     img.alt = 'Inspiration Image';
+                                    img.loading = 'lazy'; // Lazy loading for better performance
                                     
                                     imageItem.appendChild(img);
                                     inspoGallery.appendChild(imageItem);
                                 });
                             } else {
-                                inspoGallery.innerHTML = '<p>No inspiration images found.</p>';
+                                inspoGallery.innerHTML = '<p style="text-align: center; width: 100%;">No inspiration images found.</p>';
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            inspoGallery.innerHTML = '<p>Error loading images.</p>';
+                            inspoGallery.innerHTML = '<p style="text-align: center; width: 100%;">Error loading images.</p>';
                         });
                 });
             });
@@ -848,7 +1205,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                     const appointmentId = button.getAttribute('data-id');
                     
                     // Clear gallery
-                    paymentGallery.innerHTML = 'Loading...';
+                    paymentGallery.innerHTML = '<div style="text-align: center; width: 100%;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
                     
                     // Show modal
                     paymentModal.style.display = 'flex';
@@ -867,17 +1224,18 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                                     const img = document.createElement('img');
                                     img.src = image;
                                     img.alt = 'Payment Proof';
+                                    img.loading = 'lazy'; // Lazy loading for better performance
                                     
                                     imageItem.appendChild(img);
                                     paymentGallery.appendChild(imageItem);
                                 });
                             } else {
-                                paymentGallery.innerHTML = '<p>No payment proofs found.</p>';
+                                paymentGallery.innerHTML = '<p style="text-align: center; width: 100%;">No payment proofs found.</p>';
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            paymentGallery.innerHTML = '<p>Error loading payment proofs.</p>';
+                            paymentGallery.innerHTML = '<p style="text-align: center; width: 100%;">Error loading payment proofs.</p>';
                         });
                 });
             });
@@ -897,6 +1255,19 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                 }
                 if (event.target === paymentModal) {
                     paymentModal.style.display = 'none';
+                }
+            });
+            
+            // Add keyboard shortcut (Escape key) to close modals
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    inspoModal.style.display = 'none';
+                    paymentModal.style.display = 'none';
+                    
+                    // Close any open details panels
+                    document.querySelectorAll('.details-panel').forEach(panel => {
+                        panel.style.display = 'none';
+                    });
                 }
             });
         });

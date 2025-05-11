@@ -2,6 +2,11 @@
 // Start session
 session_start();
 
+if (!isset($_SESSION['user_id'])) {
+    // Redirect to login page if not logged in
+    header("Location: login.php");
+    exit();
+}
 // Check if user is logged in
 $logged_in = isset($_SESSION['user_id']);
 
@@ -100,7 +105,6 @@ if ($logged_in) {
             padding-bottom: 15px;
         }
 
-
         .page-title {
             font-size: 24px;
             margin-bottom: 10px;
@@ -122,7 +126,7 @@ if ($logged_in) {
         }
 
         .booking-form {
-            background-color: rgb(224, 184, 184);
+            background-color: #e8d7d0;
             border-radius: 15px;
             padding: 25px;
         }
@@ -146,7 +150,7 @@ if ($logged_in) {
             border: none;
             border-radius: 8px;
             background-color: #f2e9e9;
-            font-family: Poppins;
+            font-family: 'Courier New', monospace;
             font-size: 14px;
             transition: all 0.3s ease;
         }
@@ -327,7 +331,7 @@ if ($logged_in) {
         }
 
         .payment-info {
-            background: linear-gradient(to right, rgb(237, 215, 215), #e8d7d0);
+            background-color: #e8d7d0;
             border-radius: 15px;
             padding: 25px;
         }
@@ -368,7 +372,7 @@ if ($logged_in) {
         }
 
         .policy-box {
-            background-color: rgb(238, 205, 205);
+            background-color: #e8d7d0;
             border-radius: 15px;
             padding: 25px;
         }
@@ -398,7 +402,7 @@ if ($logged_in) {
 
         .submit-button {
             padding: 12px 24px;
-            background: linear-gradient(to right, #e6a4a4, #d98d8d);
+            background-color: #d9bbb0;
             border: none;
             border-radius: 30px;
             cursor: pointer;
@@ -584,18 +588,8 @@ if ($logged_in) {
 
                             <div>
                                 <label for="time">Preferred Time</label>
-                                <select id="time" name="time" required>
-                                    <option value="">Select a time</option>
-                                    <option value="9:00">9:00 AM</option>
-                                    <option value="10:00">10:00 AM</option>
-                                    <option value="11:00">11:00 AM</option>
-                                    <option value="12:00">12:00 PM</option>
-                                    <option value="13:00">1:00 PM</option>
-                                    <option value="14:00">2:00 PM</option>
-                                    <option value="15:00">3:00 PM</option>
-                                    <option value="16:00">4:00 PM</option>
-                                    <option value="17:00">5:00 PM</option>
-                                    <option value="18:00">6:00 PM</option>
+                                <select id="time" name="time" required disabled>
+                                    <option value="">Select a date first</option>
                                 </select>
                             </div>
                         </div>
@@ -808,8 +802,70 @@ if ($logged_in) {
                 }
             });
         });
+        // Add these functions to your existing script in booking.php
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... your existing code ...
+
+            // Get time slot select element
+            const timeSelect = document.getElementById('time');
+            const dateInput = document.getElementById('date');
+
+            // Update available times when date changes
+            dateInput.addEventListener('change', function() {
+                const selectedDate = this.value;
+                if (selectedDate) {
+                    updateAvailableTimes(selectedDate);
+                }
+            });
+
+            // Function to update available time slots
+            function updateAvailableTimes(date) {
+                // Clear current options
+                timeSelect.innerHTML = '<option value="">Select a time</option>';
+                timeSelect.disabled = true;
+
+                // Add loading option
+                const loadingOption = document.createElement('option');
+                loadingOption.text = 'Loading available times...';
+                timeSelect.add(loadingOption);
+
+                // Fetch available times from server
+                fetch('get-available-times.php?date=' + date)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Remove loading option
+                        timeSelect.removeChild(loadingOption);
+
+                        // Enable select
+                        timeSelect.disabled = false;
+
+                        if (data.success) {
+                            if (Object.keys(data.available_times).length === 0) {
+                                // No available times
+                                const noTimesOption = document.createElement('option');
+                                noTimesOption.text = 'No available times for this date';
+                                noTimesOption.disabled = true;
+                                timeSelect.add(noTimesOption);
+                            } else {
+                                // Add available times
+                                for (const [value, label] of Object.entries(data.available_times)) {
+                                    const option = document.createElement('option');
+                                    option.value = value;
+                                    option.text = label;
+                                    timeSelect.add(option);
+                                }
+                            }
+                        } else {
+                            console.error('Error fetching available times:', data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        timeSelect.disabled = false;
+                    });
+            }
+        });
     </script>
-    <?php include 'chat-widget.php'; ?>
 </body>
 
 </html>

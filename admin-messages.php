@@ -140,29 +140,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nail Architect - Admin Messages</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Poppins;
+            font-family: 'Poppins', sans-serif;
         }
         
         body {
             background-color: #F2E9E9;
-            padding: 20px;
+            padding: 0;
         }
         
         .sidebar {
             width: 250px;
-            background-color:#E8D7D0;
+            background-color: #E8D7D0;
             height: 100vh;
             padding: 25px 0;
             position: fixed;
             overflow-y: auto;
             left: 0;
             top: 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 100;
         }
         
         .logo-container {
@@ -179,6 +182,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             background-color: #e0c5b7;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .logo::after {
@@ -194,7 +200,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         .admin-title {
             margin-left: 15px;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 18px;
         }
         
@@ -208,6 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             font-size: 12px;
             color: #666;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .menu-item {
@@ -217,6 +224,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            border-left: 4px solid transparent;
         }
         
         .menu-item:hover {
@@ -225,20 +233,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         .menu-item.active {
             background-color: #D9BBB0;
-        }
-        
-        .menu-item.active::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
-            background-color: #333;
+            border-left-color: #333;
         }
         
         .menu-icon {
-            width: 20px;
+            width: 24px;
             margin-right: 10px;
             text-align: center;
             font-size: 16px;
@@ -246,6 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         .menu-text {
             font-size: 14px;
+            font-weight: 500;
         }
         
         a {
@@ -256,26 +256,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         .content-wrapper {
             margin-left: 250px;
             padding: 25px;
+            padding-top: 80px;
+        }
+        
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 250px;
+            right: 0;
+            height: 60px;
+            background-color: #E8D7D0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 99;
         }
         
         .page-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: 600;
         }
         
         .messages-container {
             display: flex;
             gap: 20px;
-            height: calc(100vh - 100px);
+            height: calc(100vh - 140px);
+            margin-top: 20px;
         }
         
         .messages-list {
-            width: 300px;
+            width: 320px;
             background-color: #E8D7D0;
             border-radius: 15px;
             overflow-y: auto;
             max-height: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .messages-list-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background-color: #E8D7D0;
+            z-index: 1;
+        }
+        
+        .messages-count {
+            padding: 3px 10px;
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .messages-list-content {
+            flex: 1;
+            overflow-y: auto;
         }
         
         .conversation-wrapper {
@@ -285,19 +331,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
         
         .conversation-container {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
+            background-color: rgba(255,255,255,0.1);
         }
         
         .user-item {
-            padding: 15px;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
         }
         
         .user-item:hover {
@@ -308,15 +358,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             background-color: #D9BBB0;
         }
         
+        .user-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
         .user-name {
-            font-weight: bold;
-            font-size: 16px;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-time {
+            font-size: 12px;
+            color: #777;
         }
         
         .user-email {
-            font-size: 12px;
+            font-size: 13px;
             color: #666;
             margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .last-message {
@@ -330,21 +398,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             background-color: #FF5252;
             color: white;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
-            margin-left: 10px;
+            font-size: 11px;
+            font-weight: 600;
         }
         
         .conversation-header {
-            padding: 15px 20px;
+            padding: 20px;
             border-bottom: 1px solid rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background-color: #E8D7D0;
         }
         
         .user-info h3 {
@@ -364,11 +433,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         .header-action {
             padding: 8px 16px;
-            border-radius: 20px;
+            border-radius: 8px;
             background-color: #D9BBB0;
-            font-size: 12px;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .header-action:hover {
@@ -381,47 +453,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             padding: 15px;
             border-radius: 18px;
             position: relative;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
         
-        .message-bubble.salon {
-            background-color: #D9BBB0;
-            border-bottom-left-radius: 5px;
-            margin-right: auto;
-        }
+       .message-bubble.salon {
+    background-color: #D9BBB0;
+    border-bottom-right-radius: 5px;
+    margin-left: auto;
+    margin-right: 0;
+}
         
-        .message-bubble.user {
-            background-color: #e0c5b7;
-            border-bottom-right-radius: 5px;
-            margin-left: auto;
-        }
+       .message-bubble.user {
+    background-color: #e0c5b7;
+    border-bottom-left-radius: 5px;
+    margin-right: auto;
+    margin-left: 0;
+}
+.message-bubble.user .message-content {
+    text-align: left;
+}
+
+.message-bubble.salon .message-content {
+    text-align: right;
+}
+
+.message-bubble.salon .message-sender {
+    text-align: right;
+}
+
+.message-bubble.user .message-sender {
+    text-align: left;
+}
         
         .message-sender {
-            font-weight: bold;
+            font-weight: 600;
             margin-bottom: 8px;
             padding-bottom: 5px;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
         }
         
         .message-content {
             font-size: 14px;
-            line-height: 1.4;
+            line-height: 1.5;
             word-break: break-word;
         }
         
         .message-time {
-            font-size: 10px;
-            color: #888;
-            margin-top: 5px;
-            text-align: right;
+            font-size: 11px;
+            color: #777;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
         .message-date {
             text-align: center;
-            margin: 10px 0;
-            font-size: 12px;
-            color: #888;
+            margin: 20px 0;
+            font-size: 13px;
+            color: #666;
             position: relative;
+            font-weight: 500;
         }
         
         .message-date::before {
@@ -449,17 +543,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             padding: 0 15px;
             position: relative;
             z-index: 1;
+            opacity: 0.9;
         }
         
         .composition-area {
-            padding: 15px;
+            padding: 20px;
             border-top: 1px solid rgba(0,0,0,0.1);
+            background-color: #E8D7D0;
         }
         
         .message-form {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 15px;
         }
         
         .composition-row {
@@ -469,33 +565,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         .composition-row textarea {
             flex: 1;
-            padding: 12px 15px;
+            padding: 15px;
             border: none;
-            border-radius: 20px;
+            border-radius: 15px;
             font-size: 14px;
             background-color: white;
             min-height: 100px;
             resize: vertical;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
         
         .composition-row textarea:focus {
             outline: none;
-            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .file-input-container {
+            position: relative;
+        }
+        
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #D9BBB0;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .file-input-label:hover {
+            background-color: #ae9389;
+        }
+        
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
         
         .send-button {
             padding: 12px 25px;
             border: none;
-            border-radius: 20px;
-            background-color: #ae9389;
-            color: white;
-            font-weight: bold;
+            border-radius: 8px;
+            background-color: #D9BBB0;
+            color: #333;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .send-button:hover {
-            background-color: #8e766e;
+            background-color: #ae9389;
         }
         
         .empty-state {
@@ -504,7 +635,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             align-items: center;
             justify-content: center;
             height: 100%;
-            color: #888;
+            color: #666;
             text-align: center;
             padding: 0 20px;
         }
@@ -512,16 +643,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         .empty-state-icon {
             font-size: 48px;
             margin-bottom: 20px;
+            opacity: 0.7;
         }
         
         .empty-state h3 {
             font-size: 18px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
         }
         
         .empty-state p {
             font-size: 14px;
             max-width: 400px;
+            line-height: 1.5;
+            opacity: 0.8;
         }
         
         .attachment-preview {
@@ -541,6 +676,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .attachment-item img {
@@ -551,7 +687,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         .file-icon {
             font-size: 24px;
-            color: #888;
+            color: #777;
         }
         
         .attachment-name {
@@ -561,8 +697,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             right: 0;
             background-color: rgba(0,0,0,0.5);
             color: white;
-            font-size: 8px;
-            padding: 2px 5px;
+            font-size: 9px;
+            padding: 3px 5px;
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
@@ -571,7 +707,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         .message-attachments {
             display: flex;
             gap: 10px;
-            margin-top: 10px;
+            margin-top: 12px;
             flex-wrap: wrap;
         }
         
@@ -579,6 +715,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             max-width: 200px;
             border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .message-attachment:hover {
+            transform: scale(1.03);
         }
         
         .message-attachment img {
@@ -592,17 +734,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             background-color: rgba(0,0,0,0.05);
             padding: 8px 12px;
             border-radius: 8px;
-            font-size: 12px;
-            gap: 5px;
+            font-size: 13px;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .file-attachment:hover {
+            background-color: rgba(0,0,0,0.1);
+        }
+        
+        /* Responsive Media Queries */
+        @media (max-width: 1200px) {
+            .messages-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .messages-list {
+                width: 100%;
+                max-height: 300px;
+            }
         }
         
         @media (max-width: 992px) {
             .sidebar {
                 width: 80px;
+                z-index: 1000;
             }
             
             .content-wrapper {
                 margin-left: 80px;
+            }
+            
+            .top-bar {
+                left: 80px;
             }
             
             .admin-title, .menu-text, .menu-section {
@@ -625,13 +790,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
         
         @media (max-width: 768px) {
-            .messages-container {
+            .content-wrapper {
+                padding: 15px;
+                padding-top: 70px;
+            }
+            
+            .conversation-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .header-actions {
+                width: 100%;
+            }
+            
+            .composition-row {
                 flex-direction: column;
             }
             
-            .messages-list {
-                width: 100%;
-                max-height: 200px;
+            .user-info-row {
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -639,7 +818,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 <body>
     <div class="sidebar">
         <div class="logo-container">
-            <div class="logo"></div>
+            <div class="logo">
+                <i class="fas fa-spa" style="font-size: 20px; z-index: 1;"></i>
+            </div>
             <div class="admin-title">Admin</div>
         </div>
         
@@ -647,76 +828,94 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <div class="menu-section">MAIN</div>
             
             <a href="admin-dashboard.php" class="menu-item">
-                <div class="menu-icon">📊</div>
+                <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
                 <div class="menu-text">Dashboard</div>
             </a>
             
             <a href="admin-appointments.php" class="menu-item">
-                <div class="menu-icon">📅</div>
+                <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
                 <div class="menu-text">Appointments</div>
             </a>
             
             <a href="admin-clients.php" class="menu-item">
-                <div class="menu-icon">👥</div>
+                <div class="menu-icon"><i class="fas fa-users"></i></div>
                 <div class="menu-text">Clients</div>
             </a>
             
             <a href="admin-messages.php" class="menu-item active">
-                <div class="menu-icon">💌</div>
+                <div class="menu-icon"><i class="fas fa-envelope"></i></div>
                 <div class="menu-text">Messages</div>
             </a>
             
             <div class="menu-section">SYSTEM</div>
             
+            <a href="admin-backup.php" class="menu-item">
+                <div class="menu-icon"><i class="fas fa-database"></i></div>
+                <div class="menu-text">Backup & Restore</div>
+            </a>
+            
             <a href="logout.php" class="menu-item">
-                <div class="menu-icon">↩️</div>
+                <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
                 <div class="menu-text">Logout</div>
             </a>
         </div>
     </div>
     
-    <div class="content-wrapper">
+    <div class="top-bar">
         <div class="page-title">Client Messages</div>
-        
+    </div>
+    
+    <div class="content-wrapper">
         <div class="messages-container">
             <div class="messages-list">
-                <?php if (mysqli_num_rows($messages_result) > 0): ?>
-                    <?php while ($row = mysqli_fetch_assoc($messages_result)): ?>
-                        <?php
-                        $user_full_name = $row['first_name'] . ' ' . $row['last_name'];
-                        $message_date = new DateTime($row['last_message']);
-                        $now = new DateTime();
-                        $interval = $message_date->diff($now);
-                        
-                        if ($interval->days == 0) {
-                            $date_text = 'Today';
-                        } elseif ($interval->days == 1) {
-                            $date_text = 'Yesterday';
-                        } else {
-                            $date_text = $message_date->format('M j');
-                        }
-                        ?>
-                        <a href="?user_id=<?php echo $row['user_id']; ?>">
-                            <div class="user-item <?php echo (isset($_GET['user_id']) && $_GET['user_id'] == $row['user_id']) ? 'active' : ''; ?>">
-                                <div class="user-name">
-                                    <?php echo $user_full_name; ?>
-                                    <?php if ($row['unread_count'] > 0): ?>
-                                        <span class="unread-badge"><?php echo $row['unread_count']; ?></span>
-                                    <?php endif; ?>
+                <div class="messages-list-header">
+                    <span>Client Conversations</span>
+                    <?php if (mysqli_num_rows($messages_result) > 0): ?>
+                        <span class="messages-count"><?php echo mysqli_num_rows($messages_result); ?></span>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="messages-list-content">
+                    <?php if (mysqli_num_rows($messages_result) > 0): ?>
+                        <?php while ($row = mysqli_fetch_assoc($messages_result)): ?>
+                            <?php
+                            $user_full_name = $row['first_name'] . ' ' . $row['last_name'];
+                            $message_date = new DateTime($row['last_message']);
+                            $now = new DateTime();
+                            $interval = $message_date->diff($now);
+                            
+                            if ($interval->days == 0) {
+                                $date_text = 'Today';
+                            } elseif ($interval->days == 1) {
+                                $date_text = 'Yesterday';
+                            } else {
+                                $date_text = $message_date->format('M j');
+                            }
+                            ?>
+                            <a href="?user_id=<?php echo $row['user_id']; ?>">
+                                <div class="user-item <?php echo (isset($_GET['user_id']) && $_GET['user_id'] == $row['user_id']) ? 'active' : ''; ?>">
+                                    <div class="user-info-row">
+                                        <div class="user-name">
+                                            <?php echo $user_full_name; ?>
+                                            <?php if ($row['unread_count'] > 0): ?>
+                                                <span class="unread-badge"><?php echo $row['unread_count']; ?></span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="user-time"><?php echo $date_text; ?></div>
+                                    </div>
+                                    <div class="user-email"><?php echo $row['email']; ?></div>
+                                    <div class="last-message">
+                                        <span><i class="fas fa-comment-dots" style="margin-right: 5px;"></i> <?php echo $row['message_count']; ?> messages</span>
+                                    </div>
                                 </div>
-                                <div class="user-email"><?php echo $row['email']; ?></div>
-                                <div class="last-message">
-                                    <span><?php echo $row['message_count']; ?> messages</span>
-                                    <span><?php echo $date_text; ?></span>
-                                </div>
-                            </div>
-                        </a>
-                    <?php endwhile; ?>
-                <?php else: ?>
-                    <div class="empty-state">
-                        <p>No message threads found.</p>
-                    </div>
-                <?php endif; ?>
+                            </a>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <div class="empty-state" style="height: 200px;">
+                            <p>No message threads found.</p>
+                        </div>
+                    <?php endif; ?>
+                </div>
             </div>
             
             <div class="conversation-wrapper">
@@ -728,7 +927,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         </div>
                         
                         <div class="header-actions">
-                            <a href="admin-client-details.php?id=<?php echo $user['id']; ?>" class="header-action">View Client Profile</a>
+                            <a href="admin-client-details.php?id=<?php echo $user['id']; ?>" class="header-action">
+                                <i class="fas fa-user"></i> View Profile
+                            </a>
+                            
+                            <?php if (isset($user['phone']) && !empty($user['phone'])): ?>
+                                <a href="tel:<?php echo $user['phone']; ?>" class="header-action">
+                                    <i class="fas fa-phone"></i> Call
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                     
@@ -760,11 +967,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         <?php endif; ?>
                         
                             <div class="message-bubble <?php echo $message['sender_type']; ?>">
-                                <?php if ($message['sender_type'] == 'salon'): ?>
-                                    <div class="message-sender">Nail Architect</div>
-                                <?php else: ?>
-                                    <div class="message-sender"><?php echo $user['first_name'] . ' ' . $user['last_name']; ?></div>
-                                <?php endif; ?>
+                                <div class="message-sender">
+                                    <?php if ($message['sender_type'] == 'salon'): ?>
+                                        Nail Architect
+                                    <?php else: ?>
+                                        <?php echo $user['first_name'] . ' ' . $user['last_name']; ?>
+                                    <?php endif; ?>
+                                    <div class="message-time">
+                                        <i class="far fa-clock"></i> <?php echo $message_date->format('g:i A'); ?>
+                                    </div>
+                                </div>
                                 <div class="message-content"><?php echo nl2br($message['content']); ?></div>
                                 
                                 <?php if (!empty($message['attachments'])): ?>
@@ -777,22 +989,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                             <?php if ($is_image): ?>
                                                 <div class="message-attachment">
                                                     <a href="<?php echo $attachment['file_path']; ?>" target="_blank">
-                                                        <img src="<?php echo $attachment['file_path']; ?>" alt="<?php echo $attachment['file_name']; ?>">
+                                                        <img src="<?php echo $attachment['file_path']; ?>" alt="<?php echo $attachment['file_name']; ?>" loading="lazy">
                                                     </a>
                                                 </div>
                                             <?php else: ?>
                                                 <a href="<?php echo $attachment['file_path']; ?>" target="_blank" class="file-attachment">
-                                                    <span>📎</span>
+                                                    <i class="fas fa-paperclip"></i>
                                                     <span><?php echo $attachment['file_name']; ?></span>
                                                 </a>
                                             <?php endif; ?>
                                         <?php endforeach; ?>
                                     </div>
                                 <?php endif; ?>
-                                
-                                <div class="message-time">
-                                    <?php echo $message_date->format('g:i A'); ?>
-                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -806,20 +1014,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                 <textarea name="content" placeholder="Type your message here..." required></textarea>
                             </div>
                             
-                            <div class="composition-row">
-                                <input type="file" name="attachment">
+                            <div class="composition-row" style="justify-content: space-between;">
+                                <div class="file-input-container">
+                                    <label for="attachment" class="file-input-label">
+                                        <i class="fas fa-paperclip"></i> Attach File
+                                    </label>
+                                    <input type="file" name="attachment" id="attachment" class="file-input">
+                                </div>
+                                
+                                <button type="submit" class="send-button">
+                                    <i class="fas fa-paper-plane"></i> Send Message
+                                </button>
                             </div>
                             
-                            <div class="composition-row">
-                                <button type="submit" class="send-button">Send Message</button>
-                            </div>
+                            <div id="attachment-preview-container"></div>
                         </form>
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <div class="empty-state-icon">💬</div>
+                        <div class="empty-state-icon"><i class="far fa-comments"></i></div>
                         <h3>No conversation selected</h3>
-                        <p>Select a user from the list to view and respond to their messages.</p>
+                        <p>Select a client from the list to view and respond to their messages.</p>
                     </div>
                 <?php endif; ?>
             </div>
@@ -836,20 +1051,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         // File upload preview functionality
         const fileInput = document.querySelector('input[type="file"]');
+        const previewContainer = document.getElementById('attachment-preview-container');
+        
         if (fileInput) {
             fileInput.addEventListener('change', function() {
-                let previewContainer = document.querySelector('.attachment-preview');
-                
-                // Create preview container if it doesn't exist
-                if (!previewContainer) {
-                    previewContainer = document.createElement('div');
-                    previewContainer.className = 'attachment-preview';
-                    fileInput.parentNode.appendChild(previewContainer);
-                } else {
-                    previewContainer.innerHTML = '';
-                }
+                // Clear previous preview
+                previewContainer.innerHTML = '';
                 
                 if (this.files.length > 0) {
+                    // Create preview container
+                    const attachmentPreview = document.createElement('div');
+                    attachmentPreview.className = 'attachment-preview';
+                    
                     const file = this.files[0];
                     const isImage = file.type.startsWith('image/');
                     
@@ -867,7 +1080,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     } else {
                         const fileIcon = document.createElement('div');
                         fileIcon.className = 'file-icon';
-                        fileIcon.textContent = '📄';
+                        fileIcon.innerHTML = '<i class="fas fa-file"></i>';
                         attachmentItem.appendChild(fileIcon);
                     }
                     
@@ -876,7 +1089,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     fileName.textContent = file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name;
                     attachmentItem.appendChild(fileName);
                     
-                    previewContainer.appendChild(attachmentItem);
+                    // Add remove button
+                    const removeButton = document.createElement('div');
+                    removeButton.className = 'remove-attachment';
+                    removeButton.innerHTML = '<i class="fas fa-times"></i>';
+                    removeButton.style.position = 'absolute';
+                    removeButton.style.top = '5px';
+                    removeButton.style.right = '5px';
+                    removeButton.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                    removeButton.style.color = 'white';
+                    removeButton.style.width = '20px';
+                    removeButton.style.height = '20px';
+                    removeButton.style.borderRadius = '50%';
+                    removeButton.style.display = 'flex';
+                    removeButton.style.alignItems = 'center';
+                    removeButton.style.justifyContent = 'center';
+                    removeButton.style.cursor = 'pointer';
+                    removeButton.style.fontSize = '10px';
+                    
+                    removeButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        fileInput.value = '';
+                        previewContainer.innerHTML = '';
+                    });
+                    
+                    attachmentItem.appendChild(removeButton);
+                    attachmentPreview.appendChild(attachmentItem);
+                    previewContainer.appendChild(attachmentPreview);
+                }
+            });
+        }
+        
+        // Keyboard shortcut for sending messages (Ctrl+Enter)
+        const messageTextarea = document.querySelector('textarea[name="content"]');
+        if (messageTextarea) {
+            messageTextarea.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault();
+                    const form = this.closest('form');
+                    if (form && this.value.trim().length > 0) {
+                        form.submit();
+                    }
                 }
             });
         }

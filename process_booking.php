@@ -57,14 +57,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $reference_id = 'NAI-' . rand(1000000, 9999999);
     
     // Insert booking data
-    $query = "INSERT INTO bookings (user_id, name, email, phone, service, date, time, notes, technician, duration, price, reference_id, status) 
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
-    
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("issssssssisd", $user_id, $name, $email, $phone, $service, $date, $time, $notes, $technician, $duration, $price, $reference_id);
-    
+// Insert booking data
+$query = "INSERT INTO bookings (user_id, name, email, phone, service, date, time, notes, technician, duration, price, reference_id, status) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
+
+$stmt = $conn->prepare($query);
+$stmt->bind_param("issssssssiis", $user_id, $name, $email, $phone, $service, $date, $time, $notes, $technician, $duration, $price, $reference_id);
+
     if ($stmt->execute()) {
-        $booking_id = $conn->insert_id;
+          $booking_id = $conn->insert_id;
         
         // Handle payment proof upload
         if (isset($_FILES['payment_proof']) && $_FILES['payment_proof']['error'] == 0) {
