@@ -288,32 +288,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         .messages-list {
             width: 320px;
-            background-color: #E8D7D0;
+            background-color: white;
             border-radius: 15px;
             overflow-y: auto;
             max-height: 100%;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
         }
         
         .messages-list-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            font-weight: 600;
+            padding: 12px 15px;
+            background: linear-gradient(to right, rgb(222, 131, 131), rgb(111, 33, 50));
+            color: white;
+            font-weight: 500;
             font-size: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
-            background-color: #E8D7D0;
             z-index: 1;
+            border-radius: 15px 15px 0 0;
         }
         
         .messages-count {
             padding: 3px 10px;
-            background-color: rgba(0,0,0,0.1);
+            background-color: rgba(255,255,255,0.2);
             border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
@@ -326,19 +327,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         
         .conversation-wrapper {
             flex: 1;
-            background-color: #E8D7D0;
+            background-color: white;
             border-radius: 15px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
         }
         
         .conversation-container {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            background-color: rgba(255,255,255,0.1);
+            padding: 15px;
+            background-color: #F2E9E9;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         
         .user-item {
@@ -351,11 +355,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
         
         .user-item:hover {
-            background-color: #D9BBB0;
+            background-color: #f9f2f2;
         }
         
         .user-item.active {
-            background-color: #D9BBB0;
+            background-color: #f9f2f2;
         }
         
         .user-info-row {
@@ -395,11 +399,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
         
         .unread-badge {
-            background-color: #FF5252;
+            background-color: #ff0000;
             color: white;
             border-radius: 50%;
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -408,225 +412,230 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
         
         .conversation-header {
-            padding: 20px;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding: 12px 15px;
+            background: linear-gradient(to right, rgb(222, 131, 131), rgb(111, 33, 50));
+            color: white;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: #E8D7D0;
         }
         
         .user-info h3 {
-            font-size: 18px;
-            margin-bottom: 5px;
+            font-size: 16px;
+            margin-bottom: 3px;
+            font-weight: 500;
         }
         
         .user-info p {
-            font-size: 14px;
-            color: #666;
+            font-size: 12px;
+            opacity: 0.9;
         }
         
         .header-actions {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         
         .header-action {
-            padding: 8px 16px;
+            padding: 6px 12px;
             border-radius: 8px;
-            background-color: #D9BBB0;
-            font-size: 14px;
+            background-color: rgba(255,255,255,0.2);
+            font-size: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            color: white;
+            border: none;
         }
         
         .header-action:hover {
-            background-color: #ae9389;
+            background-color: rgba(255,255,255,0.3);
         }
         
-        .message-bubble {
-            max-width: 70%;
-            margin-bottom: 15px;
-            padding: 15px;
-            border-radius: 18px;
-            position: relative;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-        }
+        .chat-message {
+        display: flex;
+        gap: 8px;
+        max-width: 85%;
+        margin-bottom: 10px;
+        animation: messageIn 0.3s ease-out forwards;
+    }
         
-       .message-bubble.salon {
-    background-color: #D9BBB0;
-    border-bottom-right-radius: 5px;
-    margin-left: auto;
-    margin-right: 0;
-}
+        .chat-message.user {
+        margin-right: auto;
+        flex-direction: row;
+    }
         
-       .message-bubble.user {
-    background-color: #e0c5b7;
-    border-bottom-left-radius: 5px;
-    margin-right: auto;
-    margin-left: 0;
-}
-.message-bubble.user .message-content {
-    text-align: left;
-}
-
-.message-bubble.salon .message-content {
-    text-align: right;
-}
-
-.message-bubble.salon .message-sender {
-    text-align: right;
-}
-
-.message-bubble.user .message-sender {
-    text-align: left;
-}
+        .chat-message.salon {
+        margin-left: auto;
+        flex-direction: row-reverse;
+    }
         
-        .message-sender {
-            font-weight: 600;
-            margin-bottom: 8px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid rgba(0,0,0,0.08);
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-        }
+        .chat-avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #e0c5b7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 500;
+        color: #333;
+        flex-shrink: 0;
+    }
         
-        .message-content {
-            font-size: 14px;
-            line-height: 1.5;
-            word-break: break-word;
-        }
+        .chat-message.user .chat-avatar {
+        background-color: #e0c5b7;
+        color: #333;
+    }
+        
+        .chat-message.salon .chat-avatar {
+        background-color: #9b59b6;
+        color: white;
+    }
+        
+        .chat-bubble {
+        background-color: white;
+        padding: 10px 12px;
+        border-radius: 15px;
+        border-top-left-radius: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        font-size: 14px;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+        
+        .chat-message.user .chat-bubble {
+        background-color: white;
+        color: #333;
+        border-radius: 15px;
+        border-top-left-radius: 5px;
+    }
+        
+        .chat-message.salon .chat-bubble {
+        background-color: #e6a4a4;
+        color: white;
+        border-radius: 15px;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 15px;
+    }
         
         .message-time {
             font-size: 11px;
-            color: #777;
+            color: #888;
+            margin-top: 4px;
             display: flex;
             align-items: center;
             gap: 5px;
         }
         
-        .message-date {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 13px;
-            color: #666;
-            position: relative;
-            font-weight: 500;
+        .chat-message.user .message-time {
+            justify-content: flex-end;
+            color: rgba(255,255,255,0.8);
         }
         
-        .message-date::before {
+        .date-separator {
+            text-align: center;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .date-separator::before {
             content: '';
             position: absolute;
             left: 0;
             top: 50%;
-            width: 45%;
+            width: 40%;
             height: 1px;
-            background-color: rgba(0,0,0,0.1);
+            background-color: #ddd;
         }
         
-        .message-date::after {
+        .date-separator::after {
             content: '';
             position: absolute;
             right: 0;
             top: 50%;
-            width: 45%;
+            width: 40%;
             height: 1px;
-            background-color: rgba(0,0,0,0.1);
+            background-color: #ddd;
         }
         
-        .message-date span {
-            background-color: #E8D7D0;
+        .date-text {
+            background-color: #F2E9E9;
             padding: 0 15px;
+            display: inline-block;
             position: relative;
-            z-index: 1;
-            opacity: 0.9;
+            font-size: 12px;
+            color: #888;
         }
         
         .composition-area {
-            padding: 20px;
-            border-top: 1px solid rgba(0,0,0,0.1);
-            background-color: #E8D7D0;
+            padding: 12px;
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #eee;
+            align-items: center;
+            background-color: white;
         }
         
         .message-form {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            width: 100%;
+            gap: 8px;
+            align-items: center;
         }
         
-        .composition-row {
+        .attach-button {
+            background-color: transparent;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: #d98d8d;
             display: flex;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
         
-        .composition-row textarea {
+        .attach-button:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .chat-input {
             flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 15px;
-            font-size: 14px;
-            background-color: white;
-            min-height: 100px;
-            resize: vertical;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
-        
-        .composition-row textarea:focus {
+            padding: 10px 12px;
+            border: 1px solid #e0c5b7;
+            border-radius: 20px;
             outline: none;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .file-input-container {
-            position: relative;
-        }
-        
-        .file-input-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background-color: #D9BBB0;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
             font-size: 14px;
         }
         
-        .file-input-label:hover {
-            background-color: #ae9389;
+        .chat-input:focus {
+            border-color: #e6a4a4;
         }
         
-        .file-input {
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .send-button {
-            padding: 12px 25px;
+        .chat-send {
+            background: linear-gradient(to right, #d98d8d, #e6a4a4);
+            color: white;
             border: none;
-            border-radius: 8px;
-            background-color: #D9BBB0;
-            color: #333;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        .send-button:hover {
-            background-color: #ae9389;
+        .chat-send:hover {
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
+            transform: scale(1.05);
         }
         
         .empty-state {
@@ -660,67 +669,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
         
         .attachment-preview {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 8px;
+            padding: 10px;
+            display: none;
         }
         
         .attachment-item {
-            width: 80px;
-            height: 80px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background-color: #f5f5f5;
             border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-            background-color: #f0f0f0;
+        }
+        
+        .attachment-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #e6a4a4;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            color: white;
         }
         
-        .attachment-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .file-icon {
-            font-size: 24px;
-            color: #777;
+        .attachment-info {
+            flex: 1;
         }
         
         .attachment-name {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: rgba(0,0,0,0.5);
-            color: white;
-            font-size: 9px;
-            padding: 3px 5px;
-            text-overflow: ellipsis;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
             overflow: hidden;
+            text-overflow: ellipsis;
             white-space: nowrap;
         }
         
+        .attachment-size {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .remove-attachment {
+            background-color: transparent;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.2s;
+        }
+        
+        .remove-attachment:hover {
+            color: #ff5252;
+        }
+        
         .message-attachments {
+            margin-top: 8px;
             display: flex;
-            gap: 10px;
-            margin-top: 12px;
+            gap: 8px;
             flex-wrap: wrap;
         }
         
         .message-attachment {
             max-width: 200px;
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
         }
         
         .message-attachment:hover {
-            transform: scale(1.03);
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
         
         .message-attachment img {
@@ -729,18 +758,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
         
         .file-attachment {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            background-color: rgba(0,0,0,0.05);
-            padding: 8px 12px;
-            border-radius: 8px;
+            background-color: rgba(255,255,255,0.9);
+            padding: 6px 10px;
+            border-radius: 12px;
             font-size: 13px;
-            gap: 8px;
+            gap: 6px;
             transition: all 0.3s ease;
+            color: #333;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .file-attachment:hover {
-            background-color: rgba(0,0,0,0.1);
+            background-color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        
+        /* Animation for messages */
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         /* Responsive Media Queries */
@@ -805,10 +849,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 width: 100%;
             }
             
-            .composition-row {
-                flex-direction: column;
-            }
-            
             .user-info-row {
                 flex-wrap: wrap;
             }
@@ -824,41 +864,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <div class="admin-title">Admin</div>
         </div>
         
-        <div class="nav-menu">
-            <div class="menu-section">MAIN</div>
-            
-            <a href="admin-dashboard.php" class="menu-item">
-                <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
-                <div class="menu-text">Dashboard</div>
-            </a>
-            
-            <a href="admin-appointments.php" class="menu-item">
-                <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
-                <div class="menu-text">Appointments</div>
-            </a>
-            
-            <a href="admin-clients.php" class="menu-item">
-                <div class="menu-icon"><i class="fas fa-users"></i></div>
-                <div class="menu-text">Clients</div>
-            </a>
-            
-            <a href="admin-messages.php" class="menu-item active">
-                <div class="menu-icon"><i class="fas fa-envelope"></i></div>
-                <div class="menu-text">Messages</div>
-            </a>
-            
-            <div class="menu-section">SYSTEM</div>
-            
-            <a href="admin-backup.php" class="menu-item">
-                <div class="menu-icon"><i class="fas fa-database"></i></div>
-                <div class="menu-text">Backup & Restore</div>
-            </a>
-            
-            <a href="logout.php" class="menu-item">
-                <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
-                <div class="menu-text">Logout</div>
-            </a>
-        </div>
+       <div class="nav-menu">
+    <div class="menu-section">MAIN</div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-dashboard.php'">
+        <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
+        <div class="menu-text">Dashboard</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-appointments.php'">
+        <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
+        <div class="menu-text">Appointments</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='clients.php'">
+        <div class="menu-icon"><i class="fas fa-users"></i></div>
+        <div class="menu-text">Clients</div>
+    </div>
+    
+    <div class="menu-item active" onclick="window.location.href='admin-messages.php'">
+        <div class="menu-icon"><i class="fas fa-envelope"></i></div>
+        <div class="menu-text">Messages</div>
+    </div>
+    
+    <div class="menu-section">SYSTEM</div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-backup.php'">
+        <div class="menu-icon"><i class="fas fa-database"></i></div>
+        <div class="menu-text">Backup & Restore</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='logout.php'">
+        <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
+        <div class="menu-text">Logout</div>
+    </div>
+</div>
     </div>
     
     <div class="top-bar">
@@ -961,46 +1001,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                                     $display_date = $message_date->format('F j, Y');
                                 }
                         ?>
-                            <div class="message-date">
-                                <span><?php echo $display_date; ?></span>
+                            <div class="date-separator">
+                                <span class="date-text"><?php echo $display_date; ?></span>
                             </div>
                         <?php endif; ?>
                         
-                            <div class="message-bubble <?php echo $message['sender_type']; ?>">
-                                <div class="message-sender">
+                            <div class="chat-message <?php echo $message['sender_type']; ?>">
+                                <div class="chat-avatar">
                                     <?php if ($message['sender_type'] == 'salon'): ?>
-                                        Nail Architect
+                                        NA
                                     <?php else: ?>
-                                        <?php echo $user['first_name'] . ' ' . $user['last_name']; ?>
+                                        <?php echo strtoupper(substr($user['first_name'], 0, 1)); ?>
                                     <?php endif; ?>
+                                </div>
+                                <div class="chat-content">
+                                    <div class="chat-bubble"><?php echo nl2br($message['content']); ?></div>
                                     <div class="message-time">
                                         <i class="far fa-clock"></i> <?php echo $message_date->format('g:i A'); ?>
                                     </div>
-                                </div>
-                                <div class="message-content"><?php echo nl2br($message['content']); ?></div>
-                                
-                                <?php if (!empty($message['attachments'])): ?>
-                                    <div class="message-attachments">
-                                        <?php foreach ($message['attachments'] as $attachment): ?>
-                                            <?php
-                                            $is_image = in_array($attachment['file_type'], ['image/jpeg', 'image/png', 'image/gif']);
-                                            ?>
-                                            
-                                            <?php if ($is_image): ?>
-                                                <div class="message-attachment">
-                                                    <a href="<?php echo $attachment['file_path']; ?>" target="_blank">
-                                                        <img src="<?php echo $attachment['file_path']; ?>" alt="<?php echo $attachment['file_name']; ?>" loading="lazy">
+                                    
+                                    <?php if (!empty($message['attachments'])): ?>
+                                        <div class="message-attachments">
+                                            <?php foreach ($message['attachments'] as $attachment): ?>
+                                                <?php
+                                                $is_image = in_array($attachment['file_type'], ['image/jpeg', 'image/png', 'image/gif']);
+                                                ?>
+                                                
+                                                <?php if ($is_image): ?>
+                                                    <div class="message-attachment">
+                                                        <a href="<?php echo $attachment['file_path']; ?>" target="_blank">
+                                                            <img src="<?php echo $attachment['file_path']; ?>" alt="<?php echo $attachment['file_name']; ?>" loading="lazy">
+                                                        </a>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <a href="<?php echo $attachment['file_path']; ?>" target="_blank" class="file-attachment">
+                                                        <i class="fas fa-paperclip"></i>
+                                                        <span><?php echo $attachment['file_name']; ?></span>
                                                     </a>
-                                                </div>
-                                            <?php else: ?>
-                                                <a href="<?php echo $attachment['file_path']; ?>" target="_blank" class="file-attachment">
-                                                    <i class="fas fa-paperclip"></i>
-                                                    <span><?php echo $attachment['file_name']; ?></span>
-                                                </a>
-                                            <?php endif; ?>
-                                        <?php endforeach; ?>
-                                    </div>
-                                <?php endif; ?>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -1010,24 +1052,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                             <input type="hidden" name="action" value="send_message">
                             <input type="hidden" name="user_id" value="<?php echo $user['id']; ?>">
                             
-                            <div class="composition-row">
-                                <textarea name="content" placeholder="Type your message here..." required></textarea>
-                            </div>
+                            <button type="button" class="attach-button" id="attach-btn">
+                                <i class="fas fa-paperclip"></i>
+                            </button>
+                            <input type="file" name="attachment" id="attachment" style="display: none;">
                             
-                            <div class="composition-row" style="justify-content: space-between;">
-                                <div class="file-input-container">
-                                    <label for="attachment" class="file-input-label">
-                                        <i class="fas fa-paperclip"></i> Attach File
-                                    </label>
-                                    <input type="file" name="attachment" id="attachment" class="file-input">
-                                </div>
-                                
-                                <button type="submit" class="send-button">
-                                    <i class="fas fa-paper-plane"></i> Send Message
-                                </button>
-                            </div>
+                            <input type="text" name="content" placeholder="Type your message..." required class="chat-input">
                             
-                            <div id="attachment-preview-container"></div>
+                            <button type="submit" class="chat-send">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                            
+                            <div class="attachment-preview" id="attachment-preview"></div>
                         </form>
                     </div>
                 <?php else: ?>
@@ -1049,88 +1085,120 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             conversationContainer.scrollTop = conversationContainer.scrollHeight;
         }
         
-        // File upload preview functionality
-        const fileInput = document.querySelector('input[type="file"]');
-        const previewContainer = document.getElementById('attachment-preview-container');
+        // File upload functionality
+        const fileInput = document.getElementById('attachment');
+        const attachBtn = document.getElementById('attach-btn');
+        const preview = document.getElementById('attachment-preview');
+        const messageForm = document.querySelector('.message-form');
         
+        // Click on paperclip to open file selector
+        if (attachBtn) {
+            attachBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+        }
+        
+        // Handle file selection
         if (fileInput) {
             fileInput.addEventListener('change', function() {
-                // Clear previous preview
-                previewContainer.innerHTML = '';
-                
                 if (this.files.length > 0) {
-                    // Create preview container
-                    const attachmentPreview = document.createElement('div');
-                    attachmentPreview.className = 'attachment-preview';
-                    
                     const file = this.files[0];
-                    const isImage = file.type.startsWith('image/');
-                    
-                    const attachmentItem = document.createElement('div');
-                    attachmentItem.className = 'attachment-item';
-                    
-                    if (isImage) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const img = document.createElement('img');
-                            img.src = e.target.result;
-                            attachmentItem.appendChild(img);
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        const fileIcon = document.createElement('div');
-                        fileIcon.className = 'file-icon';
-                        fileIcon.innerHTML = '<i class="fas fa-file"></i>';
-                        attachmentItem.appendChild(fileIcon);
-                    }
-                    
-                    const fileName = document.createElement('div');
-                    fileName.className = 'attachment-name';
-                    fileName.textContent = file.name.length > 15 ? file.name.substring(0, 12) + '...' : file.name;
-                    attachmentItem.appendChild(fileName);
-                    
-                    // Add remove button
-                    const removeButton = document.createElement('div');
-                    removeButton.className = 'remove-attachment';
-                    removeButton.innerHTML = '<i class="fas fa-times"></i>';
-                    removeButton.style.position = 'absolute';
-                    removeButton.style.top = '5px';
-                    removeButton.style.right = '5px';
-                    removeButton.style.backgroundColor = 'rgba(0,0,0,0.5)';
-                    removeButton.style.color = 'white';
-                    removeButton.style.width = '20px';
-                    removeButton.style.height = '20px';
-                    removeButton.style.borderRadius = '50%';
-                    removeButton.style.display = 'flex';
-                    removeButton.style.alignItems = 'center';
-                    removeButton.style.justifyContent = 'center';
-                    removeButton.style.cursor = 'pointer';
-                    removeButton.style.fontSize = '10px';
-                    
-                    removeButton.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        fileInput.value = '';
-                        previewContainer.innerHTML = '';
-                    });
-                    
-                    attachmentItem.appendChild(removeButton);
-                    attachmentPreview.appendChild(attachmentItem);
-                    previewContainer.appendChild(attachmentPreview);
+                    showAttachmentPreview(file);
                 }
             });
         }
         
-        // Keyboard shortcut for sending messages (Ctrl+Enter)
-        const messageTextarea = document.querySelector('textarea[name="content"]');
-        if (messageTextarea) {
-            messageTextarea.addEventListener('keydown', function(e) {
-                if (e.ctrlKey && e.key === 'Enter') {
+        function showAttachmentPreview(file) {
+            const isImage = file.type.startsWith('image/');
+            
+            preview.innerHTML = `
+                <div class="attachment-item">
+                    <div class="attachment-icon">
+                        ${isImage ? '<i class="fas fa-image"></i>' : '<i class="fas fa-file"></i>'}
+                    </div>
+                    <div class="attachment-info">
+                        <div class="attachment-name">${file.name}</div>
+                        <div class="attachment-size">${formatFileSize(file.size)}</div>
+                    </div>
+                    <button type="button" class="remove-attachment" onclick="removeAttachment()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            preview.style.display = 'block';
+            
+            // If it's an image, show a thumbnail
+            if (isImage) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const icon = preview.querySelector('.attachment-icon');
+                    icon.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        window.removeAttachment = function() {
+            fileInput.value = '';
+            preview.innerHTML = '';
+            preview.style.display = 'none';
+        };
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Enter key to send message (shift+enter for new line)
+        const messageInput = document.querySelector('.chat-input');
+        if (messageInput) {
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     const form = this.closest('form');
                     if (form && this.value.trim().length > 0) {
                         form.submit();
                     }
                 }
+            });
+        }
+        
+        // Auto-resize textarea based on content
+        if (messageInput) {
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 150) + 'px';
+            });
+        }
+        
+        // Add animation to new messages
+        const messages = document.querySelectorAll('.chat-message');
+        messages.forEach((message, index) => {
+            message.style.animationDelay = `${index * 0.05}s`;
+        });
+        
+        // Show typing indicator when typing (this would need backend support)
+        let typingTimer;
+        let isTyping = false;
+        
+        if (messageInput) {
+            messageInput.addEventListener('input', function() {
+                clearTimeout(typingTimer);
+                
+                if (!isTyping) {
+                    isTyping = true;
+                    // Send typing status to server
+                    // This would require implementing backend support
+                }
+                
+                typingTimer = setTimeout(() => {
+                    isTyping = false;
+                    // Send stop typing status to server
+                }, 1000);
             });
         }
     });

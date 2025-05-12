@@ -280,18 +280,70 @@ mysqli_close($conn);
             padding: 30px;
         }
         
+        .appointments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #c0c0c0;
+        }
+        
+        .appointments-count {
+            font-size: 14px;
+            color: #666;
+        }
+        
         .section-title {
             font-size: 20px;
             font-weight: bold;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #c0c0c0;
-            padding-bottom: 10px;
+            margin-bottom: 0;
+        }
+        
+        /* Fade effect at bottom when scrollable */
+        .appointments-wrapper {
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .appointments-wrapper.has-scroll::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent, #e8d7d0);
+            pointer-events: none;
         }
         
         .appointments-list {
             display: flex;
             flex-direction: column;
             gap: 15px;
+            max-height: 600px; /* Add maximum height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding-right: 10px; /* Add padding for scrollbar */
+        }
+        
+        /* Custom scrollbar styling */
+        .appointments-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .appointments-list::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+        
+        .appointments-list::-webkit-scrollbar-thumb {
+            background: #d9bbb0;
+            border-radius: 10px;
+        }
+        
+        .appointments-list::-webkit-scrollbar-thumb:hover {
+            background: #ae9389;
         }
         
         .appointment-card {
@@ -306,7 +358,7 @@ mysqli_close($conn);
             box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
         
-        .appointment-header {
+        .appointment-card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -399,6 +451,8 @@ mysqli_close($conn);
         
         .tab-content {
             display: none;
+            height: calc(100% - 60px); /* Adjust based on tab height */
+            overflow: hidden;
         }
         
         .tab-content.active {
@@ -966,6 +1020,72 @@ input[type="file"] {
     padding: 30px 0;
     color: #666;
 }
+
+/* New styles for better profile edit modal */
+.profile-edit-modal .modal-content {
+    max-width: 600px;
+}
+
+.profile-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.profile-form .form-group.full-width {
+    grid-column: span 2;
+}
+
+.profile-modal-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    grid-column: span 2;
+}
+
+.profile-modal-buttons .modal-button {
+    flex: 1;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.save-profile-btn {
+    background-color: #ae9389;
+    color: white;
+}
+
+.save-profile-btn:hover {
+    background-color: #8b6f5f;
+}
+
+.cancel-profile-btn {
+    background-color: #d9bbb0;
+}
+
+.cancel-profile-btn:hover {
+    background-color: #c0a297;
+}
+
+.error-message, .success-message {
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.error-message {
+    background-color: #ffcdd2;
+    color: #c62828;
+}
+
+.success-message {
+    background-color: #c8e6c9;
+    color: #2e7d32;
+}
     </style>
 </head>
 <body>
@@ -1025,150 +1145,160 @@ input[type="file"] {
                     </div>
                     
                     <div class="tab-content active" id="upcoming-tab">
-                        <div class="section-title">Upcoming Appointments</div>
+                        <div class="appointments-header">
+                            <h2 class="section-title">Upcoming Appointments</h2>
+                            <span class="appointments-count"><?php echo count($upcoming_bookings); ?> appointment<?php echo count($upcoming_bookings) !== 1 ? 's' : ''; ?></span>
+                        </div>
                         
-                        <div class="appointments-list" id="upcoming-appointments">
-                            <?php if (empty($upcoming_bookings)): ?>
-                                <div class="no-appointments">
-                                    <div class="no-appointments-icon">📅</div>
-                                    <p>You don't have any upcoming appointments.</p>
-                                    <a href="booking.php" class="action-button">Book Appointment</a>
-                                </div>
-                            <?php else: ?>
-                                <?php foreach ($upcoming_bookings as $booking): ?>
-                                    <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
-                                        <div class="appointment-header">
-                                            <div class="appointment-service">
-                                                <?php 
-                                                // Format service name
-                                                $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
-                                                echo $service_name; 
-                                                ?>
-                                            </div>
-                                            <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
-                                                <?php echo ucfirst($booking['status']); ?>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="appointment-details">
-                                            <div class="detail-item">
-                                                <div class="detail-label">Date</div>
-                                                <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
-                                            </div>
-                                            
-                                            <div class="detail-item">
-                                                <div class="detail-label">Time</div>
-                                                <div class="detail-value">
+                        <div class="appointments-wrapper <?php echo count($upcoming_bookings) > 2 ? 'has-scroll' : ''; ?>">
+                            <div class="appointments-list" id="upcoming-appointments">
+                                <?php if (empty($upcoming_bookings)): ?>
+                                    <div class="no-appointments">
+                                        <div class="no-appointments-icon">📅</div>
+                                        <p>You don't have any upcoming appointments.</p>
+                                        <a href="booking.php" class="action-button">Book Appointment</a>
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach ($upcoming_bookings as $booking): ?>
+                                        <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
+                                            <div class="appointment-card-header">
+                                                <div class="appointment-service">
                                                     <?php 
-                                                    // Format time (12-hour format)
-                                                    echo date('g:i A', strtotime($booking['time'])); 
+                                                    // Format service name
+                                                    $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
+                                                    echo $service_name; 
                                                     ?>
+                                                </div>
+                                                <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
+                                                    <?php echo ucfirst($booking['status']); ?>
                                                 </div>
                                             </div>
                                             
-                                            <div class="detail-item">
-                                                <div class="detail-label">Duration</div>
-                                                <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
+                                            <div class="appointment-details">
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Date</div>
+                                                    <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
+                                                </div>
+                                                
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Time</div>
+                                                    <div class="detail-value">
+                                                        <?php 
+                                                        // Format time (12-hour format)
+                                                        echo date('g:i A', strtotime($booking['time'])); 
+                                                        ?>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Duration</div>
+                                                    <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
+                                                </div>
+                                                
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Technician</div>
+                                                    <div class="detail-value"><?php echo $booking['technician']; ?></div>
+                                                </div>
+                                                
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Price</div>
+                                                    <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
+                                                </div>
+                                                
+                                                <div class="detail-item">
+        <div class="detail-label">Reference</div>
+        <div class="detail-value">#<?php echo $booking['reference_id']; ?></div>
+    </div>
                                             </div>
                                             
-                                            <div class="detail-item">
-                                                <div class="detail-label">Technician</div>
-                                                <div class="detail-value"><?php echo $booking['technician']; ?></div>
+                                            <?php if ($booking['status'] != 'cancelled'): ?>
+                                            <div class="appointment-actions">
+                                                <div class="action-button reschedule-btn" data-id="<?php echo $booking['id']; ?>">Reschedule</div>
+                                                <div class="action-button cancel-btn" data-id="<?php echo $booking['id']; ?>">Cancel</div>
                                             </div>
-                                            
-                                            <div class="detail-item">
-                                                <div class="detail-label">Price</div>
-                                                <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
-                                            </div>
-                                            
-                                            <div class="detail-item">
-    <div class="detail-label">Reference</div>
-    <div class="detail-value">#<?php echo $booking['reference_id']; ?></div>
-</div>
+                                            <?php endif; ?>
                                         </div>
-                                        
-                                        <?php if ($booking['status'] != 'cancelled'): ?>
-                                        <div class="appointment-actions">
-                                            <div class="action-button reschedule-btn" data-id="<?php echo $booking['id']; ?>">Reschedule</div>
-                                            <div class="action-button cancel-btn" data-id="<?php echo $booking['id']; ?>">Cancel</div>
-                                        </div>
-                                        <?php endif; ?>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="tab-content" id="past-tab">
-                        <div class="section-title">Past Appointments</div>
+                        <div class="appointments-header">
+                            <h2 class="section-title">Past Appointments</h2>
+                            <span class="appointments-count"><?php echo count($past_bookings); ?> appointment<?php echo count($past_bookings) !== 1 ? 's' : ''; ?></span>
+                        </div>
                         
-                        <div class="appointments-list" id="past-appointments">
-                            <?php if (empty($past_bookings)): ?>
-                                <div class="no-appointments">
-                                    <div class="no-appointments-icon">📅</div>
-                                    <p>You don't have any past appointments.</p>
-                                </div>
-                            <?php else: ?>
-                                <?php foreach ($past_bookings as $booking): ?>
-                                    <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
-                                        <div class="appointment-header">
-                                            <div class="appointment-service">
-                                                <?php 
-                                                // Format service name
-                                                $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
-                                                echo $service_name; 
-                                                ?>
-                                            </div>
-                                            <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
-                                                <?php echo ucfirst($booking['status']); ?>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="appointment-details">
-                                            <div class="detail-item">
-                                                <div class="detail-label">Date</div>
-                                                <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
-                                            </div>
-                                            
-                                            <div class="detail-item">
-                                                <div class="detail-label">Time</div>
-                                                <div class="detail-value">
+                        <div class="appointments-wrapper <?php echo count($past_bookings) > 2 ? 'has-scroll' : ''; ?>">
+                            <div class="appointments-list" id="past-appointments">
+                                <?php if (empty($past_bookings)): ?>
+                                    <div class="no-appointments">
+                                        <div class="no-appointments-icon">📅</div>
+                                        <p>You don't have any past appointments.</p>
+                                    </div>
+                                <?php else: ?>
+                                    <?php foreach ($past_bookings as $booking): ?>
+                                        <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
+                                            <div class="appointment-header">
+                                                <div class="appointment-service">
                                                     <?php 
-                                                    // Format time (12-hour format)
-                                                    echo date('g:i A', strtotime($booking['time'])); 
+                                                    // Format service name
+                                                    $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
+                                                    echo $service_name; 
                                                     ?>
+                                                </div>
+                                                <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
+                                                    <?php echo ucfirst($booking['status']); ?>
                                                 </div>
                                             </div>
                                             
-                                            <div class="detail-item">
-                                                <div class="detail-label">Duration</div>
-                                                <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
+                                            <div class="appointment-details">
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Date</div>
+                                                    <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
+                                                </div>
+                                                
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Time</div>
+                                                    <div class="detail-value">
+                                                        <?php 
+                                                        // Format time (12-hour format)
+                                                        echo date('g:i A', strtotime($booking['time'])); 
+                                                        ?>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Duration</div>
+                                                    <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
+                                                </div>
+                                                
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Technician</div>
+                                                    <div class="detail-value"><?php echo $booking['technician']; ?></div>
+                                                </div>
+                                                
+                                                <div class="detail-item">
+                                                    <div class="detail-label">Price</div>
+                                                    <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
+                                                </div>
+                                                
+                                                <div class="detail-item">
+        <div class="detail-label">Reference</div>
+        <div class="detail-value">#NAI-<?php echo $booking['reference_id']; ?></div>
+    </div>
                                             </div>
                                             
-                                            <div class="detail-item">
-                                                <div class="detail-label">Technician</div>
-                                                <div class="detail-value"><?php echo $booking['technician']; ?></div>
+                                            <?php if ($booking['status'] == 'completed'): ?>
+                                            <div class="appointment-actions">
+                                                <div class="action-button book-again-btn" data-service="<?php echo $booking['service']; ?>">Book Again</div>
                                             </div>
-                                            
-                                            <div class="detail-item">
-                                                <div class="detail-label">Price</div>
-                                                <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
-                                            </div>
-                                            
-                                            <div class="detail-item">
-    <div class="detail-label">Reference</div>
-    <div class="detail-value">#NAI-<?php echo $booking['reference_id']; ?></div>
-</div>
+                                            <?php endif; ?>
                                         </div>
-                                        
-                                        <?php if ($booking['status'] == 'completed'): ?>
-                                        <div class="appointment-actions">
-                                            <div class="action-button book-again-btn" data-service="<?php echo $booking['service']; ?>">Book Again</div>
-                                        </div>
-                                        <?php endif; ?>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                     <div class="tab-content" id="messages-tab">
@@ -1261,49 +1391,58 @@ input[type="file"] {
     </div>
 
     <!-- Profile Edit Modal -->
-    <div class="modal" id="profile-modal">
+    <div class="modal profile-edit-modal" id="profile-modal">
         <div class="modal-content">
             <div class="close-modal">&times;</div>
             <div class="modal-title">Edit Profile</div>
             
-            <form class="contact-form" id="profile-form" method="POST" action="update_profile.php">
+            <div id="profile-message"></div>
+            
+            <form class="profile-form" id="profile-form">
                 <div class="form-group">
                     <label for="profile-first-name">First Name</label>
-                    <input type="text" id="profile-first-name" name="first_name" value="<?php echo htmlspecialchars($user['first_name']); ?>">
+                    <input type="text" id="profile-first-name" name="first_name" value="<?php echo htmlspecialchars($user['first_name']); ?>" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="profile-last-name">Last Name</label>
-                    <input type="text" id="profile-last-name" name="last_name" value="<?php echo htmlspecialchars($user['last_name']); ?>">
+                    <input type="text" id="profile-last-name" name="last_name" value="<?php echo htmlspecialchars($user['last_name']); ?>" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="profile-email">Email Address</label>
-                    <input type="email" id="profile-email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>">
+                    <input type="email" id="profile-email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="profile-phone">Phone Number</label>
-                    <input type="tel" id="profile-phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>">
+                    <input type="tel" id="profile-phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="profile-password">Change Password</label>
+                    <label for="profile-password">New Password (leave blank to keep current)</label>
                     <input type="password" id="profile-password" name="password" placeholder="New password">
                 </div>
                 
                 <div class="form-group">
-                    <label for="profile-confirm-password">Confirm Password</label>
+                    <label for="profile-confirm-password">Confirm New Password</label>
                     <input type="password" id="profile-confirm-password" name="confirm_password" placeholder="Confirm new password">
                 </div>
                 
-                <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
+                <div class="form-group full-width">
+                    <label for="update-past-records">
+                        <input type="checkbox" id="update-past-records" name="update_past_records" checked>
+                        Update all my past booking records with new information
+                    </label>
+                    <p style="font-size: 12px; color: #666; margin-top: 5px;">
+                        If checked, all your past appointments will show your new name and contact details. 
+                        If unchecked, only future appointments will be updated.
+                    </p>
+                </div>
                 
-                <div class="modal-buttons">
-                    <div class="modal-button confirm-button" id="save-profile">Save Changes</div>
-                    <div class="modal-buttons">
-                    <div class="modal-button confirm-button" id="save-profile">Save Changes</div>
-                    <div class="modal-button cancel-button" id="cancel-profile">Cancel</div>
+                <div class="profile-modal-buttons">
+                    <button type="submit" class="modal-button save-profile-btn">Save Changes</button>
+                    <button type="button" class="modal-button cancel-profile-btn" id="cancel-profile">Cancel</button>
                 </div>
             </form>
         </div>
@@ -1519,23 +1658,96 @@ input[type="file"] {
         profileModal.style.display = 'flex';
     });
     
-    // Profile edit form submission
-    document.getElementById('save-profile').addEventListener('click', function() {
-        const formElement = document.getElementById('profile-form');
+    // Profile edit form submission - AJAX version
+    document.getElementById('profile-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
         const password = document.getElementById('profile-password').value;
         const confirmPassword = document.getElementById('profile-confirm-password').value;
+        const messageDiv = document.getElementById('profile-message');
+        
+        // Clear previous messages
+        messageDiv.innerHTML = '';
         
         if (password && password !== confirmPassword) {
-            alert('Passwords do not match.');
+            messageDiv.innerHTML = '<div class="error-message">Passwords do not match.</div>';
             return;
         }
         
-        // Submit the form
-        formElement.submit();
+        // Create FormData object
+        const formData = new FormData(this);
+        formData.append('action', 'update_profile');
+        
+        // Add checkbox value for updating past records
+        const updatePastRecords = document.getElementById('update-past-records').checked;
+        formData.append('update_past_records', updatePastRecords ? '1' : '0');
+        
+        // Show loading state
+        const submitButton = this.querySelector('.save-profile-btn');
+        const originalText = submitButton.innerHTML;
+        submitButton.innerHTML = 'Saving...';
+        submitButton.disabled = true;
+        
+        // Submit form via AJAX
+        fetch('update_profile.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                messageDiv.innerHTML = '<div class="success-message">' + data.message + '</div>';
+                
+                // Update displayed user information
+                document.querySelector('.profile-name').textContent = document.getElementById('profile-first-name').value + ' ' + document.getElementById('profile-last-name').value;
+                document.querySelector('.profile-email').textContent = document.getElementById('profile-email').value;
+                document.querySelector('.profile-phone').textContent = document.getElementById('profile-phone').value;
+                
+                // Update avatar if first name changed
+                const newFirstLetter = document.getElementById('profile-first-name').value.charAt(0).toUpperCase();
+                document.querySelector('.avatar').textContent = newFirstLetter;
+                document.querySelector('.user-initial').textContent = newFirstLetter;
+                
+                // Update page title
+                document.querySelector('.page-title').textContent = 'Welcome, ' + document.getElementById('profile-first-name').value + '!';
+                
+                // Close modal after 2 seconds
+                setTimeout(() => {
+                    profileModal.style.display = 'none';
+                    messageDiv.innerHTML = '';
+                }, 2000);
+                
+                // Handle email verification if email changed
+                if (data.email_changed) {
+                    setTimeout(() => {
+                        alert('Your email has been changed. Please check your new email for a verification link.');
+                        // Redirect to verification pending page
+                        window.location.href = data.redirect || 'verification-pending.php';
+                    }, 2000);
+                }
+            } else {
+                messageDiv.innerHTML = '<div class="error-message">' + data.message + '</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            messageDiv.innerHTML = '<div class="error-message">An error occurred. Please try again.</div>';
+        })
+        .finally(() => {
+            // Restore button state
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        });
     });
     
     document.getElementById('cancel-profile').addEventListener('click', function() {
         profileModal.style.display = 'none';
+        document.getElementById('profile-message').innerHTML = '';
     });
     
     // File attachment preview handling
@@ -1614,15 +1826,14 @@ input[type="file"] {
         });
     }
     
-    // IMPORTANT: Message form submission - FIXED VERSION
-    // Consolidated single form submission handler
+    // Message form submission
     const messageForm = document.getElementById('message-form');
     if (messageForm) {
         messageForm.addEventListener('submit', function(e) {
             e.preventDefault();
             console.log('Form submitted');
             
-            const subject = document.getElementById('message-subject').value || "Re: Salon Conversation"; // Provide default subject
+            const subject = document.getElementById('message-subject').value || "Re: Salon Conversation";
             const content = document.getElementById('message-content').value;
             const attachmentInput = document.getElementById('message-attachment');
             const attachment = attachmentInput && attachmentInput.files.length > 0 ? attachmentInput.files[0] : null;
@@ -1656,12 +1867,7 @@ input[type="file"] {
                 formData.append('attachment', attachment);
             }
             
-            // Debug log to check form data
-            console.log('Sending message with subject:', subject);
-            console.log('Message content length:', content.length);
-            console.log('Has attachment:', attachment ? 'Yes' : 'No');
-            
-            // Send using fetch with explicit error handling
+            // Send using fetch
             fetch('chat.php', {
                 method: 'POST',
                 body: formData
@@ -1878,119 +2084,48 @@ input[type="file"] {
             console.error('Error marking message as read:', error);
         });
     }
-});
-            // Reschedule button functionality (keep this part as is)
-document.querySelectorAll('.reschedule-btn').forEach(button => {
-    button.addEventListener('click', () => {
-        const appointmentId = button.getAttribute('data-id');
-        document.getElementById('confirm-reschedule').setAttribute('data-id', appointmentId);
-        rescheduleModal.style.display = 'flex';
-        
-        // Set minimum date to tomorrow
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('new-date').min = tomorrow.toISOString().split('T')[0];
-    });
-});
-
-// Add an event listener to the date field to load available times
-document.getElementById('new-date').addEventListener('change', function() {
-    const selectedDate = this.value;
-    if (selectedDate) {
-        // Fetch available times for the selected date
-        fetch('get-available-times.php?date=' + selectedDate)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Get the time dropdown
-                    const timeSelect = document.getElementById('new-time');
-                    // Clear existing options
-                    timeSelect.innerHTML = '<option value="">Select a time</option>';
-                    
-                    // Add available time slots as options
-                    const availableTimes = data.available_times;
-                    for (const [value, label] of Object.entries(availableTimes)) {
-                        const option = document.createElement('option');
-                        option.value = value;
-                        option.textContent = label;
-                        timeSelect.appendChild(option);
-                    }
-                    
-                    // If no times available, show message
-                    if (Object.keys(availableTimes).length === 0) {
-                        const option = document.createElement('option');
-                        option.disabled = true;
-                        option.selected = true;
-                        option.textContent = "No available times for this date";
-                        timeSelect.appendChild(option);
-                    }
-                } else {
-                    console.error('Error:', data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-});
-
-// Reschedule appointment confirmation
-document.getElementById('confirm-reschedule').addEventListener('click', function() {
-    const appointmentId = this.getAttribute('data-id');
-    const newDate = document.getElementById('new-date').value;
-    const newTime = document.getElementById('new-time').value;
     
-    if (!newDate || !newTime) {
-        alert('Please select both a date and time for rescheduling.');
-        return;
-    }
-    
-    // Double-check availability before rescheduling (using your existing check-availability.php)
-    fetch('check-availability.php?date=' + newDate + '&time=' + newTime)
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.available) {
-                // Proceed with reschedule if time is available
-                updateAppointment(appointmentId, newDate, newTime);
-            } else {
-                // Show error if time is not available (this shouldn't normally happen since we're only showing available times)
-                alert('Sorry, this time slot is no longer available. Please select a different time.');
-                // Refresh the available times
-                document.getElementById('new-date').dispatchEvent(new Event('change'));
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while checking availability.');
-        });
-});
-
-// Function to update appointment
-function updateAppointment(appointmentId, newDate, newTime) {
-    fetch('update_booking.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'action=reschedule&booking_id=' + appointmentId + '&new_date=' + newDate + '&new_time=' + newTime
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Your appointment has been rescheduled successfully!');
-            // Reload the page to show updated booking list
-            window.location.reload();
-        } else {
-            alert('Error: ' + data.message);
+    // Add event listener to the date field to load available times
+    document.getElementById('new-date').addEventListener('change', function() {
+        const selectedDate = this.value;
+        if (selectedDate) {
+            // Fetch available times for the selected date
+            fetch('get-available-times.php?date=' + selectedDate)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Get the time dropdown
+                        const timeSelect = document.getElementById('new-time');
+                        // Clear existing options
+                        timeSelect.innerHTML = '<option value="">Select a time</option>';
+                        
+                        // Add available time slots as options
+                        const availableTimes = data.available_times;
+                        for (const [value, label] of Object.entries(availableTimes)) {
+                            const option = document.createElement('option');
+                            option.value = value;
+                            option.textContent = label;
+                            timeSelect.appendChild(option);
+                        }
+                        
+                        // If no times available, show message
+                        if (Object.keys(availableTimes).length === 0) {
+                            const option = document.createElement('option');
+                            option.disabled = true;
+                            option.selected = true;
+                            option.textContent = "No available times for this date";
+                            timeSelect.appendChild(option);
+                        }
+                    } else {
+                        console.error('Error:', data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
-        rescheduleModal.style.display = 'none';
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred during rescheduling.');
-        rescheduleModal.style.display = 'none';
     });
-}
+});
 </script>
 </body>
 </html>

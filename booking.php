@@ -475,6 +475,43 @@ if ($logged_in) {
                 flex-direction: column;
             }
         }
+        .upload-section.has-images .upload-icon,
+.upload-section.has-images .upload-text,
+.upload-section.has-images .browse-button {
+    display: none;
+}
+
+.upload-section.has-images {
+    border-style: solid;
+    min-height: 120px;
+}
+
+/* Image wrapper for proper positioning */
+.preview-image-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.remove-image {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.remove-image:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+}
     </style>
 </head>
 
@@ -657,214 +694,249 @@ if ($logged_in) {
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize date picker with current date + 1 day as minimum
-            const dateInput = document.getElementById('date');
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
-            dateInput.setAttribute('min', tomorrowFormatted);
+     document.addEventListener('DOMContentLoaded', function() {
+    // Initialize date picker with current date + 1 day as minimum
+    const dateInput = document.getElementById('date');
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
+    dateInput.setAttribute('min', tomorrowFormatted);
 
-            // Handle navigation
-            const backButton = document.querySelector('.back-button');
-            backButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = 'index.php';
-            });
+    // Handle navigation
+    const backButton = document.querySelector('.back-button');
+    backButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.href = 'index.php';
+    });
 
-            const servicesLink = document.querySelector('.nav-link');
-            servicesLink.addEventListener('click', function() {
-                window.location.href = 'services.php';
-            });
+    const servicesLink = document.querySelector('.nav-link');
+    servicesLink.addEventListener('click', function() {
+        window.location.href = 'services.php';
+    });
 
-            <?php if ($logged_in): ?>
-                const userInitial = document.querySelector('.user-initial');
-                userInitial.addEventListener('click', function() {
-                    window.location.href = 'members-lounge.php';
-                });
-            <?php else: ?>
-                const loginIcon = document.querySelector('.login-icon');
-                loginIcon.addEventListener('click', function() {
-                    window.location.href = 'login.php';
-                });
-            <?php endif; ?>
+    <?php if ($logged_in): ?>
+        const userInitial = document.querySelector('.user-initial');
+        userInitial.addEventListener('click', function() {
+            window.location.href = 'members-lounge.php';
+        });
+    <?php else: ?>
+        const loginIcon = document.querySelector('.login-icon');
+        loginIcon.addEventListener('click', function() {
+            window.location.href = 'login.php';
+        });
+    <?php endif; ?>
 
-            // Handle file uploads for inspiration images
-            setupFileUpload('nail-inspo', 'inspo-preview', 'inspiration-upload', 3);
+    // Handle file uploads for inspiration images
+    setupFileUpload('nail-inspo', 'inspo-preview', 'inspiration-upload', 3);
 
-            // Handle file upload for payment proof
-            setupFileUpload('payment-proof', 'payment-preview', 'payment-upload', 1);
+    // Handle file upload for payment proof
+    setupFileUpload('payment-proof', 'payment-preview', 'payment-upload', 1);
 
-            // Setup file upload functionality
-            function setupFileUpload(inputId, previewId, areaId, maxFiles) {
-                const fileInput = document.getElementById(inputId);
-                const previewContainer = document.getElementById(previewId);
-                const uploadArea = document.getElementById(areaId);
+    // Setup file upload functionality
+    function setupFileUpload(inputId, previewId, areaId, maxFiles) {
+        const fileInput = document.getElementById(inputId);
+        const previewContainer = document.getElementById(previewId);
+        const uploadArea = document.getElementById(areaId);
+        
+        // Store files in a DataTransfer object to maintain file list
+        let storedFiles = new DataTransfer();
 
-                // Handle drag and drop
-                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                    uploadArea.addEventListener(eventName, preventDefaults, false);
-                });
+        // Handle drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
 
-                function preventDefaults(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, function() {
+                uploadArea.style.borderColor = '#a0a0a0';
+                uploadArea.style.backgroundColor = '#e5e5e5';
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, function() {
+                uploadArea.style.borderColor = '#c0c0c0';
+                uploadArea.style.backgroundColor = '#f0f0f0';
+            }, false);
+        });
+
+        uploadArea.addEventListener('drop', function(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }, false);
+
+        fileInput.addEventListener('change', function() {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            // Convert FileList to Array
+            const filesArray = Array.from(files);
+            
+            // Clear stored files if single file upload
+            if (maxFiles === 1) {
+                storedFiles = new DataTransfer();
+                previewContainer.innerHTML = '';
+            }
+            
+            let currentFileCount = storedFiles.files.length;
+            
+            filesArray.forEach(file => {
+                if (!file.type.match('image.*')) {
+                    alert('Please upload only image files.');
+                    return;
                 }
-
-                ['dragenter', 'dragover'].forEach(eventName => {
-                    uploadArea.addEventListener(eventName, function() {
-                        uploadArea.style.borderColor = '#a0a0a0';
-                        uploadArea.style.backgroundColor = '#e5e5e5';
-                    }, false);
-                });
-
-                ['dragleave', 'drop'].forEach(eventName => {
-                    uploadArea.addEventListener(eventName, function() {
-                        uploadArea.style.borderColor = '#c0c0c0';
-                        uploadArea.style.backgroundColor = '#f0f0f0';
-                    }, false);
-                });
-
-                uploadArea.addEventListener('drop', function(e) {
-                    const dt = e.dataTransfer;
-                    const files = dt.files;
-                    handleFiles(files);
-                }, false);
-
-                fileInput.addEventListener('change', function() {
-                    handleFiles(this.files);
-                });
-
-                function handleFiles(files) {
-                    // Limit to max files
-                    let validFiles = Array.from(files).slice(0, maxFiles);
-
-                    // Clear existing previews if single file upload
-                    if (maxFiles === 1) {
-                        previewContainer.innerHTML = '';
-                    }
-                    // Clear if more than max allowed for multiple uploads
-                    else if (previewContainer.children.length + validFiles.length > maxFiles) {
-                        previewContainer.innerHTML = '';
-                    }
-
-                    validFiles.forEach(file => {
-                        if (!file.type.match('image.*')) {
-                            return;
-                        }
-
-                        const reader = new FileReader();
-
-                        reader.onload = function(e) {
-                            const imagePreviewWrapper = document.createElement('div');
-                            imagePreviewWrapper.style.position = 'relative';
-
-                            const img = document.createElement('img');
-                            img.classList.add('preview-image');
-                            img.src = e.target.result;
-
-                            const removeBtn = document.createElement('div');
-                            removeBtn.classList.add('remove-image');
-                            removeBtn.innerHTML = '×';
-                            removeBtn.addEventListener('click', function() {
-                                imagePreviewWrapper.remove();
-                            });
-
-                            imagePreviewWrapper.appendChild(img);
-                            imagePreviewWrapper.appendChild(removeBtn);
-
-                            if (previewContainer.children.length < maxFiles) {
-                                previewContainer.appendChild(imagePreviewWrapper);
+                
+                if (currentFileCount >= maxFiles) {
+                    alert(`Maximum ${maxFiles} files allowed.`);
+                    return;
+                }
+                
+                // Add file to stored files
+                storedFiles.items.add(file);
+                currentFileCount++;
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const imagePreviewWrapper = document.createElement('div');
+                    imagePreviewWrapper.className = 'preview-image-wrapper';
+                    imagePreviewWrapper.dataset.fileName = file.name;
+                    
+                    const img = document.createElement('img');
+                    img.classList.add('preview-image');
+                    img.src = e.target.result;
+                    
+                    const removeBtn = document.createElement('div');
+                    removeBtn.classList.add('remove-image');
+                    removeBtn.innerHTML = '×';
+                    removeBtn.addEventListener('click', function() {
+                        // Remove file from stored files
+                        const newStoredFiles = new DataTransfer();
+                        for (let i = 0; i < storedFiles.files.length; i++) {
+                            if (storedFiles.files[i].name !== file.name) {
+                                newStoredFiles.items.add(storedFiles.files[i]);
                             }
                         }
-
-                        reader.readAsDataURL(file);
+                        storedFiles = newStoredFiles;
+                        
+                        // Update the input files
+                        fileInput.files = storedFiles.files;
+                        
+                        // Remove the preview
+                        imagePreviewWrapper.remove();
+                        
+                        // Update upload area class
+                        checkForImages();
                     });
+                    
+                    imagePreviewWrapper.appendChild(img);
+                    imagePreviewWrapper.appendChild(removeBtn);
+                    previewContainer.appendChild(imagePreviewWrapper);
+                    
+                    // Update upload area to show images are present
+                    uploadArea.classList.add('has-images');
                 }
+                
+                reader.readAsDataURL(file);
+            });
+            
+            // Update the file input with all stored files
+            fileInput.files = storedFiles.files;
+        }
+        
+        function checkForImages() {
+            if (previewContainer.children.length === 0) {
+                uploadArea.classList.remove('has-images');
+            } else {
+                uploadArea.classList.add('has-images');
             }
+        }
+    }
 
-            // Form validation
-            document.getElementById('appointment-form').addEventListener('submit', function(e) {
-                // Basic validation
-                const name = document.getElementById('name').value;
-                const email = document.getElementById('email').value;
-                const phone = document.getElementById('phone').value;
-                const date = document.getElementById('date').value;
-                const time = document.getElementById('time').value;
-                const serviceSelected = document.querySelector('input[name="service"]:checked');
-                const depositConfirm = document.getElementById('deposit-confirm').checked;
-                const policyAgree = document.getElementById('policy-agree').checked;
-                const paymentProof = document.getElementById('payment-proof').files.length > 0;
+    // Get time slot select element
+    const timeSelect = document.getElementById('time');
 
-                if (!name || !email || !phone || !date || !time || !serviceSelected || !depositConfirm || !policyAgree || !paymentProof) {
-                    e.preventDefault();
-                    alert('Please fill in all required fields, upload payment proof, and confirm the policies.');
-                }
-            });
-        });
-        // Add these functions to your existing script in booking.php
-        document.addEventListener('DOMContentLoaded', function() {
-            // ... your existing code ...
+    // Update available times when date changes
+    dateInput.addEventListener('change', function() {
+        const selectedDate = this.value;
+        if (selectedDate) {
+            updateAvailableTimes(selectedDate);
+        }
+    });
 
-            // Get time slot select element
-            const timeSelect = document.getElementById('time');
-            const dateInput = document.getElementById('date');
+    // Function to update available time slots
+    function updateAvailableTimes(date) {
+        // Clear current options
+        timeSelect.innerHTML = '<option value="">Select a time</option>';
+        timeSelect.disabled = true;
 
-            // Update available times when date changes
-            dateInput.addEventListener('change', function() {
-                const selectedDate = this.value;
-                if (selectedDate) {
-                    updateAvailableTimes(selectedDate);
-                }
-            });
+        // Add loading option
+        const loadingOption = document.createElement('option');
+        loadingOption.text = 'Loading available times...';
+        timeSelect.add(loadingOption);
 
-            // Function to update available time slots
-            function updateAvailableTimes(date) {
-                // Clear current options
-                timeSelect.innerHTML = '<option value="">Select a time</option>';
-                timeSelect.disabled = true;
+        // Fetch available times from server
+        fetch('get-available-times.php?date=' + date)
+            .then(response => response.json())
+            .then(data => {
+                // Remove loading option
+                timeSelect.removeChild(loadingOption);
 
-                // Add loading option
-                const loadingOption = document.createElement('option');
-                loadingOption.text = 'Loading available times...';
-                timeSelect.add(loadingOption);
+                // Enable select
+                timeSelect.disabled = false;
 
-                // Fetch available times from server
-                fetch('get-available-times.php?date=' + date)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Remove loading option
-                        timeSelect.removeChild(loadingOption);
-
-                        // Enable select
-                        timeSelect.disabled = false;
-
-                        if (data.success) {
-                            if (Object.keys(data.available_times).length === 0) {
-                                // No available times
-                                const noTimesOption = document.createElement('option');
-                                noTimesOption.text = 'No available times for this date';
-                                noTimesOption.disabled = true;
-                                timeSelect.add(noTimesOption);
-                            } else {
-                                // Add available times
-                                for (const [value, label] of Object.entries(data.available_times)) {
-                                    const option = document.createElement('option');
-                                    option.value = value;
-                                    option.text = label;
-                                    timeSelect.add(option);
-                                }
-                            }
-                        } else {
-                            console.error('Error fetching available times:', data.message);
+                if (data.success) {
+                    if (Object.keys(data.available_times).length === 0) {
+                        // No available times
+                        const noTimesOption = document.createElement('option');
+                        noTimesOption.text = 'No available times for this date';
+                        noTimesOption.disabled = true;
+                        timeSelect.add(noTimesOption);
+                    } else {
+                        // Add available times
+                        for (const [value, label] of Object.entries(data.available_times)) {
+                            const option = document.createElement('option');
+                            option.value = value;
+                            option.text = label;
+                            timeSelect.add(option);
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        timeSelect.disabled = false;
-                    });
-            }
-        });
+                    }
+                } else {
+                    console.error('Error fetching available times:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                timeSelect.disabled = false;
+            });
+    }
+
+    // Form validation
+    document.getElementById('appointment-form').addEventListener('submit', function(e) {
+        // Basic validation
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('time').value;
+        const serviceSelected = document.querySelector('input[name="service"]:checked');
+        const depositConfirm = document.getElementById('deposit-confirm').checked;
+        const policyAgree = document.getElementById('policy-agree').checked;
+        const paymentProof = document.getElementById('payment-proof').files.length > 0;
+
+        if (!name || !email || !phone || !date || !time || !serviceSelected || !depositConfirm || !policyAgree || !paymentProof) {
+            e.preventDefault();
+            alert('Please fill in all required fields, upload payment proof, and confirm the policies.');
+        }
+    });
+});
     </script>
 </body>
 

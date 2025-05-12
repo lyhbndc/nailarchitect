@@ -591,40 +591,40 @@ usort($backup_files, function($a, $b) {
         </div>
         
         <div class="nav-menu">
-            <div class="menu-section">MAIN</div>
-            
-            <div class="menu-item" onclick="window.location.href='admin-dashboard.php'">
-                <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
-                <div class="menu-text">Dashboard</div>
-            </div>
-            
-            <div class="menu-item" onclick="window.location.href='admin-appointments.php'">
-                <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
-                <div class="menu-text">Appointments</div>
-            </div>
-            
-            <div class="menu-item" onclick="window.location.href='admin-clients.php'">
-                <div class="menu-icon"><i class="fas fa-users"></i></div>
-                <div class="menu-text">Clients</div>
-            </div>
-            
-            <div class="menu-item" onclick="window.location.href='admin-messages.php'">
-                <div class="menu-icon"><i class="fas fa-envelope"></i></div>
-                <div class="menu-text">Messages</div>
-            </div>
-            
-            <div class="menu-section">SYSTEM</div>
-            
-            <div class="menu-item active" onclick="window.location.href='admin-backup.php'">
-                <div class="menu-icon"><i class="fas fa-database"></i></div>
-                <div class="menu-text">Backup & Restore</div>
-            </div>
-            
-            <div class="menu-item" onclick="window.location.href='logout.php'">
-                <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
-                <div class="menu-text">Logout</div>
-            </div>
-        </div>
+    <div class="menu-section">MAIN</div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-dashboard.php'">
+        <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
+        <div class="menu-text">Dashboard</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-appointments.php'">
+        <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
+        <div class="menu-text">Appointments</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='clients.php'">
+        <div class="menu-icon"><i class="fas fa-users"></i></div>
+        <div class="menu-text">Clients</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-messages.php'">
+        <div class="menu-icon"><i class="fas fa-envelope"></i></div>
+        <div class="menu-text">Messages</div>
+    </div>
+    
+    <div class="menu-section">SYSTEM</div>
+    
+    <div class="menu-item active" onclick="window.location.href='admin-backup.php'">
+        <div class="menu-icon"><i class="fas fa-database"></i></div>
+        <div class="menu-text">Backup & Restore</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='logout.php'">
+        <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
+        <div class="menu-text">Logout</div>
+    </div>
+</div>
     </div>
     
     <div class="top-bar">

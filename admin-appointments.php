@@ -908,41 +908,41 @@ $cancelled_appointments = mysqli_query($conn, $cancelled_appointments_query)->fe
             <div class="admin-title">Admin</div>
         </div>
         
-        <div class="nav-menu">
-            <div class="menu-section">MAIN</div>
-            
-            <a href="admin-dashboard.php" class="menu-item">
-                <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
-                <div class="menu-text">Dashboard</div>
-            </a>
-            
-            <a href="admin-appointments.php" class="menu-item active">
-                <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
-                <div class="menu-text">Appointments</div>
-            </a>
-            
-            <a href="admin-clients.php" class="menu-item">
-                <div class="menu-icon"><i class="fas fa-users"></i></div>
-                <div class="menu-text">Clients</div>
-            </a>
-            
-            <a href="admin-messages.php" class="menu-item">
-                <div class="menu-icon"><i class="fas fa-envelope"></i></div>
-                <div class="menu-text">Messages</div>
-            </a>
-            
-            <div class="menu-section">SYSTEM</div>
-            
-            <a href="admin-backup.php" class="menu-item">
-                <div class="menu-icon"><i class="fas fa-database"></i></div>
-                <div class="menu-text">Backup & Restore</div>
-            </a>
-            
-            <a href="logout.php" class="menu-item">
-                <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
-                <div class="menu-text">Logout</div>
-            </a>
-        </div>
+       <div class="nav-menu">
+    <div class="menu-section">MAIN</div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-dashboard.php'">
+        <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
+        <div class="menu-text">Dashboard</div>
+    </div>
+    
+    <div class="menu-item active" onclick="window.location.href='admin-appointments.php'">
+        <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
+        <div class="menu-text">Appointments</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='clients.php'">
+        <div class="menu-icon"><i class="fas fa-users"></i></div>
+        <div class="menu-text">Clients</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-messages.php'">
+        <div class="menu-icon"><i class="fas fa-envelope"></i></div>
+        <div class="menu-text">Messages</div>
+    </div>
+    
+    <div class="menu-section">SYSTEM</div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-backup.php'">
+        <div class="menu-icon"><i class="fas fa-database"></i></div>
+        <div class="menu-text">Backup & Restore</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='logout.php'">
+        <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
+        <div class="menu-text">Logout</div>
+    </div>
+</div>
     </div>
     
     <div class="top-bar">

@@ -268,6 +268,51 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             padding: 25px;
             margin-bottom: 30px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        
+        /* New scrollable appointments table styles */
+        .appointments-wrapper {
+            position: relative;
+            max-height: 400px;
+            overflow: hidden;
+        }
+        
+        .appointments-wrapper.has-scroll::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent, #E8D7D0);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .appointments-scroll {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        /* Custom scrollbar styling */
+        .appointments-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .appointments-scroll::-webkit-scrollbar-track {
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+        
+        .appointments-scroll::-webkit-scrollbar-thumb {
+            background: #d9bbb0;
+            border-radius: 10px;
+        }
+        
+        .appointments-scroll::-webkit-scrollbar-thumb:hover {
+            background: #ae9389;
         }
         
         .section-header {
@@ -342,6 +387,13 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             border-collapse: collapse;
         }
         
+        .appointments-table thead {
+            position: sticky;
+            top: 0;
+            background-color: #E8D7D0;
+            z-index: 2;
+        }
+        
         .appointments-table th {
             text-align: left;
             padding: 12px 15px;
@@ -351,6 +403,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
             text-transform: uppercase;
             letter-spacing: 0.5px;
             font-weight: 500;
+            background-color: #E8D7D0;
         }
         
         .appointments-table td {
@@ -645,9 +698,13 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                 justify-content: flex-end;
             }
             
-            .appointments-table {
-                display: block;
-                overflow-x: auto;
+            .appointments-wrapper,
+            .appointments-scroll {
+                max-height: 350px;
+            }
+            
+            .appointments-table thead {
+                position: static;
             }
         }
         
@@ -673,40 +730,40 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         </div>
         
         <div class="nav-menu">
-            <div class="menu-section">MAIN</div>
-            
-            <div class="menu-item active" onclick="window.location.href='admin-dashboard.php'">
-                <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
-                <div class="menu-text">Dashboard</div>
-            </div>
-            
-            <div class="menu-item" onclick="window.location.href='admin-appointments.php'">
-                <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
-                <div class="menu-text">Appointments</div>
-            </div>
-            
-            <div class="menu-item" onclick="window.location.href='admin-clients.php'">
-                <div class="menu-icon"><i class="fas fa-users"></i></div>
-                <div class="menu-text">Clients</div>
-            </div>
-            
-            <div class="menu-item" onclick="window.location.href='admin-messages.php'">
-                <div class="menu-icon"><i class="fas fa-envelope"></i></div>
-                <div class="menu-text">Messages</div>
-            </div>
-            
-            <div class="menu-section">SYSTEM</div>
-            
-            <div class="menu-item" onclick="window.location.href='admin-backup.php'">
-                <div class="menu-icon"><i class="fas fa-database"></i></div>
-                <div class="menu-text">Backup & Restore</div>
-            </div>
-            
-            <div class="menu-item" onclick="window.location.href='logout.php'">
-                <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
-                <div class="menu-text">Logout</div>
-            </div>
-        </div>
+    <div class="menu-section">MAIN</div>
+    
+    <div class="menu-item active" onclick="window.location.href='admin-dashboard.php'">
+        <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
+        <div class="menu-text">Dashboard</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-appointments.php'">
+        <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
+        <div class="menu-text">Appointments</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='clients.php'">
+        <div class="menu-icon"><i class="fas fa-users"></i></div>
+        <div class="menu-text">Clients</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-messages.php'">
+        <div class="menu-icon"><i class="fas fa-envelope"></i></div>
+        <div class="menu-text">Messages</div>
+    </div>
+    
+    <div class="menu-section">SYSTEM</div>
+    
+    <div class="menu-item" onclick="window.location.href='admin-backup.php'">
+        <div class="menu-icon"><i class="fas fa-database"></i></div>
+        <div class="menu-text">Backup & Restore</div>
+    </div>
+    
+    <div class="menu-item" onclick="window.location.href='logout.php'">
+    <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
+    <div class="menu-text">Logout</div>
+</div>
+</div>
     </div>
     
     <div class="top-bar">
@@ -785,88 +842,93 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                 <div class="tab" data-tab="cancelled">Cancelled</div>
             </div>
             
-            <table class="appointments-table">
-                <thead>
-                    <tr>
-                        <th>CLIENT</th>
-                        <th>SERVICE</th>
-                        <th>DATE & TIME</th>
-                        <th>STATUS</th>
-                        <th>REFERENCE</th>
-                        <th>ACTIONS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (mysqli_num_rows($appointments) > 0): ?>
-                        <?php while ($appointment = mysqli_fetch_assoc($appointments)): 
-                            // Check if this appointment has any images
-                            $has_images_query = "SELECT COUNT(*) as count FROM booking_images WHERE booking_id = " . $appointment['id'];
-                            $has_images_result = mysqli_query($conn, $has_images_query);
-                            $has_images = $has_images_result->fetch_assoc()['count'] > 0;
-                            
-                            // Check if this appointment has payment proof
-                            $has_payment_query = "SELECT COUNT(*) as count FROM payment_proofs WHERE booking_id = " . $appointment['id'];
-                            $has_payment_result = mysqli_query($conn, $has_payment_query);
-                            $has_payment = $has_payment_result->fetch_assoc()['count'] > 0;
-                        ?>
+            <!-- SCROLLABLE WRAPPER -->
+            <div class="appointments-wrapper <?php echo mysqli_num_rows($appointments) > 5 ? 'has-scroll' : ''; ?>">
+                <div class="appointments-scroll">
+                    <table class="appointments-table">
+                        <thead>
                             <tr>
-                                <td>
-                                    <?php 
-                                    if ($appointment['user_id']) {
-                                        echo htmlspecialchars($appointment['first_name'] . ' ' . $appointment['last_name']);
-                                    } else {
-                                        echo htmlspecialchars($appointment['name']); 
-                                    }
-                                    ?>
-                                </td>
-                                <td>
-                                    <?php 
-                                    // Format service name
-                                    $service_name = ucfirst(str_replace('-', ' ', $appointment['service']));
-                                    echo htmlspecialchars($service_name); 
-                                    ?>
-                                </td>
-                                <td>
-                                    <?php 
-                                    echo date('M j, Y', strtotime($appointment['date'])) . ' - ';
-                                    echo date('g:i A', strtotime($appointment['time'])); 
-                                    ?>
-                                </td>
-                                <td>
-                                    <span class="status-badge status-<?php echo strtolower($appointment['status']); ?>">
-                                        <?php echo ucfirst($appointment['status']); ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <?php 
-                                    if (!empty($appointment['reference_id'])) {
-                                        echo "#" . htmlspecialchars($appointment['reference_id']); 
-                                    } else {
-                                        echo "<span style='color: #c62828;'>No Ref</span>";
-                                    }
-                                    ?>
-                                </td>
-                                <td class="action-cell">
-                                    <div class="action-button view-button" title="View Details" data-id="<?php echo $appointment['id']; ?>">
-                                        <i class="fas fa-eye"></i>
-                                    </div>
-                                    
-                                    <?php if ($appointment['status'] == 'pending'): ?>
-                                        <div class="action-button approve-button" title="Approve" data-id="<?php echo $appointment['id']; ?>">
-                                            <i class="fas fa-check"></i>
-                                        </div>
-                                        <div class="action-button reject-button" title="Reject" data-id="<?php echo $appointment['id']; ?>">
-                                            <i class="fas fa-times"></i>
-                                        </div>
-                                    <?php elseif ($appointment['status'] == 'confirmed'): ?>
-                                        <div class="action-button complete-button" title="Mark as Completed" data-id="<?php echo $appointment['id']; ?>">
-                                            <i class="fas fa-check-double"></i>
-                                        </div>
-                                    <?php endif; ?>
-                                </td>
+                                <th>CLIENT</th>
+                                <th>SERVICE</th>
+                                <th>DATE & TIME</th>
+                                <th>STATUS</th>
+                                <th>REFERENCE</th>
+                                <th>ACTIONS</th>
                             </tr>
-                            <tr>
-                                <td colspan="6" class="details-panel" id="details-<?php echo $appointment['id']; ?>">
+                        </thead>
+                        <tbody>
+                            <?php 
+                            if (mysqli_num_rows($appointments) > 0): 
+                                mysqli_data_seek($appointments, 0); // Reset the result pointer
+                                while ($appointment = mysqli_fetch_assoc($appointments)): 
+                                    // Check if this appointment has any images
+                                    $has_images_query = "SELECT COUNT(*) as count FROM booking_images WHERE booking_id = " . $appointment['id'];
+                                    $has_images_result = mysqli_query($conn, $has_images_query);
+                                    $has_images = $has_images_result->fetch_assoc()['count'] > 0;
+                                    
+                                    // Check if this appointment has payment proof
+                                    $has_payment_query = "SELECT COUNT(*) as count FROM payment_proofs WHERE booking_id = " . $appointment['id'];
+                                    $has_payment_result = mysqli_query($conn, $has_payment_query);
+                                    $has_payment = $has_payment_result->fetch_assoc()['count'] > 0;
+                            ?>
+                                    <tr>
+                                        <td>
+                                            <?php 
+                                            if ($appointment['user_id']) {
+                                                echo htmlspecialchars($appointment['first_name'] . ' ' . $appointment['last_name']);
+                                            } else {
+                                                echo htmlspecialchars($appointment['name']); 
+                                            }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                            // Format service name
+                                            $service_name = ucfirst(str_replace('-', ' ', $appointment['service']));
+                                            echo htmlspecialchars($service_name); 
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                            echo date('M j, Y', strtotime($appointment['date'])) . ' - ';
+                                            echo date('g:i A', strtotime($appointment['time'])); 
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge status-<?php echo strtolower($appointment['status']); ?>">
+                                                <?php echo ucfirst($appointment['status']); ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                            if (!empty($appointment['reference_id'])) {
+                                                echo "#" . htmlspecialchars($appointment['reference_id']); 
+                                            } else {
+                                                echo "<span style='color: #c62828;'>No Ref</span>";
+                                            }
+                                            ?>
+                                        </td>
+                                        <td class="action-cell">
+                                            <div class="action-button view-button" title="View Details" data-id="<?php echo $appointment['id']; ?>">
+                                                <i class="fas fa-eye"></i>
+                                            </div>
+                                            
+                                            <?php if ($appointment['status'] == 'pending'): ?>
+                                                <div class="action-button approve-button" title="Approve" data-id="<?php echo $appointment['id']; ?>">
+                                                    <i class="fas fa-check"></i>
+                                                </div>
+                                                <div class="action-button reject-button" title="Reject" data-id="<?php echo $appointment['id']; ?>">
+                                                    <i class="fas fa-times"></i>
+                                                </div>
+                                            <?php elseif ($appointment['status'] == 'confirmed'): ?>
+                                                <div class="action-button complete-button" title="Mark as Completed" data-id="<?php echo $appointment['id']; ?>">
+                                                    <i class="fas fa-check-double"></i>
+                                                </div>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="6" class="details-panel" id="details-<?php echo $appointment['id']; ?>">
                                     <div class="details-panel-header">
                                         <div>Appointment #<?php echo htmlspecialchars($appointment['reference_id'] ?? 'N/A'); ?></div>
                                         <div class="details-close" style="cursor: pointer;" onclick="document.getElementById('details-<?php echo $appointment['id']; ?>').style.display='none'">

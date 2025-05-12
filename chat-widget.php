@@ -1,12 +1,23 @@
 <?php
-// This file contains the chat widget code for Nail Architect
+// This file contains the chat widget code for Nail Architect with database integration
 // Include this file before the closing </body> tag on all pages
+
+// Start session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in
+$is_logged_in = isset($_SESSION['user_id']);
+$user_id = $is_logged_in ? $_SESSION['user_id'] : null;
+$user_name = $is_logged_in ? ($_SESSION['user_first_name'] ?? 'User') : 'Guest';
 ?>
 
 <!-- Chat Widget HTML -->
 <div id="chat-widget">
     <div id="chat-button">
         <i class="fa fa-comments"></i>
+        <span id="unread-count" class="hidden">0</span>
     </div>
     <div id="chat-container" class="hidden">
         <div id="chat-header">
@@ -84,6 +95,27 @@
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         transition: all 0.3s ease;
         font-size: 24px;
+        position: relative;
+    }
+
+    #unread-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #ff0000;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
+
+    #unread-count.hidden {
+        display: none;
     }
 
     #chat-button:hover {
@@ -97,7 +129,6 @@
         right: 0;
         width: 320px;
         height: 450px;
-        /* Adjusted height for hamburger menu */
         background-color: #fff;
         border-radius: 15px;
         box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
@@ -185,6 +216,10 @@
     .agent-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .agent-btn.connected {
+        background: linear-gradient(to right, #27ae60, #2ecc71);
     }
 
     #chat-input-container {
@@ -352,6 +387,11 @@
         color: white;
     }
 
+    .chat-message.agent .chat-avatar {
+        background-color: #9b59b6;
+        color: white;
+    }
+
     .chat-bubble {
         background-color: white;
         padding: 10px 12px;
@@ -366,6 +406,7 @@
         color: white;
         border-radius: 15px;
         border-top-right-radius: 5px;
+        border-top-left-radius: 15px;
     }
 
     /* Notification styles */
@@ -378,6 +419,48 @@
         color: #888;
         font-size: 12px;
         animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    .date-separator {
+        text-align: center;
+        margin: 15px 0;
+        position: relative;
+    }
+
+    .date-separator::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 40%;
+        height: 1px;
+        background-color: #ddd;
+    }
+
+    .date-separator::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        width: 40%;
+        height: 1px;
+        background-color: #ddd;
+    }
+
+    .date-text {
+        background-color: #f2e9e9;
+        padding: 0 15px;
+        display: inline-block;
+        position: relative;
+        font-size: 12px;
+        color: #888;
+    }
+
+    /* Agent message indicator */
+    .agent-indicator {
+        font-size: 11px;
+        color: #9b59b6;
+        margin-top: 2px;
     }
 
     /* Animation for messages */
@@ -446,6 +529,7 @@
         const chatSend = document.getElementById('chat-send');
         const chatMessages = document.getElementById('chat-messages');
         const quickButtons = document.querySelectorAll('.quick-btn');
+        const unreadCount = document.getElementById('unread-count');
 
         // Get Chat with Agent and Clear Chat buttons
         const chatWithAgentBtn = document.getElementById('chat-with-agent');
@@ -455,28 +539,40 @@
         const hamburgerIcon = document.querySelector('.hamburger-icon');
         const quickQuestionsMenu = document.getElementById('quick-questions');
 
-        // Load saved messages from localStorage
-        loadMessages();
+        // Variables for chat state
+        let isConnectedToAgent = false;
+        let currentUserId = <?php echo json_encode($user_id); ?>;
+        let currentUserName = <?php echo json_encode($user_name); ?>;
+        let lastMessageId = 0;
+        let pollingInterval = null;
+
+        // Load messages from database if logged in
+        if (currentUserId) {
+            loadMessagesFromDatabase();
+            // Start polling for new messages
+            startPolling();
+        } else {
+            // Load from localStorage for guests
+            loadMessagesFromLocalStorage();
+        }
 
         // Toggle chat container
         chatButton.addEventListener('click', function() {
             chatContainer.classList.toggle('hidden');
-            // Save chat state to localStorage
-            localStorage.setItem('nailArchitectChatOpen', !chatContainer.classList.contains('hidden'));
+            if (!chatContainer.classList.contains('hidden') && currentUserId) {
+                markMessagesAsRead();
+                unreadCount.classList.add('hidden');
+            }
         });
 
         // Minimize chat
         chatMinimize.addEventListener('click', function() {
             chatContainer.classList.add('hidden');
-            // Save chat state to localStorage
-            localStorage.setItem('nailArchitectChatOpen', false);
         });
 
         // Close chat
         chatClose.addEventListener('click', function() {
             chatContainer.classList.add('hidden');
-            // Save chat state to localStorage
-            localStorage.setItem('nailArchitectChatOpen', false);
         });
 
         // Add event listeners to quick buttons
@@ -484,42 +580,6 @@
             button.addEventListener('click', function() {
                 const question = this.getAttribute('data-question');
                 handleQuickQuestion(question);
-            });
-        });
-
-        // Handle quick question
-        function handleQuickQuestion(question) {
-            // Add user question to chat
-            addMessage(question, 'user');
-
-            // Get response for this question
-            const response = quickQuestionMap[question];
-
-            // Add bot response after a short delay
-            setTimeout(() => {
-                addMessage(response, 'bot');
-            }, 500);
-        }
-
-        // Toggle hamburger menu
-        hamburgerIcon.addEventListener('click', function() {
-            quickQuestionsMenu.classList.toggle('hidden');
-        });
-
-        // Close hamburger menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const isHamburgerClick = hamburgerIcon.contains(event.target);
-            const isMenuClick = quickQuestionsMenu.contains(event.target);
-
-            if (!isHamburgerClick && !isMenuClick && !quickQuestionsMenu.classList.contains('hidden')) {
-                quickQuestionsMenu.classList.add('hidden');
-            }
-        });
-
-        // Close menu after selecting a quick question
-        quickButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                quickQuestionsMenu.classList.add('hidden');
             });
         });
 
@@ -552,6 +612,47 @@
             'Do you accept walk-ins?': quickResponses['walk-in']
         };
 
+        // Handle quick question
+        function handleQuickQuestion(question) {
+            // Add user question to chat
+            addMessage(question, 'user');
+
+            if (!isConnectedToAgent) {
+                // Get response for this question
+                const response = quickQuestionMap[question];
+
+                // Add bot response after a short delay
+                setTimeout(() => {
+                    addMessage(response, 'bot');
+                }, 500);
+            } else if (currentUserId) {
+                // Send to database if connected to agent
+                sendMessageToDatabase(question);
+            }
+        }
+
+        // Toggle hamburger menu
+        hamburgerIcon.addEventListener('click', function() {
+            quickQuestionsMenu.classList.toggle('hidden');
+        });
+
+        // Close hamburger menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const isHamburgerClick = hamburgerIcon.contains(event.target);
+            const isMenuClick = quickQuestionsMenu.contains(event.target);
+
+            if (!isHamburgerClick && !isMenuClick && !quickQuestionsMenu.classList.contains('hidden')) {
+                quickQuestionsMenu.classList.add('hidden');
+            }
+        });
+
+        // Close menu after selecting a quick question
+        quickButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                quickQuestionsMenu.classList.add('hidden');
+            });
+        });
+
         // Send message function
         function sendMessage() {
             const message = chatInput.value.trim();
@@ -561,14 +662,24 @@
             addMessage(message, 'user');
             chatInput.value = '';
 
-            // Process response (after a small delay to simulate thinking)
-            setTimeout(() => {
-                processResponse(message);
-            }, 500);
+            if (isConnectedToAgent && currentUserId) {
+                // Send to database for live agent
+                sendMessageToDatabase(message);
+            } else if (!isConnectedToAgent) {
+                // Process bot response only if not connected to agent
+                setTimeout(() => {
+                    processResponse(message);
+                }, 500);
+            }
         }
 
         // Process bot response
         function processResponse(message) {
+            // Don't process bot responses if connected to an agent
+            if (isConnectedToAgent) {
+                return;
+            }
+
             const messageLower = message.toLowerCase();
             let response = "I'm not sure about that. Would you like to speak with one of our nail technicians? You can reach us at +63 2 8123 4567.";
 
@@ -590,49 +701,317 @@
         }
 
         // Add message to chat
-        function addMessage(message, sender) {
+        function addMessage(message, sender, senderName = null, timestamp = null) {
             const messageElement = document.createElement('div');
             messageElement.classList.add('chat-message', sender);
 
             const avatarElement = document.createElement('div');
             avatarElement.classList.add('chat-avatar');
-            avatarElement.textContent = sender === 'user' ? 'You' : 'NA';
+            
+            if (sender === 'user') {
+                avatarElement.textContent = currentUserName ? currentUserName.charAt(0).toUpperCase() : 'You';
+            } else if (sender === 'agent') {
+                avatarElement.textContent = 'NA';
+                avatarElement.style.backgroundColor = '#9b59b6';
+            } else {
+                avatarElement.textContent = 'NA';
+            }
+
+            const messageContent = document.createElement('div');
+            messageContent.classList.add('message-content');
 
             const bubbleElement = document.createElement('div');
             bubbleElement.classList.add('chat-bubble');
             bubbleElement.textContent = message;
 
+            messageContent.appendChild(bubbleElement);
+
+            // Add agent indicator if it's an agent message
+            if (sender === 'agent') {
+                const indicatorElement = document.createElement('div');
+                indicatorElement.classList.add('agent-indicator');
+                indicatorElement.textContent = '• Nail Architect Agent';
+                messageContent.appendChild(indicatorElement);
+            }
+
+            // Add timestamp if provided
+            if (timestamp) {
+                const timeElement = document.createElement('div');
+                timeElement.classList.add('message-time');
+                timeElement.textContent = timestamp;
+                messageContent.appendChild(timeElement);
+            }
+
             messageElement.appendChild(avatarElement);
-            messageElement.appendChild(bubbleElement);
+            messageElement.appendChild(messageContent);
 
             chatMessages.appendChild(messageElement);
 
             // Scroll to bottom
             chatMessages.scrollTop = chatMessages.scrollHeight;
 
-            // Save messages to localStorage
-            saveMessages();
+            // Save messages locally if not logged in
+            if (!currentUserId) {
+                saveMessagesToLocalStorage();
+            }
         }
 
-        // Save messages to localStorage
-        function saveMessages() {
+        // Chat with Live Agent button
+        chatWithAgentBtn.addEventListener('click', function() {
+            if (!currentUserId) {
+                // If not logged in, prompt to log in
+                addMessage("Please log in to chat with a live agent.", 'bot');
+                setTimeout(() => {
+                    addMessage("You can log in using the user icon in the top right corner.", 'bot');
+                }, 1000);
+                return;
+            }
+
+            // Add user message requesting live agent
+            addMessage("I'd like to chat with a live agent please.", 'user');
+
+            // Send request to database
+            sendMessageToDatabase("I'd like to chat with a live agent please.", "Live Chat Request");
+
+            // Update UI
+            setTimeout(() => {
+                addMessage("Connecting you with a live agent. Please wait a moment while we transfer you to the next available specialist.", 'bot');
+                isConnectedToAgent = true;
+                chatWithAgentBtn.textContent = "Connected to Agent";
+                chatWithAgentBtn.classList.add('connected');
+                chatWithAgentBtn.disabled = true;
+                
+                // Increase polling frequency when connected to agent
+                if (pollingInterval) {
+                    clearInterval(pollingInterval);
+                }
+                pollingInterval = setInterval(checkForNewMessages, 2000); // Check every 2 seconds when connected
+            }, 500);
+        });
+
+        // Send message to database
+        function sendMessageToDatabase(message, subject = null) {
+            const formData = new FormData();
+            formData.append('action', 'send_message');
+            formData.append('content', message);
+            formData.append('subject', subject || 'Chat Widget Message');
+
+            fetch('chat.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error('Failed to send message:', data.message);
+                    addMessage("Error sending message. Please try again.", 'bot');
+                }
+            })
+            .catch(error => {
+                console.error('Error sending message:', error);
+                addMessage("Error sending message. Please try again.", 'bot');
+            });
+        }
+
+        // Load messages from database
+        function loadMessagesFromDatabase() {
+            fetch('chat.php?action=get_messages')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.messages) {
+                        // Clear existing messages
+                        chatMessages.innerHTML = '';
+                        
+                        // Track if we've connected to an agent
+                        let foundAgentResponse = false;
+                        let skipWelcomeMessage = false;
+                        
+                        // Process messages
+                        data.messages.forEach(msg => {
+                            // Skip the agent request message completely
+                            if (msg.content === "I'd like to chat with a live agent please.") {
+                                skipWelcomeMessage = true;
+                                isConnectedToAgent = true;
+                                return;
+                            }
+                            
+                            // Determine sender type based on sender_type from PHP
+                            let sender;
+                            if (msg.sender_type === 'user') {
+                                sender = 'user';
+                            } else if (msg.sender_type === 'salon') {
+                                sender = 'agent';
+                                foundAgentResponse = true;
+                                isConnectedToAgent = true;
+                                skipWelcomeMessage = true;
+                            } else {
+                                return; // Skip unknown sender types
+                            }
+                            
+                            // Format timestamp with timezone consideration
+                            const msgDate = new Date(msg.created_at);
+                            // Use local time display
+                            const timestamp = msgDate.toLocaleTimeString('en-US', { 
+                                hour: 'numeric', 
+                                minute: '2-digit',
+                                hour12: true,
+                                timeZone: 'Asia/Manila' // Set to Philippines timezone
+                            });
+                            
+                            addMessage(msg.content, sender, null, timestamp);
+                            lastMessageId = Math.max(lastMessageId, msg.id);
+                        });
+                        
+                        // Add welcome message only if no messages exist
+                        if (chatMessages.children.length === 0 && !skipWelcomeMessage) {
+                            addMessage('Welcome to Nail Architect! How can I help you today?', 'bot');
+                        }
+                        
+                        // Update agent button if connected
+                        if (isConnectedToAgent || foundAgentResponse) {
+                            chatWithAgentBtn.textContent = "Connected to Agent";
+                            chatWithAgentBtn.classList.add('connected');
+                            chatWithAgentBtn.disabled = true;
+                            
+                            // Increase polling frequency
+                            if (pollingInterval) {
+                                clearInterval(pollingInterval);
+                            }
+                            pollingInterval = setInterval(checkForNewMessages, 2000);
+                        }
+                    } else {
+                        // Add welcome message if no messages
+                        addMessage('Welcome to Nail Architect! How can I help you today?', 'bot');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading messages:', error);
+                    addMessage('Welcome to Nail Architect! How can I help you today?', 'bot');
+                });
+        }
+
+        // Check for new messages
+        function checkForNewMessages() {
+            if (!currentUserId || chatContainer.classList.contains('hidden')) {
+                return;
+            }
+
+            fetch('chat.php?action=get_messages')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Find new messages
+                        const newMessages = data.messages.filter(msg => msg.id > lastMessageId);
+                        
+                        newMessages.forEach(msg => {
+                            // Skip the agent request message
+                            if (msg.content === "I'd like to chat with a live agent please.") {
+                                lastMessageId = Math.max(lastMessageId, msg.id);
+                                return;
+                            }
+                            
+                            // Only show new salon/agent messages
+                            if (msg.sender_type === 'salon') {
+                                const msgDate = new Date(msg.created_at);
+                                const timestamp = msgDate.toLocaleTimeString('en-US', { 
+                                    hour: 'numeric', 
+                                    minute: '2-digit',
+                                    hour12: true 
+                                });
+                                
+                                addMessage(msg.content, 'agent', null, timestamp);
+                                isConnectedToAgent = true;
+                                
+                                // Update agent button
+                                chatWithAgentBtn.textContent = "Connected to Agent";
+                                chatWithAgentBtn.classList.add('connected');
+                                chatWithAgentBtn.disabled = true;
+                            }
+                            // Skip user's own messages (already displayed when sent)
+                            
+                            lastMessageId = Math.max(lastMessageId, msg.id);
+                        });
+                        
+                        // Update unread count if chat is closed
+                        if (chatContainer.classList.contains('hidden')) {
+                            const unreadMsgs = data.messages.filter(msg => 
+                                msg.sender_type === 'salon' && msg.read_status === 0
+                            );
+                            if (unreadMsgs.length > 0) {
+                                unreadCount.textContent = unreadMsgs.length;
+                                unreadCount.classList.remove('hidden');
+                            }
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking for new messages:', error);
+                });
+        }
+
+        // Mark messages as read
+        function markMessagesAsRead() {
+            if (!currentUserId) return;
+
+            fetch('chat.php?action=get_messages')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Mark each unread message as read
+                        data.messages.forEach(msg => {
+                            if (msg.read_status === 0 && msg.sender_id === null) {
+                                const formData = new FormData();
+                                formData.append('action', 'mark_read');
+                                formData.append('message_id', msg.id);
+                                
+                                fetch('chat.php', {
+                                    method: 'POST',
+                                    body: formData
+                                });
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking messages as read:', error);
+                });
+        }
+
+        // Start polling for new messages
+        function startPolling() {
+            // Poll every 5 seconds when not connected to agent
+            pollingInterval = setInterval(() => {
+                if (!chatContainer.classList.contains('hidden')) {
+                    checkForNewMessages();
+                }
+            }, isConnectedToAgent ? 2000 : 5000);
+        }
+
+        // Stop polling
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        // Save messages to localStorage (for guests)
+        function saveMessagesToLocalStorage() {
             const messages = [];
             const messageElements = chatMessages.querySelectorAll('.chat-message');
 
             messageElements.forEach(element => {
-                const sender = element.classList.contains('user') ? 'user' : 'bot';
+                const sender = element.classList.contains('user') ? 'user' : 
+                             element.classList.contains('agent') ? 'agent' : 'bot';
                 const text = element.querySelector('.chat-bubble').textContent.trim();
-                messages.push({
-                    sender,
-                    text
-                });
+                messages.push({ sender, text });
             });
 
             localStorage.setItem('nailArchitectChatMessages', JSON.stringify(messages));
         }
 
-        // Load messages from localStorage
-        function loadMessages() {
+        // Load messages from localStorage (for guests)
+        function loadMessagesFromLocalStorage() {
             const savedMessages = localStorage.getItem('nailArchitectChatMessages');
 
             if (savedMessages) {
@@ -643,58 +1022,13 @@
 
                 // Add saved messages
                 messages.forEach(msg => {
-                    const messageElement = document.createElement('div');
-                    messageElement.classList.add('chat-message', msg.sender);
-
-                    const avatarElement = document.createElement('div');
-                    avatarElement.classList.add('chat-avatar');
-                    avatarElement.textContent = msg.sender === 'user' ? 'You' : 'NA';
-
-                    const bubbleElement = document.createElement('div');
-                    bubbleElement.classList.add('chat-bubble');
-                    bubbleElement.textContent = msg.text;
-
-                    messageElement.appendChild(avatarElement);
-                    messageElement.appendChild(bubbleElement);
-
-                    chatMessages.appendChild(messageElement);
+                    addMessage(msg.text, msg.sender);
                 });
 
                 // Scroll to bottom
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
         }
-
-        // Chat with Live Agent button
-        chatWithAgentBtn.addEventListener('click', function() {
-            // Add user message requesting live agent
-            addMessage("I'd like to chat with a live agent please.", 'user');
-
-            // Add response after short delay
-            setTimeout(() => {
-                addMessage("Connecting you with a live agent. Please wait a moment while we transfer you to the next available specialist.", 'bot');
-
-                // Simulate agent connection after 2 seconds
-                setTimeout(() => {
-                    addMessage("Hello, this is Maria, a nail specialist at Nail Architect. How can I assist you today?", 'bot');
-
-                    // Update the agent avatar to show it's a live person
-                    const lastMessage = chatMessages.lastElementChild;
-                    const avatar = lastMessage.querySelector('.chat-avatar');
-                    if (avatar) {
-                        avatar.textContent = 'MA';
-                        avatar.style.backgroundColor = '#9b59b6';
-                    }
-
-                    // Optional: Display a notification that this is now a live chat
-                    const notification = document.createElement('div');
-                    notification.classList.add('chat-notification');
-                    notification.textContent = '✓ Connected to live agent';
-                    chatMessages.appendChild(notification);
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 2000);
-            }, 500);
-        });
 
         // Clear Chat History button
         clearChatBtn.addEventListener('click', function() {
@@ -705,28 +1039,27 @@
                 // Close the hamburger menu
                 quickQuestionsMenu.classList.add('hidden');
 
-                // Clear all messages except the welcome message
+                // Clear messages
                 chatMessages.innerHTML = '';
 
                 // Add welcome message
-                const welcomeMessage = document.createElement('div');
-                welcomeMessage.classList.add('chat-message', 'bot');
-
-                const welcomeAvatar = document.createElement('div');
-                welcomeAvatar.classList.add('chat-avatar');
-                welcomeAvatar.textContent = 'NA';
-
-                const welcomeBubble = document.createElement('div');
-                welcomeBubble.classList.add('chat-bubble');
-                welcomeBubble.textContent = 'Welcome to Nail Architect! How can I help you today?';
-
-                welcomeMessage.appendChild(welcomeAvatar);
-                welcomeMessage.appendChild(welcomeBubble);
-
-                chatMessages.appendChild(welcomeMessage);
+                addMessage('Welcome to Nail Architect! How can I help you today?', 'bot');
 
                 // Clear localStorage
                 localStorage.removeItem('nailArchitectChatMessages');
+                
+                // Reset agent connection
+                isConnectedToAgent = false;
+                chatWithAgentBtn.textContent = "Chat with Live Agent";
+                chatWithAgentBtn.classList.remove('connected');
+                chatWithAgentBtn.disabled = false;
+                lastMessageId = 0;
+
+                // Reset polling interval
+                if (pollingInterval) {
+                    clearInterval(pollingInterval);
+                }
+                startPolling();
 
                 // Confirmation message
                 const confirmation = document.createElement('div');
@@ -756,39 +1089,39 @@
 
         // Function to check if user is logged out
         function checkUserLoggedOut() {
-            // This is a placeholder - replace with your actual logout detection method
-            // For example, you might check a specific cookie or localStorage item
-
-            // For demonstration, we'll add a global function that your logout process can call
             window.clearChatOnLogout = function() {
+                // Stop polling
+                stopPolling();
+
                 // Clear all messages
                 chatMessages.innerHTML = '';
 
                 // Add welcome message
-                const welcomeMessage = document.createElement('div');
-                welcomeMessage.classList.add('chat-message', 'bot');
-
-                const welcomeAvatar = document.createElement('div');
-                welcomeAvatar.classList.add('chat-avatar');
-                welcomeAvatar.textContent = 'NA';
-
-                const welcomeBubble = document.createElement('div');
-                welcomeBubble.classList.add('chat-bubble');
-                welcomeBubble.textContent = 'Welcome to Nail Architect! How can I help you today?';
-
-                welcomeMessage.appendChild(welcomeAvatar);
-                welcomeMessage.appendChild(welcomeBubble);
-
-                chatMessages.appendChild(welcomeMessage);
+                addMessage('Welcome to Nail Architect! How can I help you today?', 'bot');
 
                 // Clear localStorage
                 localStorage.removeItem('nailArchitectChatMessages');
+                
+                // Reset variables
+                currentUserId = null;
+                currentUserName = 'Guest';
+                isConnectedToAgent = false;
+                chatWithAgentBtn.textContent = "Chat with Live Agent";
+                chatWithAgentBtn.classList.remove('connected');
+                chatWithAgentBtn.disabled = false;
+                lastMessageId = 0;
             };
-
-            // You can call window.clearChatOnLogout() from your logout function
         }
 
         // Initialize logout detection
         checkUserLoggedOut();
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            stopPolling();
+        });
     });
 </script>
+</body>
+
+</html>

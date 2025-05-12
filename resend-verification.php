@@ -44,14 +44,14 @@ function sendVerificationEmail($userEmail, $userName, $verificationToken) {
         $mail->isHTML(true);
         $mail->Subject = 'Verify Your Nail Architect Account';
         
-        // Generate verification URL (replace with your actual domain)
-        $verifyUrl = 'http://localhost/nail-architect/verify.php?email=' . urlencode($userEmail) . '&token=' . $verificationToken;
+        // Generate verification URL - MATCH THE URL FORMAT FROM sign-up.php
+        $verifyUrl = 'localhost/nailarchitect/verify.php?email=' . urlencode($userEmail) . '&token=' . $verificationToken;
         
         // Email body
         $mail->Body = '
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e8d7d0; border-radius: 10px;">
             <div style="text-align: center; margin-bottom: 20px;">
-                <img src="http://localhost/nail-architect/Assets/logo.png" alt="Nail Architect Logo" style="max-width: 150px;">
+                <h1 style="color: #ae9389; margin: 0;">Nail Architect</h1>
             </div>
             <h2 style="color: #ae9389; text-align: center;">Verify Your Email</h2>
             <p>Hello ' . $userName . ',</p>
@@ -77,6 +77,7 @@ function sendVerificationEmail($userEmail, $userName, $verificationToken) {
         return true;
     } catch (Exception $e) {
         // Return false if email fails to send
+        error_log("Email could not be sent. Error: {$mail->ErrorInfo}");
         return false;
     }
 }
@@ -118,6 +119,9 @@ if (isset($_POST['resend'])) {
                 if ($emailSent) {
                     $message = "A new verification email has been sent to your email address. Please check your inbox and spam folder.";
                     $status = "success";
+                    
+                    // Set session for verification pending
+                    $_SESSION['verification_email_sent'] = true;
                 } else {
                     $message = "We couldn't send the verification email. Please try again later.";
                     $status = "error";
@@ -133,6 +137,9 @@ if (isset($_POST['resend'])) {
         $status = "error";
     }
 }
+
+// Clear any database connections
+mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
@@ -405,12 +412,13 @@ if (isset($_POST['resend'])) {
                 <div class="text-center mt-4">
                     <?php if ($status == 'success'): ?>
                     <p class="text-muted">After verifying your email, you can <a href="login.php">log in to your account</a>.</p>
+                    <p class="text-muted mt-4"><a href="verification-pending.php">Go to verification pending page</a></p>
                     <?php elseif ($status == 'info'): ?>
                     <p class="text-muted">You can now <a href="login.php">log in to your account</a>.</p>
                     <?php else: ?>
                     <p class="text-muted">Remember to check your spam/junk folder if you don't see the email in your inbox.</p>
                     <div class="mt-4">
-                        <p class="text-muted">Don't have an account? <a href="signup.php">Sign up here</a></p>
+                        <p class="text-muted">Don't have an account? <a href="sign-up.php">Sign up here</a></p>
                     </div>
                     <?php endif; ?>
                 </div>

@@ -97,6 +97,23 @@ switch ($action) {
         echo json_encode(['success' => true, 'messages' => $messages]);
         break;
         
+    case 'get_unread_count':
+        // Get count of unread messages from salon/admin
+        $query = "SELECT COUNT(*) as unread_count 
+                  FROM messages 
+                  WHERE user_id = ? 
+                  AND sender_id IS NULL 
+                  AND read_status = 0";
+                  
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        
+        echo json_encode(['success' => true, 'count' => $row['unread_count']]);
+        break;
+        
     case 'send_message':
         // Validate input data
         if (!isset($_POST['content']) || empty($_POST['content'])) {
@@ -267,6 +284,25 @@ switch ($action) {
         } else {
             error_log("Failed to mark message as read: " . $stmt->error);
             echo json_encode(['success' => false, 'message' => 'Failed to mark message as read: ' . $stmt->error]);
+        }
+        break;
+        
+    case 'mark_all_read':
+        // Mark all messages as read for the current user
+        $query = "UPDATE messages 
+                  SET read_status = 1 
+                  WHERE user_id = ? 
+                  AND sender_id IS NULL 
+                  AND read_status = 0";
+                  
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $user_id);
+        
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true, 'updated' => $stmt->affected_rows]);
+        } else {
+            error_log("Failed to mark messages as read: " . $stmt->error);
+            echo json_encode(['success' => false, 'message' => 'Failed to mark messages as read']);
         }
         break;
         
