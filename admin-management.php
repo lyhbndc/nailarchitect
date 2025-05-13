@@ -6,18 +6,29 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Check if admin is logged in (you'll need to implement admin auth)
- if (!isset($_SESSION['admin_id'])) {
+// Check if admin is logged in
+if (!isset($_SESSION['admin_id'])) {
     header("Location: admin-login.php");
     exit();
- }
+}
+
+// Get current admin's role
+$current_admin_id = $_SESSION['admin_id'];
+$role_query = "SELECT role FROM admin_users WHERE id = ?";
+$stmt = mysqli_prepare($conn, $role_query);
+mysqli_stmt_bind_param($stmt, "i", $current_admin_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$current_admin = mysqli_fetch_assoc($result);
+$is_super_admin = ($current_admin['role'] === 'super_admin');
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
         
-        if ($action == 'create') {
+        // Only super admin can create admins
+        if ($action == 'create' && $is_super_admin) {
             $username = mysqli_real_escape_string($conn, $_POST['username']);
             $email = mysqli_real_escape_string($conn, $_POST['email']);
             $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
@@ -26,17 +37,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $phone = mysqli_real_escape_string($conn, $_POST['phone']);
             $role = mysqli_real_escape_string($conn, $_POST['role']);
             
-            $query = "INSERT INTO admin_users (username, email, password, first_name, last_name, phone, role) 
-                      VALUES ('$username', '$email', '$password', '$first_name', '$last_name', '$phone', '$role')";
-            
-            if (mysqli_query($conn, $query)) {
-                $success_message = "Admin user created successfully!";
+            // Check if trying to create super_admin and one already exists
+            if ($role === 'super_admin') {
+                $check_super = "SELECT COUNT(*) as count FROM admin_users WHERE role = 'super_admin'";
+                $super_result = mysqli_query($conn, $check_super);
+                $super_count = mysqli_fetch_assoc($super_result)['count'];
+                
+                if ($super_count > 0) {
+                    $error_message = "Only one super admin is allowed in the system!";
+                } else {
+                    $query = "INSERT INTO admin_users (username, email, password, first_name, last_name, phone, role) 
+                              VALUES ('$username', '$email', '$password', '$first_name', '$last_name', '$phone', '$role')";
+                    
+                    if (mysqli_query($conn, $query)) {
+                        $success_message = "Admin user created successfully!";
+                    } else {
+                        $error_message = "Error creating admin user: " . mysqli_error($conn);
+                    }
+                }
             } else {
-                $error_message = "Error creating admin user: " . mysqli_error($conn);
+                $query = "INSERT INTO admin_users (username, email, password, first_name, last_name, phone, role) 
+                          VALUES ('$username', '$email', '$password', '$first_name', '$last_name', '$phone', '$role')";
+                
+                if (mysqli_query($conn, $query)) {
+                    $success_message = "Admin user created successfully!";
+                } else {
+                    $error_message = "Error creating admin user: " . mysqli_error($conn);
+                }
             }
         }
         
-        if ($action == 'update') {
+        // Only super admin can update other admins
+        if ($action == 'update' && $is_super_admin) {
             $admin_id = $_POST['admin_id'];
             $first_name = mysqli_real_escape_string($conn, $_POST['first_name']);
             $last_name = mysqli_real_escape_string($conn, $_POST['last_name']);
@@ -45,44 +77,78 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $role = mysqli_real_escape_string($conn, $_POST['role']);
             $is_active = isset($_POST['is_active']) ? 1 : 0;
             
-            $query = "UPDATE admin_users SET 
-                      first_name = '$first_name',
-                      last_name = '$last_name',
-                      email = '$email',
-                      phone = '$phone',
-                      role = '$role',
-                      is_active = $is_active
-                      WHERE id = $admin_id";
-            
-            if (!empty($_POST['password'])) {
-                $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-                $query = "UPDATE admin_users SET 
-                          first_name = '$first_name',
-                          last_name = '$last_name',
-                          email = '$email',
-                          phone = '$phone',
-                          role = '$role',
-                          is_active = $is_active,
-                          password = '$password'
-                          WHERE id = $admin_id";
-            }
-            
-            if (mysqli_query($conn, $query)) {
-                $success_message = "Admin user updated successfully!";
+            // Prevent changing own role from super_admin
+            if ($admin_id == $current_admin_id && $current_admin['role'] === 'super_admin' && $role !== 'super_admin') {
+                $error_message = "Cannot change your own super admin role!";
             } else {
-                $error_message = "Error updating admin user: " . mysqli_error($conn);
+                // Check if trying to create another super_admin
+                if ($role === 'super_admin') {
+                    $check_super = "SELECT COUNT(*) as count FROM admin_users WHERE role = 'super_admin' AND id != $admin_id";
+                    $super_result = mysqli_query($conn, $check_super);
+                    $super_count = mysqli_fetch_assoc($super_result)['count'];
+                    
+                    if ($super_count > 0) {
+                        $error_message = "Only one super admin is allowed in the system!";
+                    } else {
+                        $update_allowed = true;
+                    }
+                } else {
+                    $update_allowed = true;
+                }
+                
+                if (isset($update_allowed) && $update_allowed) {
+                    $query = "UPDATE admin_users SET 
+                              first_name = '$first_name',
+                              last_name = '$last_name',
+                              email = '$email',
+                              phone = '$phone',
+                              role = '$role',
+                              is_active = $is_active
+                              WHERE id = $admin_id";
+                    
+                    if (!empty($_POST['password'])) {
+                        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+                        $query = "UPDATE admin_users SET 
+                                  first_name = '$first_name',
+                                  last_name = '$last_name',
+                                  email = '$email',
+                                  phone = '$phone',
+                                  role = '$role',
+                                  is_active = $is_active,
+                                  password = '$password'
+                                  WHERE id = $admin_id";
+                    }
+                    
+                    if (mysqli_query($conn, $query)) {
+                        $success_message = "Admin user updated successfully!";
+                    } else {
+                        $error_message = "Error updating admin user: " . mysqli_error($conn);
+                    }
+                }
             }
         }
         
-        if ($action == 'delete') {
+        // Only super admin can delete admins
+        if ($action == 'delete' && $is_super_admin) {
             $admin_id = $_POST['admin_id'];
-            $query = "DELETE FROM admin_users WHERE id = $admin_id";
             
-            if (mysqli_query($conn, $query)) {
-                $success_message = "Admin user deleted successfully!";
+            // Prevent deleting yourself
+            if ($admin_id == $current_admin_id) {
+                $error_message = "You cannot delete your own account!";
             } else {
-                $error_message = "Error deleting admin user: " . mysqli_error($conn);
+                $query = "DELETE FROM admin_users WHERE id = $admin_id";
+                
+                if (mysqli_query($conn, $query)) {
+                    $success_message = "Admin user deleted successfully!";
+                } else {
+                    $error_message = "Error deleting admin user: " . mysqli_error($conn);
+                }
             }
+        }
+        
+        // Show error if non-super admin tries to perform actions
+        if (!$is_super_admin && in_array($action, ['create', 'update', 'delete'])) {
+            $error_message = "Only super admins can manage admin users!";
         }
     }
 }
@@ -331,6 +397,16 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
             background-color: #ae9389;
         }
         
+        .control-button.disabled {
+            background-color: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .control-button.disabled:hover {
+            background-color: #e0e0e0;
+        }
+        
         .admin-table {
             width: 100%;
             border-collapse: collapse;
@@ -411,6 +487,16 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
         .action-button:hover {
             transform: translateY(-2px);
             background-color: rgba(255,255,255,0.8);
+        }
+        
+        .action-button.disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        .action-button.disabled:hover {
+            transform: none;
+            background-color: rgba(255,255,255,0.5);
         }
         
         .edit-button {
@@ -575,6 +661,25 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
         .checkbox-group input[type="checkbox"] {
             width: auto;
         }
+        
+        .no-permission {
+            text-align: center;
+            padding: 40px;
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .no-permission i {
+            font-size: 48px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+        
+        .no-permission p {
+            font-size: 16px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -608,8 +713,6 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
                 <div class="menu-icon"><i class="fas fa-users"></i></div>
                 <div class="menu-text">Clients</div>
             </div>
-            
-            
             
             <div class="menu-item" onclick="window.location.href='admin-messages.php'">
                 <div class="menu-icon"><i class="fas fa-envelope"></i></div>
@@ -676,12 +779,21 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
         <div class="content-section">
             <div class="section-header">
                 <div class="section-title">Admin Users</div>
+                <?php if ($is_super_admin): ?>
                 <div class="section-controls">
                     <div class="control-button" id="create-admin-btn">
                         <i class="fas fa-plus"></i> Add New Admin
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
+            
+            <?php if (!$is_super_admin): ?>
+            <div class="no-permission">
+                <i class="fas fa-lock"></i>
+                <p>Only Super Admins can manage admin users.</p>
+            </div>
+            <?php endif; ?>
             
             <table class="admin-table">
                 <thead>
@@ -691,7 +803,6 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
                         <th>PHONE</th>
                         <th>ROLE</th>
                         <th>STATUS</th>
-                        <th>LAST LOGIN</th>
                         <th>ACTIONS</th>
                     </tr>
                 </thead>
@@ -729,18 +840,25 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
                                     <?php echo $admin['is_active'] ? 'Active' : 'Inactive'; ?>
                                 </span>
                             </td>
-                            <td>
-                                <?php 
-                                echo $admin['last_login'] ? date('M j, Y - g:i A', strtotime($admin['last_login'])) : 'Never';
-                                ?>
-                            </td>
                             <td class="action-cell">
-                                <div class="action-button edit-button" data-id="<?php echo $admin['id']; ?>" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </div>
-                                <div class="action-button delete-button" data-id="<?php echo $admin['id']; ?>" title="Delete">
-                                    <i class="fas fa-trash"></i>
-                                </div>
+                                <?php if ($is_super_admin): ?>
+                                    <div class="action-button edit-button" data-id="<?php echo $admin['id']; ?>" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <?php if ($admin['id'] != $current_admin_id): ?>
+                                        <div class="action-button delete-button" data-id="<?php echo $admin['id']; ?>" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="action-button disabled" title="Cannot delete yourself">
+                                            <i class="fas fa-trash"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <div class="action-button disabled" title="No permissions">
+                                        <i class="fas fa-lock"></i>
+                                    </div>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endwhile; ?>
@@ -788,14 +906,14 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
                 
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone">
+                    <input type="tel" id="phone" name="phone" pattern="[0-9]{11}" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                 </div>
                 
                 <div class="form-group">
                     <label for="role">Role</label>
                     <select id="role" name="role" required>
                         <option value="admin">Admin</option>
-                        <option value="super_admin">Super Admin</option>
+                        <option value="super_admin" id="super_admin_option">Super Admin</option>
                     </select>
                 </div>
                 
@@ -826,23 +944,37 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
             const passwordNote = document.getElementById('password-note');
             const statusGroup = document.getElementById('status-group');
             const usernameField = document.getElementById('username');
+            const isSuperAdmin = <?php echo $is_super_admin ? 'true' : 'false'; ?>;
             
-            // Create new admin
-            createAdminBtn.addEventListener('click', () => {
-                modalTitle.textContent = 'Add New Admin';
-                formAction.value = 'create';
-                adminForm.reset();
-                passwordNote.style.display = 'none';
-                document.getElementById('password').required = true;
-                statusGroup.style.display = 'none';
-                usernameField.disabled = false;
-                adminModal.style.display = 'flex';
-            });
+            // Only super admin can create new admins
+            if (createAdminBtn) {
+                createAdminBtn.addEventListener('click', () => {
+                    if (!isSuperAdmin) {
+                        alert('Only super admins can create new admin users!');
+                        return;
+                    }
+                    
+                    modalTitle.textContent = 'Add New Admin';
+                    formAction.value = 'create';
+                    adminForm.reset();
+                    passwordNote.style.display = 'none';
+                    document.getElementById('password').required = true;
+                    statusGroup.style.display = 'none';
+                    usernameField.disabled = false;
+                    adminModal.style.display = 'flex';
+                });
+            }
             
-            // Edit admin
+            // Edit admin - only for super admins
             document.querySelectorAll('.edit-button').forEach(button => {
                 button.addEventListener('click', async () => {
+                    if (!isSuperAdmin) {
+                        alert('Only super admins can edit admin users!');
+                        return;
+                    }
+                    
                     const adminId = button.getAttribute('data-id');
+                    const isEditingSelf = adminId == <?php echo $current_admin_id; ?>;
                     
                     // Fetch admin data
                     const response = await fetch(`get-admin-data.php?id=${adminId}`);
@@ -860,6 +992,15 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
                     document.getElementById('role').value = admin.role;
                     document.getElementById('is_active').checked = admin.is_active == 1;
                     
+                    // If editing self and is super admin, disable role change
+                    if (isEditingSelf && admin.role === 'super_admin') {
+                        document.getElementById('role').disabled = true;
+                        document.getElementById('super_admin_option').disabled = true;
+                    } else {
+                        document.getElementById('role').disabled = false;
+                        document.getElementById('super_admin_option').disabled = false;
+                    }
+                    
                     passwordNote.style.display = 'inline';
                     document.getElementById('password').required = false;
                     statusGroup.style.display = 'block';
@@ -868,9 +1009,14 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
                 });
             });
             
-            // Delete admin
+            // Delete admin - only for super admins
             document.querySelectorAll('.delete-button').forEach(button => {
                 button.addEventListener('click', () => {
+                    if (!isSuperAdmin) {
+                        alert('Only super admins can delete admin users!');
+                        return;
+                    }
+                    
                     const adminId = button.getAttribute('data-id');
                     
                     if (confirm('Are you sure you want to delete this admin user?')) {
@@ -889,18 +1035,36 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
             // Close modal
             closeModal.addEventListener('click', () => {
                 adminModal.style.display = 'none';
+                document.getElementById('role').disabled = false;
             });
             
             cancelBtn.addEventListener('click', () => {
                 adminModal.style.display = 'none';
+                document.getElementById('role').disabled = false;
             });
             
             // Close modal when clicking outside
             window.addEventListener('click', (event) => {
                 if (event.target === adminModal) {
                     adminModal.style.display = 'none';
+                    document.getElementById('role').disabled = false;
                 }
             });
+            
+            // Check if super admin exists before allowing creation of another
+            if (document.getElementById('role')) {
+                document.getElementById('role').addEventListener('change', async (e) => {
+                    if (e.target.value === 'super_admin' && formAction.value === 'create') {
+                        const response = await fetch('check-super-admin.php');
+                        const result = await response.json();
+                        
+                        if (result.exists) {
+                            alert('Only one super admin is allowed in the system!');
+                            e.target.value = 'admin';
+                        }
+                    }
+                });
+            }
         });
     </script>
 </body>
