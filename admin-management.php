@@ -7,10 +7,10 @@ if (!$conn) {
 }
 
 // Check if admin is logged in (you'll need to implement admin auth)
-// if (!isset($_SESSION['admin_id'])) {
-//     header("Location: admin-login.php");
-//     exit();
-// }
+ if (!isset($_SESSION['admin_id'])) {
+    header("Location: admin-login.php");
+    exit();
+ }
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -598,16 +598,18 @@ $active_admins = mysqli_query($conn, $active_admins_query)->fetch_assoc()['count
                 <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
                 <div class="menu-text">Appointments</div>
             </div>
+
+            <div class="menu-item active" onclick="window.location.href='admin-management.php'">
+                <div class="menu-icon"><i class="fas fa-user-shield"></i></div>
+                <div class="menu-text">Admin Users</div>
+            </div>
             
             <div class="menu-item" onclick="window.location.href='clients.php'">
                 <div class="menu-icon"><i class="fas fa-users"></i></div>
                 <div class="menu-text">Clients</div>
             </div>
             
-            <div class="menu-item active" onclick="window.location.href='admin-management.php'">
-                <div class="menu-icon"><i class="fas fa-user-shield"></i></div>
-                <div class="menu-text">Admin Users</div>
-            </div>
+            
             
             <div class="menu-item" onclick="window.location.href='admin-messages.php'">
                 <div class="menu-icon"><i class="fas fa-envelope"></i></div>

@@ -1,0 +1,14 @@
+
+# Deny direct access to all files in this directory
+<Files "*">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Alternative method using mod_authz_core (Apache 2.4+)
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes

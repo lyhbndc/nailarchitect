@@ -6,6 +6,10 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
+if (!isset($_SESSION['admin_id'])) {
+    header("Location: admin-login.php");
+    exit();
+}
 // Get appointments with user information
 $appointments_query = "SELECT b.*, u.first_name, u.last_name 
                        FROM bookings b 
@@ -741,6 +745,11 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
         <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
         <div class="menu-text">Appointments</div>
     </div>
+
+     <div class="menu-item" onclick="window.location.href='admin-management.php'">
+    <div class="menu-icon"><i class="fas fa-user-shield"></i></div>
+    <div class="menu-text">Admin Users</div>
+</div>
     
     <div class="menu-item" onclick="window.location.href='clients.php'">
         <div class="menu-icon"><i class="fas fa-users"></i></div>
@@ -808,7 +817,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                 </div>
             </div>
             
-            <div class="stat-card">
+            <!-- <div class="stat-card">
                 <div class="stat-header">
                     <div>
                         <div class="stat-title">Total Revenue</div>
@@ -818,7 +827,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                         <i class="fas fa-money-bill-wave"></i>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
         
         <div class="content-section">

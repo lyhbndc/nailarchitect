@@ -876,6 +876,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
         <div class="menu-text">Appointments</div>
     </div>
+
+    <div class="menu-item" onclick="window.location.href='admin-management.php'">
+        <div class="menu-icon"><i class="fas fa-user-shield"></i></div>
+        <div class="menu-text">Admin Users</div>
+    </div>
     
     <div class="menu-item" onclick="window.location.href='clients.php'">
         <div class="menu-icon"><i class="fas fa-users"></i></div>
@@ -967,15 +972,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         </div>
                         
                         <div class="header-actions">
-                            <a href="admin-client-details.php?id=<?php echo $user['id']; ?>" class="header-action">
-                                <i class="fas fa-user"></i> View Profile
-                            </a>
+                            <!-- <a href="admin-client-details.php?id=<?php echo $user['id']; ?>" class="header-action">
+                                <!-- <i class="fas fa-user"></i> View Profile -->
+                            <!-- </a> --> 
                             
-                            <?php if (isset($user['phone']) && !empty($user['phone'])): ?>
+                            <!-- <?php if (isset($user['phone']) && !empty($user['phone'])): ?>
                                 <a href="tel:<?php echo $user['phone']; ?>" class="header-action">
                                     <i class="fas fa-phone"></i> Call
                                 </a>
-                            <?php endif; ?>
+                            <?php endif; ?> -->
                         </div>
                     </div>
                     

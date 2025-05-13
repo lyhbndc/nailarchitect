@@ -1,155 +1,198 @@
 <?php
-// Start session and check admin authentication
+// simple-backup.php - Simplified backup system with admin design
 session_start();
 
-// Database connection
-$conn = mysqli_connect("localhost", "root", "", "nail_architect_db");
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+date_default_timezone_set('Asia/Manila');
+
+// Basic configuration
+$config = [
+    'db_host' => $_ENV['DB_HOST'] ?? 'localhost',
+    'db_user' => $_ENV['DB_USER'] ?? 'root',
+    'db_pass' => $_ENV['DB_PASS'] ?? '',
+    'db_name' => $_ENV['DB_NAME'] ?? 'nail_architect_db',
+    'backup_dir' => __DIR__ . '/backups/',
+    'max_backups' => 10 // Keep only latest 10 backups
+];
+
+// Create backup directory if it doesn't exist
+if (!file_exists($config['backup_dir'])) {
+    mkdir($config['backup_dir'], 0755, true);
 }
 
-if (isset($_SESSION['backup_message'])) {
-    $backup_message = $_SESSION['backup_message'];
-    unset($_SESSION['backup_message']);
-}
+// Initialize message
+$message = '';
 
-// Define backup directory - make sure this exists and is writable
-$backup_dir = "backups/";
-if (!file_exists($backup_dir)) {
-    mkdir($backup_dir, 0755, true);
-}
-
-// Handle Backup Process
-$backup_message = '';
-if (isset($_POST['create_backup'])) {
-    $timestamp = date("Y-m-d-H-i-s");
-    $backup_file = $backup_dir . "nail_architect_backup_" . $timestamp . ".sql";
-
-    // Get all tables
-    $tables = [];
-    $result = mysqli_query($conn, "SHOW TABLES");
-    while ($row = mysqli_fetch_row($result)) {
-        $tables[] = $row[0];
+// Handle database connection
+function getConnection($config) {
+    $conn = new mysqli($config['db_host'], $config['db_user'], $config['db_pass'], $config['db_name']);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
     }
+    return $conn;
+}
 
-    $output = "-- Nail Architect Database Backup\n";
-    $output .= "-- Generated: " . date("Y-m-d H:i:s") . "\n\n";
-
-    // Export each table
-    foreach ($tables as $table) {
-        // Table creation
-        $output .= "DROP TABLE IF EXISTS `$table`;\n";
-        $result = mysqli_query($conn, "SHOW CREATE TABLE `$table`");
-        $row = mysqli_fetch_row($result);
-        $output .= $row[1] . ";\n\n";
-
-        // Table data
-        $result = mysqli_query($conn, "SELECT * FROM `$table`");
-        $num_fields = mysqli_num_fields($result);
+// Create backup
+if (isset($_POST['create_backup'])) {
+    try {
+        $conn = getConnection($config);
+        $filename = 'backup_' . date('Y-m-d_H-i-s') . '.sql';
+        $filepath = $config['backup_dir'] . $filename;
         
-        while ($row = mysqli_fetch_row($result)) {
-            $output .= "INSERT INTO `$table` VALUES(";
-            for ($i = 0; $i < $num_fields; $i++) {
-                if (isset($row[$i])) {
-                    $row[$i] = addslashes($row[$i]);
-                    $row[$i] = str_replace("\n", "\\n", $row[$i]);
-                    $output .= '"' . $row[$i] . '"';
-                } else {
-                    $output .= 'NULL';
-                }
-                if ($i < ($num_fields - 1)) {
-                    $output .= ',';
+        // Start output buffering
+        ob_start();
+        
+        // Header
+        echo "-- Database Backup\n";
+        echo "-- Generated: " . date('Y-m-d H:i:s') . "\n";
+        echo "-- Database: " . $config['db_name'] . "\n\n";
+        echo "SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n";
+        echo "SET time_zone = \"+00:00\";\n\n";
+        
+        // Get all tables
+        $tables = array();
+        $result = $conn->query("SHOW TABLES");
+        while ($row = $result->fetch_row()) {
+            $tables[] = $row[0];
+        }
+        
+        // Export each table
+        foreach ($tables as $table) {
+            echo "\n-- Table structure for table `$table`\n";
+            echo "DROP TABLE IF EXISTS `$table`;\n";
+            
+            $result = $conn->query("SHOW CREATE TABLE `$table`");
+            $row = $result->fetch_row();
+            echo $row[1] . ";\n\n";
+            
+            // Get data
+            $result = $conn->query("SELECT * FROM `$table`");
+            if ($result->num_rows > 0) {
+                echo "-- Data for table `$table`\n";
+                while ($row = $result->fetch_assoc()) {
+                    $values = array_map(function($value) use ($conn) {
+                        return $value === null ? 'NULL' : "'" . $conn->real_escape_string($value) . "'";
+                    }, $row);
+                    echo "INSERT INTO `$table` VALUES (" . implode(', ', $values) . ");\n";
                 }
             }
-            $output .= ");\n";
+            echo "\n";
         }
-        $output .= "\n\n";
-    }
-
-    // Save to file
-    if (file_put_contents($backup_file, $output)) {
-        $backup_message = "<div class='alert success'>Backup created successfully: " . basename($backup_file) . "</div>";
-    } else {
-        $backup_message = "<div class='alert error'>Error creating backup file. Please check directory permissions.</div>";
+        
+        // Save to file
+        $backup_content = ob_get_clean();
+        file_put_contents($filepath, $backup_content);
+        
+        $message = "<div class='alert success'><i class='fas fa-check-circle'></i> Backup created successfully: $filename</div>";
+        
+        // Clean up old backups
+        cleanOldBackups($config['backup_dir'], $config['max_backups']);
+        
+        $conn->close();
+    } catch (Exception $e) {
+        $message = "<div class='alert error'><i class='fas fa-exclamation-circle'></i> Error creating backup: " . $e->getMessage() . "</div>";
     }
 }
 
-// Handle Backup File Deletion
+// Restore backup
+if (isset($_POST['restore_backup']) && !empty($_POST['backup_file'])) {
+    try {
+        $conn = getConnection($config);
+        $filename = basename($_POST['backup_file']);
+        $filepath = $config['backup_dir'] . $filename;
+        
+        if (!file_exists($filepath)) {
+            throw new Exception("Backup file not found");
+        }
+        
+        // Read backup file
+        $sql = file_get_contents($filepath);
+        
+        // Disable foreign key checks
+        $conn->query("SET FOREIGN_KEY_CHECKS = 0");
+        
+        // Execute queries
+        $conn->multi_query($sql);
+        
+        // Wait for all queries to complete
+        do {
+            if ($result = $conn->store_result()) {
+                $result->free();
+            }
+        } while ($conn->more_results() && $conn->next_result());
+        
+        // Re-enable foreign key checks
+        $conn->query("SET FOREIGN_KEY_CHECKS = 1");
+        
+        $message = "<div class='alert success'><i class='fas fa-check-circle'></i> Database restored successfully from: $filename</div>";
+        
+        $conn->close();
+    } catch (Exception $e) {
+        $message = "<div class='alert error'><i class='fas fa-exclamation-circle'></i> Error restoring backup: " . $e->getMessage() . "</div>";
+    }
+}
+
+// Delete backup
 if (isset($_GET['delete']) && !empty($_GET['delete'])) {
     $filename = basename($_GET['delete']);
-    $file_path = $backup_dir . $filename;
+    $filepath = $config['backup_dir'] . $filename;
     
-    // Security check to ensure we're only deleting .sql files from the backup directory
-    if (strpos($filename, '..') === false && file_exists($file_path) && pathinfo($file_path, PATHINFO_EXTENSION) === 'sql') {
-        if (unlink($file_path)) {
-            $backup_message = "<div class='alert success'>Backup file deleted successfully.</div>";
-        } else {
-            $backup_message = "<div class='alert error'>Error deleting backup file.</div>";
-        }
+    if (file_exists($filepath) && unlink($filepath)) {
+        $message = "<div class='alert success'><i class='fas fa-check-circle'></i> Backup deleted successfully</div>";
     } else {
-        $backup_message = "<div class='alert error'>Invalid backup file specified.</div>";
+        $message = "<div class='alert error'><i class='fas fa-exclamation-circle'></i> Error deleting backup</div>";
     }
 }
 
-// Handle Restore Process
-if (isset($_POST['restore_backup']) && !empty($_POST['backup_file'])) {
-    $filename = basename($_POST['backup_file']);
-    $file_path = $backup_dir . $filename;
+// Download backup
+if (isset($_GET['download']) && !empty($_GET['download'])) {
+    $filename = basename($_GET['download']);
+    $filepath = $config['backup_dir'] . $filename;
     
-    // Security check
-    if (strpos($filename, '..') === false && file_exists($file_path) && pathinfo($file_path, PATHINFO_EXTENSION) === 'sql') {
-        // Read backup file
-        $sql = file_get_contents($file_path);
-        
-        // Split into individual queries
-        $queries = explode(';', $sql);
-        
-        // Execute each query
-        $error = false;
-        mysqli_autocommit($conn, false); // Start transaction
-        
-        foreach ($queries as $query) {
-            $query = trim($query);
-            if (!empty($query)) {
-                $result = mysqli_query($conn, $query . ';');
-                if (!$result) {
-                    $error = true;
-                    break;
-                }
-            }
-        }
-        
-        if ($error) {
-            mysqli_rollback($conn);
-            $backup_message = "<div class='alert error'>Error restoring database. MySQL Error: " . mysqli_error($conn) . "</div>";
-        } else {
-            mysqli_commit($conn);
-            $backup_message = "<div class='alert success'>Database restored successfully from " . $filename . "</div>";
-        }
-    } else {
-        $backup_message = "<div class='alert error'>Invalid backup file specified.</div>";
+    if (file_exists($filepath)) {
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Content-Length: ' . filesize($filepath));
+        readfile($filepath);
+        exit;
     }
 }
 
-// Get list of backup files
-$backup_files = [];
-if ($handle = opendir($backup_dir)) {
-    while (false !== ($file = readdir($handle))) {
-        if ($file != "." && $file != ".." && pathinfo($file, PATHINFO_EXTENSION) == "sql") {
-            $backup_files[] = [
-                'name' => $file,
-                'size' => filesize($backup_dir . $file),
-                'date' => date("Y-m-d H:i:s", filemtime($backup_dir . $file))
-            ];
+// Clean old backups function
+function cleanOldBackups($dir, $keep) {
+    $files = glob($dir . '*.sql');
+    usort($files, function($a, $b) {
+        return filemtime($b) - filemtime($a);
+    });
+    
+    if (count($files) > $keep) {
+        $toDelete = array_slice($files, $keep);
+        foreach ($toDelete as $file) {
+            unlink($file);
         }
     }
-    closedir($handle);
 }
 
-// Sort backup files by date (newest first)
-usort($backup_files, function($a, $b) {
-    return strtotime($b['date']) - strtotime($a['date']);
-});
+// Get backup files
+function getBackupFiles($dir) {
+    $files = glob($dir . '*.sql');
+    $backups = [];
+    
+    foreach ($files as $file) {
+        $backups[] = [
+            'name' => basename($file),
+            'size' => filesize($file),
+            'date' => filemtime($file)
+        ];
+    }
+    
+    usort($backups, function($a, $b) {
+        return $b['date'] - $a['date'];
+    });
+    
+    return $backups;
+}
+
+$backups = getBackupFiles($config['backup_dir']);
 ?>
 
 <!DOCTYPE html>
@@ -405,6 +448,11 @@ usort($backup_files, function($a, $b) {
             color: #721c24;
         }
         
+        .btn-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
         .btn-info {
             background-color: #d1ecf1;
             color: #0c5460;
@@ -530,54 +578,16 @@ usort($backup_files, function($a, $b) {
             color: #666;
         }
         
-        /* Responsive Media Queries */
-        @media (max-width: 992px) {
-            .sidebar {
-                width: 80px;
-                z-index: 1000;
-            }
-            
-            .content-wrapper {
-                margin-left: 80px;
-            }
-            
-            .top-bar {
-                left: 80px;
-            }
-            
-            .admin-title, .menu-text, .menu-section {
-                display: none;
-            }
-            
-            .menu-item {
-                justify-content: center;
-                padding: 15px 0;
-            }
-            
-            .menu-icon {
-                margin-right: 0;
-                font-size: 20px;
-            }
-            
-            .logo-container {
-                justify-content: center;
-            }
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            color: #666;
         }
         
-        @media (max-width: 768px) {
-            .content-wrapper {
-                padding: 15px;
-                padding-top: 70px;
-            }
-            
-            .backup-table {
-                display: block;
-                overflow-x: auto;
-            }
-            
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
+        .empty-state i {
+            font-size: 48px;
+            color: #ddd;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -591,40 +601,45 @@ usort($backup_files, function($a, $b) {
         </div>
         
         <div class="nav-menu">
-    <div class="menu-section">MAIN</div>
-    
-    <div class="menu-item" onclick="window.location.href='admin-dashboard.php'">
-        <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
-        <div class="menu-text">Dashboard</div>
-    </div>
-    
-    <div class="menu-item" onclick="window.location.href='admin-appointments.php'">
-        <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
-        <div class="menu-text">Appointments</div>
-    </div>
-    
-    <div class="menu-item" onclick="window.location.href='clients.php'">
-        <div class="menu-icon"><i class="fas fa-users"></i></div>
-        <div class="menu-text">Clients</div>
-    </div>
-    
-    <div class="menu-item" onclick="window.location.href='admin-messages.php'">
-        <div class="menu-icon"><i class="fas fa-envelope"></i></div>
-        <div class="menu-text">Messages</div>
-    </div>
-    
-    <div class="menu-section">SYSTEM</div>
-    
-    <div class="menu-item active" onclick="window.location.href='admin-backup.php'">
-        <div class="menu-icon"><i class="fas fa-database"></i></div>
-        <div class="menu-text">Backup & Restore</div>
-    </div>
-    
-    <div class="menu-item" onclick="window.location.href='logout.php'">
-        <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
-        <div class="menu-text">Logout</div>
-    </div>
+            <div class="menu-section">MAIN</div>
+            
+            <div class="menu-item" onclick="window.location.href='admin-dashboard.php'">
+                <div class="menu-icon"><i class="fas fa-tachometer-alt"></i></div>
+                <div class="menu-text">Dashboard</div>
+            </div>
+            
+            <div class="menu-item" onclick="window.location.href='admin-appointments.php'">
+                <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
+                <div class="menu-text">Appointments</div>
+            </div>
+
+            <div class="menu-item" onclick="window.location.href='admin-management.php'">
+    <div class="menu-icon"><i class="fas fa-user-shield"></i></div>
+    <div class="menu-text">Admin Users</div>
 </div>
+            
+            <div class="menu-item" onclick="window.location.href='clients.php'">
+                <div class="menu-icon"><i class="fas fa-users"></i></div>
+                <div class="menu-text">Clients</div>
+            </div>
+            
+            <div class="menu-item" onclick="window.location.href='admin-messages.php'">
+                <div class="menu-icon"><i class="fas fa-envelope"></i></div>
+                <div class="menu-text">Messages</div>
+            </div>
+            
+            <div class="menu-section">SYSTEM</div>
+            
+            <div class="menu-item active" onclick="window.location.href='admin-backup.php'">
+                <div class="menu-icon"><i class="fas fa-database"></i></div>
+                <div class="menu-text">Backup & Restore</div>
+            </div>
+            
+            <div class="menu-item" onclick="window.location.href='logout.php'">
+                <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
+                <div class="menu-text">Logout</div>
+            </div>
+        </div>
     </div>
     
     <div class="top-bar">
@@ -632,8 +647,8 @@ usort($backup_files, function($a, $b) {
     </div>
     
     <div class="content-wrapper">
-        <?php if (!empty($backup_message)): ?>
-            <?php echo $backup_message; ?>
+        <?php if ($message): ?>
+            <?php echo $message; ?>
         <?php endif; ?>
         
         <div class="card-grid">
@@ -648,7 +663,7 @@ usort($backup_files, function($a, $b) {
                     Creating a backup will save the current state of your database. It's recommended to create backups regularly, especially before major changes to your website.
                 </div>
                 <div class="card-footer">
-                    <form method="post" action="">
+                    <form method="post" style="display: inline;">
                         <button type="submit" name="create_backup" class="btn btn-primary">
                             <i class="fas fa-save"></i> Create Database Backup
                         </button>
@@ -667,7 +682,7 @@ usort($backup_files, function($a, $b) {
                     Restoring from a backup will replace your current database with the backup version. This action cannot be undone. Make sure to create a new backup before restoring.
                 </div>
                 <div class="card-footer">
-                    <?php if (count($backup_files) > 0): ?>
+                    <?php if (count($backups) > 0): ?>
                         <button type="button" onclick="showRestoreForm()" class="btn btn-danger">
                             <i class="fas fa-undo"></i> Restore Database
                         </button>
@@ -676,25 +691,6 @@ usort($backup_files, function($a, $b) {
                             <i class="fas fa-undo"></i> No Backups Available
                         </button>
                     <?php endif; ?>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-icon" style="background-color: #d1ecf1; color: #0c5460;">
-                        <i class="fas fa-images"></i>
-                    </div>
-                    <div class="card-title">Backup Media Files</div>
-                </div>
-                <div class="card-body">
-                    This will create a zip archive of all uploaded images and media files from your website. Media backups are stored separately from database backups.
-                </div>
-                <div class="card-footer">
-                    <form method="post" action="create-media-backup.php">
-                        <button type="submit" name="media_backup" class="btn btn-info">
-                            <i class="fas fa-file-archive"></i> Backup Media Files
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>
@@ -713,16 +709,16 @@ usort($backup_files, function($a, $b) {
                     </div>
                 </div>
                 
-                <form method="post" action="" onsubmit="return confirm('Are you sure you want to restore the database from this backup? All current data will be replaced.');">
+                <form method="post" onsubmit="return confirm('Are you sure? This will replace all current data.');">
                     <div class="form-group">
                         <label for="backup_file">Select Backup to Restore:</label>
                         <select name="backup_file" id="backup_file" required>
                             <option value="">-- Select Backup File --</option>
-                            <?php foreach ($backup_files as $file): ?>
-                                <option value="<?php echo htmlspecialchars($file['name']); ?>">
-                                    <?php echo htmlspecialchars($file['name']); ?> 
-                                    (<?php echo date('F j, Y g:i a', strtotime($file['date'])); ?>) - 
-                                    <?php echo round($file['size'] / 1024, 2); ?> KB
+                            <?php foreach ($backups as $backup): ?>
+                                <option value="<?php echo htmlspecialchars($backup['name']); ?>">
+                                    <?php echo htmlspecialchars($backup['name']); ?> 
+                                    (<?php echo date('F j, Y g:i a', $backup['date']); ?>) - 
+                                    <?php echo number_format($backup['size'] / 1024, 2); ?> KB
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -745,7 +741,7 @@ usort($backup_files, function($a, $b) {
                 <div class="section-title">Manage Backup Files</div>
             </div>
             
-            <?php if (count($backup_files) > 0): ?>
+            <?php if (count($backups) > 0): ?>
                 <table class="backup-table">
                     <thead>
                         <tr>
@@ -756,31 +752,34 @@ usort($backup_files, function($a, $b) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($backup_files as $file): ?>
+                        <?php foreach ($backups as $backup): ?>
                             <tr>
                                 <td>
                                     <div style="display: flex; align-items: center; gap: 10px;">
                                         <i class="fas fa-file-code" style="color: #666;"></i>
-                                        <?php echo htmlspecialchars($file['name']); ?>
+                                        <?php echo htmlspecialchars($backup['name']); ?>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="file-date">
                                         <i class="far fa-calendar-alt" style="margin-right: 5px;"></i>
-                                        <?php echo date('F j, Y g:i a', strtotime($file['date'])); ?>
+                                        <?php echo date('F j, Y g:i a', $backup['date']); ?>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="file-size">
-                                        <?php echo round($file['size'] / 1024, 2); ?> KB
+                                        <?php echo number_format($backup['size'] / 1024, 2); ?> KB
                                     </div>
                                 </td>
                                 <td class="backup-actions">
-                                    <a href="<?php echo $backup_dir . $file['name']; ?>" class="btn btn-primary" download>
+                                    <a href="?download=<?php echo urlencode($backup['name']); ?>" 
+                                       class="btn btn-success">
                                         <i class="fas fa-download"></i> Download
                                     </a>
-                                    <a href="?delete=<?php echo urlencode($file['name']); ?>" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this backup file?')">
-                                        <i class="fas fa-trash-alt"></i> Delete
+                                    <a href="?delete=<?php echo urlencode($backup['name']); ?>" 
+                                       class="btn btn-danger"
+                                       onclick="return confirm('Delete this backup?');">
+                                        <i class="fas fa-trash"></i> Delete
                                     </a>
                                 </td>
                             </tr>
@@ -788,9 +787,9 @@ usort($backup_files, function($a, $b) {
                     </tbody>
                 </table>
             <?php else: ?>
-                <div class="alert info">
-                    <i class="fas fa-info-circle"></i>
-                    <div>No backup files found. Create a backup first.</div>
+                <div class="empty-state">
+                    <i class="fas fa-database"></i>
+                    <p>No backups found. Click "Create Database Backup" to get started.</p>
                 </div>
             <?php endif; ?>
         </div>
@@ -799,40 +798,12 @@ usort($backup_files, function($a, $b) {
     <script>
         function showRestoreForm() {
             document.getElementById('restore-form').style.display = 'block';
-            // Smoothly scroll to the form
             document.getElementById('restore-form').scrollIntoView({ behavior: 'smooth' });
         }
-        
+
         function hideRestoreForm() {
             document.getElementById('restore-form').style.display = 'none';
         }
-        
-        // Add loading indicator for buttons
-        document.addEventListener('DOMContentLoaded', function() {
-            const forms = document.querySelectorAll('form');
-            
-            forms.forEach(form => {
-                form.addEventListener('submit', function() {
-                    const button = this.querySelector('button[type="submit"]');
-                    if (button) {
-                        const originalText = button.innerHTML;
-                        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-                        button.disabled = true;
-                        
-                        // Store the original text to restore later if needed
-                        button.setAttribute('data-original-text', originalText);
-                        
-                        // If form submission takes too long, restore the button after a timeout
-                        setTimeout(() => {
-                            if (button.disabled) {
-                                button.innerHTML = originalText;
-                                button.disabled = false;
-                            }
-                        }, 10000); // 10 seconds timeout
-                    }
-                });
-            });
-        });
     </script>
 </body>
 </html>

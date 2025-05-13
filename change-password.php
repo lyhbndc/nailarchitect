@@ -551,13 +551,13 @@ mysqli_close($conn);
                 <?php endif; ?>
             </div>
 
-            <!-- Debug information container -->
+            <!-- Debug information container
             <div class="debug-container">
                 <h2>Debug Information</h2>
-                <?php echo $debug_info; ?>
-            </div>
+                
+            </div> -->
             
-            <div class="back-button" onclick="window.location.href='login.php'">← Back to Login</div>
+            <!-- <div class="back-button" onclick="window.location.href='login.php'">← Back to Login</div> -->
         </div>
     </div>
     

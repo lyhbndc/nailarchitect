@@ -556,14 +556,14 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
                 <div class="stat-title">Completed Bookings</div>
                 <div class="stat-value"><?php echo $completedBookings; ?></div>
             </div>
-            <div class="stat-card">
+            <!-- <div class="stat-card">
                 <div class="stat-title">Total Spent</div>
                 <div class="stat-value">₱<?php echo number_format($totalSpent, 2); ?></div>
             </div>
             <div class="stat-card">
                 <div class="stat-title">Average Booking</div>
                 <div class="stat-value">₱<?php echo $completedBookings > 0 ? number_format($totalSpent / $completedBookings, 2) : '0.00'; ?></div>
-            </div>
+            </div> -->
         </div>
 
         <!-- Booking History -->
@@ -606,7 +606,7 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
         </div>
 
         <!-- Recent Messages -->
-        <div class="content-section">
+        <!-- <div class="content-section">
             <h2 class="section-title">Recent Messages</h2>
             <?php if (mysqli_num_rows($messagesResult) > 0): ?>
                 <?php while ($message = mysqli_fetch_assoc($messagesResult)): ?>
@@ -630,7 +630,7 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
             <?php else: ?>
                 <p class="no-data">No messages found for this client.</p>
             <?php endif; ?>
-        </div>
+        </div> -->
     </div>
 </body>
 </html>

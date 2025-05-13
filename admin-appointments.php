@@ -920,6 +920,11 @@ $cancelled_appointments = mysqli_query($conn, $cancelled_appointments_query)->fe
         <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
         <div class="menu-text">Appointments</div>
     </div>
+
+    <div class="menu-item" onclick="window.location.href='admin-management.php'">
+    <div class="menu-icon"><i class="fas fa-user-shield"></i></div>
+    <div class="menu-text">Admin Users</div>
+</div>
     
     <div class="menu-item" onclick="window.location.href='clients.php'">
         <div class="menu-icon"><i class="fas fa-users"></i></div>
