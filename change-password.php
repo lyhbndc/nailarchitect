@@ -297,7 +297,7 @@ mysqli_close($conn);
         }
         
         .change-password-form-container {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 40px;
             width: 100%;
@@ -341,7 +341,7 @@ mysqli_close($conn);
             border: none;
             border-radius: 8px;
             background-color: #F2E9E9;
-            font-family: 'Courier New', monospace;
+            font-family: Poppins;
             font-size: 14px;
             transition: all 0.3s ease;
         }

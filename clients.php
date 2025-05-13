@@ -35,6 +35,7 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nail Architect - Client Management</title>
+    <link rel="stylesheet" href="sidebar-admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -49,126 +50,7 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
             background-color: #F2E9E9;
             padding: 0;
         }
-        
-        .sidebar {
-            width: 250px;
-            background-color: #E8D7D0;
-            height: 100vh;
-            padding: 25px 0;
-            position: fixed;
-            overflow-y: auto;
-            left: 0;
-            top: 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            z-index: 100;
-        }
-        
-        .logo-container {
-            padding: 0 20px;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #e0c5b7;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .logo::after {
-            content: "";
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #dcdcdc;
-            right: -8px;
-            bottom: -8px;
-        }
-        
-        .admin-title {
-            margin-left: 15px;
-            font-weight: 600;
-            font-size: 18px;
-        }
-        
-        .nav-menu {
-            margin-top: 20px;
-        }
-        
-        .menu-section {
-            margin-bottom: 10px;
-            padding: 0 20px;
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .menu-item {
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            border-left: 4px solid transparent;
-        }
-        
-        .menu-item:hover {
-            background-color: #D9BBB0;
-        }
-        
-        .menu-item.active {
-            background-color: #D9BBB0;
-            border-left-color: #333;
-        }
-        
-        .menu-icon {
-            width: 24px;
-            margin-right: 10px;
-            text-align: center;
-            font-size: 16px;
-        }
-        
-        .menu-text {
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .content-wrapper {
-            margin-left: 250px;
-            padding: 25px;
-            padding-top: 80px;
-        }
-        
-        .top-bar {
-            position: fixed;
-            top: 0;
-            left: 250px;
-            right: 0;
-            height: 60px;
-            background-color: #E8D7D0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            z-index: 99;
-        }
-        
-        .page-title {
-            font-size: 22px;
-            font-weight: 600;
-        }
+
         
         .dashboard-grid {
             display: grid;
@@ -178,7 +60,7 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
         }
         
         .stat-card {
-            background-color: #E8D7D0;
+            background: linear-gradient(to right, rgb(237, 196, 196), rgb(226, 178, 178));
             border-radius: 15px;
             padding: 20px;
             transition: all 0.3s ease;
@@ -223,7 +105,7 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
         }
         
         .content-section {
-            background-color: #E8D7D0;
+            background-color: white;
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 30px;
@@ -250,7 +132,7 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
         .control-button {
             padding: 8px 16px;
             border-radius: 8px;
-            background-color: #D9BBB0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -261,7 +143,7 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
         }
         
         .control-button:hover {
-            background-color: #ae9389;
+            background: linear-gradient(to right, #d98d8d, #ce7878);
         }
         
         .search-section {
@@ -287,7 +169,7 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
         .clients-table th {
             text-align: left;
             padding: 12px 15px;
-            border-bottom: 1px solid #c0c0c0;
+            border-bottom: 1px solid rgb(177, 140, 140);
             font-size: 12px;
             color: #666;
             text-transform: uppercase;
@@ -297,12 +179,12 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
         
         .clients-table td {
             padding: 12px 15px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid rgb(196, 162, 162);
             font-size: 14px;
         }
         
         .clients-table tr:hover {
-            background-color: #D9BBB0;
+            background: linear-gradient(to right, rgb(233, 171, 171), rgb(226, 178, 178));
         }
         
         .status-badge {
@@ -431,6 +313,11 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
             <div class="menu-item" onclick="window.location.href='admin-messages.php'">
                 <div class="menu-icon"><i class="fas fa-envelope"></i></div>
                 <div class="menu-text">Messages</div>
+            </div>
+            
+            <div class="menu-item" onclick="window.location.href='admin-inquiries.php'">
+                <div class="menu-icon"><i class="fas fa-question-circle"></i></div>
+                <div class="menu-text">Inquiries</div>
             </div>
             
             <div class="menu-section">SYSTEM</div>

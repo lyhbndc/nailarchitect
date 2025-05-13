@@ -67,20 +67,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_logout'])) {
             position: relative;
         }
         
-        /* Background overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.1);
-            z-index: 1;
-        }
+
         
         .logout-container {
-            background-color: #E8D7D0;
+            background-color: rgb(245, 207, 207);
             border-radius: 20px;
             padding: 50px 40px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
@@ -101,25 +91,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_logout'])) {
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background-color: #D9BBB0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto;
             position: relative;
         }
-        
-        .icon-circle::after {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.3);
-            bottom: -10px;
-            right: -10px;
-            z-index: -1;
-        }
+    
         
         .logout-icon {
             font-size: 36px;

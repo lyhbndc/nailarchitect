@@ -1,3 +1,15 @@
+<?php
+// Start session
+session_start();
+
+// Check if user is logged in
+$logged_in = isset($_SESSION['user_id']);
+
+// If logged in, get the first letter of the user's first name for the avatar
+if ($logged_in) {
+    $first_letter = substr($_SESSION['user_name'], 0, 1);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +17,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="bg-gradient.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Nail Salon - Policies & FAQ</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -86,11 +100,16 @@
         }
 
         .sidebar-nav {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 20px;
             position: sticky;
             top: 20px;
+            border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
         }
 
         .sidebar-title {
@@ -120,7 +139,8 @@
 
         .nav-list a:hover,
         .nav-list a.active {
-            background-color: #ae9389;
+            background-color: rgb(215, 179, 179);
+
         }
 
         .main-content {
@@ -128,10 +148,15 @@
         }
 
         .section {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 25px;
+            border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
         }
 
         .section:last-child {
@@ -143,14 +168,14 @@
             font-weight: bold;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #c0c0c0;
+            border-bottom: 1px solid rgb(182, 151, 151);
         }
 
         .policy-item,
         .faq-item {
             margin-bottom: 25px;
             padding-bottom: 25px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid rgb(195, 160, 160);
         }
 
         .policy-item:last-child,
@@ -247,6 +272,10 @@
 </head>
 
 <body>
+<div class="gradient-overlay"></div>
+    <div class="background-pattern"></div>
+    <div class="swirl-pattern"></div>
+    <div class="polish-drips"></div>
     
     <div class="container">
         <header>
@@ -260,7 +289,11 @@
             <div class="nav-links">
                 <div class="nav-link">Services</div>
                 <div class="book-now">Book Now</div>
-                <div class="login-icon"></div>
+                <?php if ($logged_in): ?>
+                    <div class="user-initial"><?php echo $first_letter; ?></div>
+                <?php else: ?>
+                    <div class="login-icon"><i class="fa fa-user"></i></div>
+                <?php endif; ?>
             </div>
         </header>
         <a href="index.php">
@@ -445,6 +478,23 @@
                 window.location.href = 'index.php';
             });
         });
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookNow = document.querySelector('.book-now');
+            bookNow.addEventListener('click', function() {
+                window.location.href = 'booking.php';
+            });
+            <?php if ($logged_in): ?>
+                const userInitial = document.querySelector('.user-initial');
+                userInitial.addEventListener('click', function() {
+                    window.location.href = 'members-lounge.php';
+                });
+            <?php else: ?>
+                const loginIcon = document.querySelector('.login-icon');
+                loginIcon.addEventListener('click', function() {
+                    window.location.href = 'login.php';
+                });
+            <?php endif; ?>
+            });
     </script>
     <?php include 'chat-widget.php'; ?>
 </body>

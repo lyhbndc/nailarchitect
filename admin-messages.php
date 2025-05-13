@@ -140,6 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nail Architect - Admin Messages</title>
+    <link rel="stylesheet" href="sidebar-admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -153,130 +154,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         body {
             background-color: #F2E9E9;
             padding: 0;
-        }
-        
-        .sidebar {
-            width: 250px;
-            background-color: #E8D7D0;
-            height: 100vh;
-            padding: 25px 0;
-            position: fixed;
-            overflow-y: auto;
-            left: 0;
-            top: 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            z-index: 100;
-        }
-        
-        .logo-container {
-            padding: 0 20px;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #e0c5b7;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .logo::after {
-            content: "";
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #dcdcdc;
-            right: -8px;
-            bottom: -8px;
-        }
-        
-        .admin-title {
-            margin-left: 15px;
-            font-weight: 600;
-            font-size: 18px;
-        }
-        
-        .nav-menu {
-            margin-top: 20px;
-        }
-        
-        .menu-section {
-            margin-bottom: 10px;
-            padding: 0 20px;
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .menu-item {
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            border-left: 4px solid transparent;
-        }
-        
-        .menu-item:hover {
-            background-color: #D9BBB0;
-        }
-        
-        .menu-item.active {
-            background-color: #D9BBB0;
-            border-left-color: #333;
-        }
-        
-        .menu-icon {
-            width: 24px;
-            margin-right: 10px;
-            text-align: center;
-            font-size: 16px;
-        }
-        
-        .menu-text {
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
-        
-        .content-wrapper {
-            margin-left: 250px;
-            padding: 25px;
-            padding-top: 80px;
-        }
-        
-        .top-bar {
-            position: fixed;
-            top: 0;
-            left: 250px;
-            right: 0;
-            height: 60px;
-            background-color: #E8D7D0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            z-index: 99;
-        }
-        
-        .page-title {
-            font-size: 22px;
-            font-weight: 600;
         }
         
         .messages-container {
@@ -310,6 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             top: 0;
             z-index: 1;
             border-radius: 15px 15px 0 0;
+       
         }
         
         .messages-count {
@@ -318,6 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
+
         }
         
         .messages-list-content {
@@ -352,6 +231,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
+            text-decoration: none;
         }
         
         .user-item:hover {
@@ -367,6 +247,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             justify-content: space-between;
             align-items: center;
             margin-bottom: 5px;
+            text-decoration: none;
         }
         
         .user-name {
@@ -389,6 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            
         }
         
         .last-message {
@@ -429,6 +311,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         .user-info p {
             font-size: 12px;
             opacity: 0.9;
+            
         }
         
         .header-actions {
@@ -448,6 +331,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             gap: 6px;
             color: white;
             border: none;
+            
         }
         
         .header-action:hover {
@@ -891,6 +775,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         <div class="menu-icon"><i class="fas fa-envelope"></i></div>
         <div class="menu-text">Messages</div>
     </div>
+
+    <div class="menu-item" onclick="window.location.href='admin-inquiries.php'">
+                <div class="menu-icon"><i class="fas fa-question-circle"></i></div>
+                <div class="menu-text">Inquiries</div>
+            </div>
     
     <div class="menu-section">SYSTEM</div>
     

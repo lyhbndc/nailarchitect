@@ -1,3 +1,23 @@
+<?php
+// Start session
+session_start();
+
+// Check if user is logged in
+$logged_in = isset($_SESSION['user_id']);
+
+// If logged in, get the first letter of the user's first name for the avatar
+if ($logged_in) {
+    $first_letter = substr($_SESSION['user_name'], 0, 1);
+}
+
+// Handle logout
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: index.php");
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,7 +25,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="bg-gradient.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Nail Architect - Gallery</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
@@ -214,6 +236,10 @@
 </head>
 
 <body>
+<div class="gradient-overlay"></div>
+    <div class="background-pattern"></div>
+    <div class="swirl-pattern"></div>
+    <div class="polish-drips"></div>
     <div class="container">
         <header>
             <div class="logo-container">
@@ -226,7 +252,11 @@
             <div class="nav-links">
                 <div class="nav-link">Services</div>
                 <div class="book-now">Book Now</div>
-                <div class="login-icon"></div>
+                <?php if ($logged_in): ?>
+                    <div class="user-initial"><?php echo $first_letter; ?></div>
+                <?php else: ?>
+                    <div class="login-icon"><i class="fa fa-user"></i></div>
+                <?php endif; ?>
             </div>
         </header>
 
@@ -348,6 +378,27 @@
                 });
             });
         });
+        document.addEventListener('DOMContentLoaded', function() {
+            const servicesLink = document.querySelector('.nav-link');
+            servicesLink.addEventListener('click', function() {
+                window.location.href = 'services.php';
+            });
+            const bookNow = document.querySelector('.book-now');
+            bookNow.addEventListener('click', function() {
+                window.location.href = 'booking.php';
+            });
+            <?php if ($logged_in): ?>
+                const userInitial = document.querySelector('.user-initial');
+                userInitial.addEventListener('click', function() {
+                    window.location.href = 'members-lounge.php';
+                });
+            <?php else: ?>
+                const loginIcon = document.querySelector('.login-icon');
+                loginIcon.addEventListener('click', function() {
+                    window.location.href = 'login.php';
+                });
+            <?php endif; ?>
+            });
     </script>
     <?php include 'chat-widget.php'; ?>
 </body>

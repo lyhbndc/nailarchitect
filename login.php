@@ -125,20 +125,6 @@ mysqli_close($conn);
             padding-bottom: 15px;
         }
 
-        .logo-container img {
-            height: 60px;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .nav-link {
-            cursor: pointer;
-        }
-
         .book-now {
             padding: 8px 20px;
             background-color: #e8d7d0;
@@ -157,13 +143,17 @@ mysqli_close($conn);
         }
 
         .login-form-container {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 40px;
             width: 100%;
             max-width: 450px;
             animation: fadeIn 0.7s ease-out forwards;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
         }
 
         .login-title {
@@ -189,7 +179,7 @@ mysqli_close($conn);
             border: none;
             border-radius: 8px;
             background-color: #F2E9E9;
-            font-family: 'Courier New', monospace;
+            font-family: Poppins;
             font-size: 14px;
             transition: all 0.3s ease;
         }
@@ -234,7 +224,8 @@ mysqli_close($conn);
 
         .login-button {
             padding: 12px 24px;
-            background-color: #d9bbb0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
+       
             border: none;
             border-radius: 30px;
             cursor: pointer;
@@ -247,7 +238,7 @@ mysqli_close($conn);
         }
 
         .login-button:hover {
-            background-color: #ae9389;
+            background: linear-gradient(to right, #d98d8d, #ce7878);
             transform: translateY(-2px);
         }
 
@@ -361,13 +352,13 @@ mysqli_close($conn);
                 <form id="login-form" method="POST" action="">
                     <div class="form-group">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" required>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
                     </div>
 
                     <div class="form-group">
                         <label for="password">Password</label>
                         <div class="password-input-container">
-                            <input type="password" id="password" name="password" required>
+                            <input type="password" id="password" name="password" placeholder="Enter your password" required>
                             <i id="toggle-password-icon" class="fa fa-eye toggle-password" onclick="togglePassword()"></i>
                         </div>
                         <div class="forgot-password" onclick="window.location.href='reset-password.php'">Forgot password?</div>
@@ -412,6 +403,28 @@ mysqli_close($conn);
                 toggleIcon.classList.add('fa-eye');
             }
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookNow = document.querySelector('.book-now');
+            bookNow.addEventListener('click', function() {
+                window.location.href = 'booking.php';
+            });
+
+            const servicesLink = document.querySelector('.nav-link');
+            servicesLink.addEventListener('click', function() {
+                window.location.href = 'services.php';
+            });
+            <?php if ($logged_in): ?>
+                const userInitial = document.querySelector('.user-initial');
+                userInitial.addEventListener('click', function() {
+                    window.location.href = 'members-lounge.php';
+                });
+            <?php else: ?>
+                const loginIcon = document.querySelector('.login-icon');
+                loginIcon.addEventListener('click', function() {
+                    window.location.href = 'login.php';
+                });
+            <?php endif; ?>
+            });
     </script>
 </body>
 

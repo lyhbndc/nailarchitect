@@ -52,7 +52,7 @@ unset($_SESSION['reference_id']);
         }
         
         .confirmation-card {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 40px;
             width: 100%;
@@ -97,7 +97,7 @@ unset($_SESSION['reference_id']);
         
         .button {
             padding: 12px 24px;
-            background-color: #d9bbb0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             border: none;
             border-radius: 30px;
             cursor: pointer;
@@ -108,7 +108,7 @@ unset($_SESSION['reference_id']);
         }
         
         .button:hover {
-            background-color: #ae9389;
+            background: linear-gradient(to right, #d98d8d, #ce7878);
             transform: translateY(-2px);
         }
     </style>

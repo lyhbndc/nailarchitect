@@ -1,4 +1,3 @@
-
 .logo-container {
     display: flex;
     align-items: center;
@@ -58,6 +57,7 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     opacity: 0.8;
 }
+
 .book-now {
     padding: 10px 20px;
     background: linear-gradient(to right, #e6a4a4, #d98d8d);
@@ -68,26 +68,29 @@
     white-space: nowrap;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border: none;
-  }
+}
 
-  .book-now:hover {
+.book-now:hover {
     background: linear-gradient(to right, #d98d8d, #ce7878);
     transform: translateY(-1px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  /* Mobile-specific styles */
+}
+
+/* Mobile-specific styles */
 @media (max-width: 768px) {
+
     /* Hide the services link in the navigation bar */
     .nav-links .nav-link {
         display: none;
     }
-    
+
     /* Make the remaining navigation items spread out better */
     .nav-links {
         justify-content: flex-end;
         gap: 15px;
     }
 }
+
 .user-initial {
     width: 45px;
     height: 45px;
@@ -98,6 +101,6 @@
     justify-content: center;
     font-size: 18px;
     font-weight: bold;
-    color:#472727; 
+    color: #472727;
     cursor: pointer;
 }

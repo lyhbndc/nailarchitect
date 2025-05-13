@@ -78,6 +78,7 @@ mysqli_close($conn);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
+    <link rel="stylesheet" href="bg-gradient.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Nail Architect - Members Lounge</title>
@@ -109,7 +110,7 @@ mysqli_close($conn);
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1500px;
             width: 100%;
             flex: 1;
             margin: 0 auto;
@@ -123,39 +124,6 @@ mysqli_close($conn);
             justify-content: space-between;
             align-items: center;
             padding-bottom: 15px;
-        }
-        
-        .logo-container img {
-            height: 60px;
-        }
-        
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .nav-link {
-            cursor: pointer;
-        }
-        
-        .book-now {
-            padding: 8px 20px;
-            background-color: #e8d7d0;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-        
-        .user-initial {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background-color: #e0c5b7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
         }
         
         .page-title {
@@ -185,17 +153,22 @@ mysqli_close($conn);
         }
         
         .profile-card {
-            background-color: #e8d7d0;
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-        }
+  background-color: rgb(245, 207, 207);
+  border-radius: 15px;
+  padding: 25px;
+  text-align: center;
+  border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
         
         .avatar {
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background-color: #e0c5b7;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             margin: 0 auto 20px;
             display: flex;
             align-items: center;
@@ -228,18 +201,26 @@ mysqli_close($conn);
             font-size: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
-            background-color: #d9bbb0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             display: inline-block;
+            color: black;
+            text-decoration: none;
         }
         
         .action-button:hover {
-            background-color: #ae9389;
+            background: linear-gradient(to right, #d98d8d, #ce7878);
         }
         
         .menu-card {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 20px;
+            background-color: rgb(245, 207, 207);
+  border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
         }
         
         .menu-title {
@@ -257,14 +238,15 @@ mysqli_close($conn);
             align-items: center;
             gap: 10px;
             margin-bottom: 8px;
+            
         }
         
         .menu-item:hover {
-            background-color: #d9bbb0;
+            background-color: rgb(236, 201, 201);
         }
         
         .menu-item.active {
-            background-color: #ae9389;
+            background-color: rgb(215, 165, 165);
             font-weight: bold;
         }
         
@@ -275,9 +257,14 @@ mysqli_close($conn);
         }
         
         .main-content {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 30px;
+            border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
         }
         
         .appointments-header {
@@ -286,7 +273,7 @@ mysqli_close($conn);
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #c0c0c0;
+            border-bottom: 1px solid rgb(142, 130, 130); ;
         }
         
         .appointments-count {
@@ -437,14 +424,14 @@ mysqli_close($conn);
         .tab {
             padding: 10px 20px;
             border-radius: 8px 8px 0 0;
-            background-color: #ae9389;
+            background-color: rgb(216, 189, 189);
             cursor: pointer;
             transition: all 0.3s ease;
             color: #fff;
         }
         
         .tab.active {
-            background-color: #f0f0f0;
+            background-color: rgb(215, 165, 165);
             font-weight: bold;
             color: #333;
         }
@@ -478,6 +465,26 @@ mysqli_close($conn);
             margin-bottom: 8px;
             font-size: 14px;
         }
+        .form-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.form-group label[for="update-past-records"] {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+}
+
+.form-group label[for="update-past-records"] input[type="checkbox"] {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.form-group p {
+    margin-left: 26px; /* Indent to align with checkbox text */
+}
         
         input, textarea, select {
             width: 100%;
@@ -485,7 +492,7 @@ mysqli_close($conn);
             border: none;
             border-radius: 8px;
             background-color: #ffffff;
-            font-family: 'Courier New', monospace;
+            font-family: Poppins;
             font-size: 14px;
             transition: all 0.3s ease;
         }
@@ -544,7 +551,7 @@ mysqli_close($conn);
         }
         
         .modal-content {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 30px;
             max-width: 500px;
@@ -571,11 +578,11 @@ mysqli_close($conn);
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            background-color: #d9bbb0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
         }
         
         .close-modal:hover {
-            background-color: #ae9389;
+            background: linear-gradient(to right, #d98d8d, #ce7878);
         }
         
         .date-picker, .time-picker {
@@ -1054,20 +1061,20 @@ input[type="file"] {
 }
 
 .save-profile-btn {
-    background-color: #ae9389;
+    background: linear-gradient(to right, #e6a4a4, #d98d8d);
     color: white;
 }
 
 .save-profile-btn:hover {
-    background-color: #8b6f5f;
+    background: linear-gradient(to right, #d98d8d, #ce7878);
 }
 
 .cancel-profile-btn {
-    background-color: #d9bbb0;
+    background: linear-gradient(to right, #e6a4a4, #d98d8d);
 }
 
 .cancel-profile-btn:hover {
-    background-color: #c0a297;
+    background: linear-gradient(to right, #d98d8d, #ce7878);
 }
 
 .error-message, .success-message {
@@ -1089,6 +1096,10 @@ input[type="file"] {
     </style>
 </head>
 <body>
+<div class="gradient-overlay"></div>
+    <div class="background-pattern"></div>
+    <div class="swirl-pattern"></div>
+    <div class="polish-drips"></div>
     <div class="container">
        <header>
             <div class="logo-container">
@@ -1430,15 +1441,15 @@ input[type="file"] {
                 </div>
                 
                 <div class="form-group full-width">
-                    <label for="update-past-records">
-                        <input type="checkbox" id="update-past-records" name="update_past_records" checked>
-                        Update all my past booking records with new information
-                    </label>
-                    <p style="font-size: 12px; color: #666; margin-top: 5px;">
-                        If checked, all your past appointments will show your new name and contact details. 
-                        If unchecked, only future appointments will be updated.
-                    </p>
-                </div>
+    <label for="update-past-records">
+        <input type="checkbox" id="update-past-records" name="update_past_records" checked>
+        <span>Update all my past booking records with new information</span>
+    </label>
+    <p style="font-size: 12px; color: #666; margin-top: 5px;">
+        If checked, all your past appointments will show your new name and contact details. 
+        If unchecked, only future appointments will be updated.
+    </p>
+</div>
                 
                 <div class="profile-modal-buttons">
                     <button type="submit" class="modal-button save-profile-btn">Save Changes</button>

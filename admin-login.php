@@ -32,13 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nail Architect - Admin Login</title>
+    <title>Nail Architect - Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -58,23 +57,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             position: relative;
         }
         
-        /* Background overlay */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.1);
-            z-index: 1;
-        }
-        
         .login-container {
-            background-color: #E8D7D0;
+            background-color: rgb(245, 207, 207);
             border-radius: 20px;
             padding: 50px 40px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+
             text-align: center;
             max-width: 440px;
             width: 90%;
@@ -87,41 +79,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             position: relative;
             display: inline-block;
         }
+
         
-        .icon-circle {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background-color: #D9BBB0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            position: relative;
-        }
-        
-        .icon-circle::after {
-            content: '';
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.3);
-            bottom: -10px;
-            right: -10px;
-            z-index: -1;
-        }
-        
-        .login-icon {
-            font-size: 36px;
-            color: #333;
+        .logo-img {
+            width: 120px;
+            height: auto;
+            object-fit: contain;
         }
         
         h2 {
             color: #333;
             margin-bottom: 10px;
-            font-size: 28px;
-            font-weight: 600;
+            font-size: 24px;
+            font-weight: bold;
         }
         
         .subtitle {
@@ -145,12 +115,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         .form-input {
             width: 100%;
-            padding: 14px 20px;
-            border: 1px solid #D9BBB0;
-            border-radius: 10px;
-            font-size: 15px;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #F2E9E9;
+            font-family: Poppins;
+            font-size: 14px;
             transition: all 0.3s ease;
-            background-color: rgba(255, 255, 255, 0.8);
         }
         
         .form-input:focus {
@@ -192,23 +163,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         .login-btn {
             width: 100%;
-            padding: 14px 35px;
-            background-color: #2196f3;
+            padding: 10px 20px;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 30px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 25px;
+            margin-top: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
         .login-btn:hover {
-            background-color: #1976d2;
+            background: linear-gradient(to right, #d98d8d, #ce7878);
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(33, 150, 243, 0.3);
+            box-shadow: 0 6px 12px rgba(233, 164, 164, 0.3);
+        }
+        
+        .login-btn:focus {
+            outline: none;
+        }
+        
+        .forgot-password {
+            text-align: right;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+        
+        .forgot-password a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .forgot-password a:hover {
+            color: #333;
+        }
+        
+        .signup-section {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .signup-section a {
+            color: black;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+        }
+        
+        .signup-section a:hover {
+            opacity: 0.8;
+        }
+        
+        .back-link {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .back-link a {
+            color: #666;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link a:hover {
+            color: #333;
         }
         
         /* Animation */
@@ -245,8 +271,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="login-container">
         <div class="icon-container">
-            <div class="icon-circle">
-                <i class="fas fa-user-shield login-icon"></i>
+            <div class="logo-circle">
+                <img src="Assets/logo.png" alt="Nail Architect Logo" class="logo-img">
             </div>
         </div>
         
@@ -278,7 +304,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fas fa-sign-in-alt"></i> Sign In
             </button>
         </form>
+        
+        <div class="back-link">
+            <a href="index.php">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
     </div>
+
 
     <script>
         function togglePassword() {

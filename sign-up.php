@@ -187,7 +187,7 @@ mysqli_close($conn);
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1500px;
             width: 100%;
             flex: 1;
             margin: 0 auto;
@@ -202,26 +202,6 @@ mysqli_close($conn);
             padding-bottom: 15px;
         }
 
-        .logo-container img {
-            height: 60px;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .nav-link {
-            cursor: pointer;
-        }
-
-        .book-now {
-            padding: 8px 20px;
-            background-color: #e8d7d0;
-            border-radius: 20px;
-            cursor: pointer;
-        }
 
         .signup-container {
             display: flex;
@@ -234,13 +214,17 @@ mysqli_close($conn);
         }
 
         .signup-form-container {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 40px;
             width: 100%;
             max-width: 600px;
             animation: fadeIn 0.7s ease-out forwards;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
         }
 
         .signup-title {
@@ -330,7 +314,7 @@ mysqli_close($conn);
 
         .signup-button {
             padding: 12px 24px;
-            background-color: #d9bbb0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             border: none;
             border-radius: 30px;
             cursor: pointer;
@@ -343,7 +327,7 @@ mysqli_close($conn);
         }
 
         .signup-button:hover {
-            background-color: #ae9389;
+            background: linear-gradient(to right, #d98d8d, #ce7878);
             transform: translateY(-2px);
         }
 
@@ -575,7 +559,7 @@ mysqli_close($conn);
 
                     <div class="terms-container">
                         <input type="checkbox" id="terms" name="terms" required>
-                        <label for="terms">I agree to the Terms of Service and Privacy Policy</label>
+                        <label for="terms">I agree to the <a href="terms-policy.php">Terms of Service and Privacy Policy</a></label>
                     </div>
 
                     <button type="submit" name="signup" class="signup-button">Create Account</button>
@@ -699,6 +683,28 @@ mysqli_close($conn);
                 return;
             }
         });
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookNow = document.querySelector('.book-now');
+            bookNow.addEventListener('click', function() {
+                window.location.href = 'booking.php';
+            });
+
+            const servicesLink = document.querySelector('.nav-link');
+            servicesLink.addEventListener('click', function() {
+                window.location.href = 'services.php';
+            });
+            <?php if ($logged_in): ?>
+                const userInitial = document.querySelector('.user-initial');
+                userInitial.addEventListener('click', function() {
+                    window.location.href = 'members-lounge.php';
+                });
+            <?php else: ?>
+                const loginIcon = document.querySelector('.login-icon');
+                loginIcon.addEventListener('click', function() {
+                    window.location.href = 'login.php';
+                });
+            <?php endif; ?>
+            });
     </script>
 </body>
 

@@ -126,9 +126,14 @@ if ($logged_in) {
         }
 
         .booking-form {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 25px;
+            border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
         }
 
         .form-group {
@@ -150,7 +155,7 @@ if ($logged_in) {
             border: none;
             border-radius: 8px;
             background-color: #f2e9e9;
-            font-family: 'Courier New', monospace;
+            font-family: Poppins;
             font-size: 14px;
             transition: all 0.3s ease;
         }
@@ -276,7 +281,7 @@ if ($logged_in) {
         .browse-button {
             display: inline-block;
             padding: 8px 16px;
-            background-color: #d9bbb0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             border-radius: 20px;
             cursor: pointer;
             font-size: 14px;
@@ -331,9 +336,15 @@ if ($logged_in) {
         }
 
         .payment-info {
-            background-color: #e8d7d0;
+            background-color:rgb(245, 207, 207);
             border-radius: 15px;
             padding: 25px;
+            border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+        
         }
 
         .info-title {
@@ -372,9 +383,15 @@ if ($logged_in) {
         }
 
         .policy-box {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 25px;
+            border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+        
         }
 
         .policy-content {
@@ -402,7 +419,7 @@ if ($logged_in) {
 
         .submit-button {
             padding: 12px 24px;
-            background-color: #d9bbb0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             border: none;
             border-radius: 30px;
             cursor: pointer;
@@ -938,6 +955,7 @@ if ($logged_in) {
     });
 });
     </script>
+    <?php include 'chat-widget.php'; ?>
 </body>
 
 </html>

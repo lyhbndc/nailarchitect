@@ -249,7 +249,7 @@ if (isset($_GET['logout'])) {
 
         .faq .grid-title {
             position: absolute;
-            bottom: 170px;
+            bottom: 80px;
             right: 100px;
         }
 

@@ -1,3 +1,22 @@
+<?php
+// Start session
+session_start();
+
+// Check if user is logged in
+$logged_in = isset($_SESSION['user_id']);
+
+// If logged in, get the first letter of the user's first name for the avatar
+if ($logged_in) {
+    $first_letter = substr($_SESSION['user_name'], 0, 1);
+}
+
+// Handle logout
+if (isset($_GET['logout'])) {
+    session_destroy();
+    header("Location: index.php");
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,30 +25,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="navbar.css">
     <link rel="stylesheet" href="bg-gradient.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
     <title>Nail Architect - Matchmaking Quiz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-        body {
-            background-color: #F2E9E9;
-            font-family: 'Poppins', sans-serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Poppins;
         }
 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
 
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f2e9e9;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+        }
+
+        .container {
+            max-width: 1500px;
+            width: 100%;
+            flex: 1;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
         .quiz-container {
             max-width: 800px;
             margin: 0 auto;
             padding: 30px;
+            
         }
 
         .quiz-card {
-            background-color: #E8D7D0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(235, 184, 184, 0.3);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.05),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3);
         }
 
         .quiz-header {
@@ -64,7 +132,6 @@
 
         .option-card.selected {
             background-color: #D9BBB0;
-            border: 2px solid #c78c8c;
         }
 
         .option-image {
@@ -129,6 +196,10 @@
             padding: 10px 30px;
             font-size: 18px;
             border-radius: 20px;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
+        }
+        .book-now-btn:hover{
+            background: linear-gradient(to right, #d98d8d, #ce7878);
         }
 
         @keyframes fadeIn {
@@ -158,6 +229,15 @@
                         <img src="Assets/logo.png" alt="Nail Architect Logo">
                     </a>
                 </div>
+            </div>
+            <div class="nav-links">
+                <div class="nav-link">Services</div>
+                <div class="book-now">Book Now</div>
+                <?php if ($logged_in): ?>
+                    <div class="user-initial"><?php echo $first_letter; ?></div>
+                <?php else: ?>
+                    <div class="login-icon"><i class="fa fa-user"></i></div>
+                <?php endif; ?>
             </div>
         </header>
 
@@ -773,8 +853,32 @@
 
                 return otherMatches;
             }
+  
+
         });
+        document.addEventListener('DOMContentLoaded', function() {
+            const servicesLink = document.querySelector('.nav-link');
+            servicesLink.addEventListener('click', function() {
+                window.location.href = 'services.php';
+            });
+            const bookNow = document.querySelector('.book-now');
+            bookNow.addEventListener('click', function() {
+                window.location.href = 'booking.php';
+            });
+            <?php if ($logged_in): ?>
+                const userInitial = document.querySelector('.user-initial');
+                userInitial.addEventListener('click', function() {
+                    window.location.href = 'members-lounge.php';
+                });
+            <?php else: ?>
+                const loginIcon = document.querySelector('.login-icon');
+                loginIcon.addEventListener('click', function() {
+                    window.location.href = 'login.php';
+                });
+            <?php endif; ?>
+            });
     </script>
+        <?php include 'chat-widget.php'; ?>
 </body>
 
 </html>
