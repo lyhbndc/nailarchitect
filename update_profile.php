@@ -1,5 +1,33 @@
 <?php
+// update_profile_debug.php - A debug version to help identify the issue
 session_start();
+
+// Set error reporting to see all errors
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Check if PHPMailer files exist
+$required_files = [
+    'phpmailer/src/Exception.php',
+    'phpmailer/src/PHPMailer.php',
+    'phpmailer/src/SMTP.php'
+];
+
+$missing_files = [];
+foreach ($required_files as $file) {
+    if (!file_exists($file)) {
+        $missing_files[] = $file;
+    }
+}
+
+if (!empty($missing_files)) {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Missing PHPMailer files: ' . implode(', ', $missing_files),
+        'debug' => 'PHPMailer is not installed properly'
+    ]);
+    exit();
+}
 
 // Include PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
@@ -11,14 +39,38 @@ require 'phpmailer/src/SMTP.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'User not logged in']);
+    echo json_encode(['success' => false, 'message' => 'User not logged in', 'debug' => 'Session not set']);
     exit();
 }
 
 // Database connection
 $conn = mysqli_connect("localhost", "root", "", "nail_architect_db");
 if (!$conn) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Database connection failed',
+        'debug' => mysqli_connect_error()
+    ]);
+    exit();
+}
+
+// Only accept POST requests
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Invalid request method',
+        'debug' => 'Method: ' . $_SERVER['REQUEST_METHOD']
+    ]);
+    exit();
+}
+
+// Check for action
+if (!isset($_POST['action']) || $_POST['action'] !== 'update_profile') {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Invalid action',
+        'debug' => 'Action received: ' . ($_POST['action'] ?? 'none')
+    ]);
     exit();
 }
 
@@ -26,6 +78,11 @@ if (!$conn) {
 function sendProfileVerificationEmail($email, $firstname, $token) {
     $mail = new PHPMailer(true);
     try {
+        // Disable SMTP for testing - just return true
+        // Comment this line and uncomment the SMTP config below to test email sending
+        return true;
+        
+        /*
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
@@ -53,37 +110,15 @@ function sendProfileVerificationEmail($email, $firstname, $token) {
             <div style="text-align: center; margin: 30px 0;">
                 <a href="' . $verificationLink . '" style="background-color: #d9bbb0; color: #000; padding: 12px 25px; text-decoration: none; border-radius: 25px; font-weight: bold;">Verify My New Email</a>
             </div>
-            <p>If the button above doesn\'t work, you can also copy and paste the following link into your browser:</p>
-            <p style="background-color: #f2e9e9; padding: 10px; border-radius: 5px; word-break: break-all;">' . $verificationLink . '</p>
-            <p>This link will expire in 24 hours for security reasons.</p>
-            <p>If you didn\'t request this email change, please contact our support team immediately.</p>
-            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e8d7d0; text-align: center; font-size: 12px; color: #666;">
-                <p>&copy; ' . date('Y') . ' Nail Architect. All rights reserved.</p>
-                <p>123 Nail Street, Beauty District, Marikina City</p>
-            </div>
         </div>';
-
-        // Plain text alternative
-        $mail->AltBody = "Hello $firstname,\n\nPlease verify your new email address by clicking this link: $verificationLink\n\nThank you,\nNail Architect Team";
 
         $mail->send();
         return true;
+        */
     } catch (Exception $e) {
         error_log("Email could not be sent. Error: {$mail->ErrorInfo}");
         return false;
     }
-}
-
-// Only accept POST requests
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
-    exit();
-}
-
-// Check for action
-if (!isset($_POST['action']) || $_POST['action'] !== 'update_profile') {
-    echo json_encode(['success' => false, 'message' => 'Invalid action']);
-    exit();
 }
 
 // Get user ID from session
@@ -96,17 +131,26 @@ $email = trim($_POST['email'] ?? '');
 $phone = trim($_POST['phone'] ?? '');
 $password = trim($_POST['password'] ?? '');
 $confirm_password = trim($_POST['confirm_password'] ?? '');
-$update_past_records = isset($_POST['update_past_records']) ? true : false; // Optional checkbox
+$update_past_records = isset($_POST['update_past_records']) ? true : false;
 
 // Validation
 if (empty($first_name) || empty($last_name) || empty($email) || empty($phone)) {
-    echo json_encode(['success' => false, 'message' => 'All fields are required']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'All fields are required',
+        'debug' => [
+            'first_name' => $first_name,
+            'last_name' => $last_name,
+            'email' => $email,
+            'phone' => $phone
+        ]
+    ]);
     exit();
 }
 
 // Validate email format
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    echo json_encode(['success' => false, 'message' => 'Invalid email format']);
+    echo json_encode(['success' => false, 'message' => 'Invalid email format', 'debug' => 'Email: ' . $email]);
     exit();
 }
 
@@ -120,10 +164,29 @@ if (!empty($password) && $password !== $confirm_password) {
 $email_changed = false;
 $current_email_query = "SELECT * FROM users WHERE id = ?";
 $stmt = $conn->prepare($current_email_query);
+if (!$stmt) {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Database prepare error',
+        'debug' => $conn->error
+    ]);
+    exit();
+}
+
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $current_user = $result->fetch_assoc();
+
+if (!$current_user) {
+    echo json_encode([
+        'success' => false, 
+        'message' => 'User not found',
+        'debug' => 'User ID: ' . $user_id
+    ]);
+    exit();
+}
+
 $current_email = $current_user['email'];
 $current_first_name = $current_user['first_name'];
 $current_last_name = $current_user['last_name'];
@@ -166,15 +229,6 @@ if ($email_changed) {
 $conn->begin_transaction();
 
 try {
-    // First, create a backup of old data in a history table (optional but recommended)
-    $backup_query = "INSERT INTO user_profile_history (user_id, old_first_name, old_last_name, old_email, old_phone, new_first_name, new_last_name, new_email, new_phone, changed_at, update_past_records) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)";
-    $stmt = $conn->prepare($backup_query);
-    $update_past_int = $update_past_records ? 1 : 0;
-    $stmt->bind_param("issssssssi", $user_id, $current_first_name, $current_last_name, $current_email, $current_phone, $first_name, $last_name, $email, $phone, $update_past_int);
-    // Execute backup (optional - uncomment if you have this table)
-    // $stmt->execute();
-    
     // Update user profile with ALL changes
     if (!empty($password)) {
         // Update with new password
@@ -190,11 +244,10 @@ try {
     }
     
     if (!$stmt->execute()) {
-        throw new Exception('Failed to update profile');
+        throw new Exception('Failed to update profile: ' . $stmt->error);
     }
     
-    // VERSION 1: Update ALL bookings (past and future)
-    // This will update every single booking regardless of status or date
+    // Update ALL bookings (past and future)
     $update_all_bookings_query = "UPDATE bookings 
                                  SET name = CONCAT(?, ' ', ?), 
                                      email = ?, 
@@ -204,17 +257,9 @@ try {
     $stmt->bind_param("ssssi", $first_name, $last_name, $email, $phone, $user_id);
     
     if (!$stmt->execute()) {
-        error_log("Warning: Could not update bookings, but profile update succeeded");
+        // Just log warning, don't fail the whole operation
+        error_log("Warning: Could not update bookings: " . $stmt->error);
     }
-    
-    // Update messages table if it has sender name
-    $update_messages_query = "UPDATE messages 
-                             SET sender_name = CONCAT(?, ' ', ?) 
-                             WHERE sender_id = ?";
-    $stmt = $conn->prepare($update_messages_query);
-    $stmt->bind_param("ssi", $first_name, $last_name, $user_id);
-    // Execute if you have such a column
-    // $stmt->execute();
     
     // If email changed, handle verification
     if ($email_changed) {
@@ -228,7 +273,7 @@ try {
         $stmt->bind_param("ssi", $verification_token, $token_expiry, $user_id);
         
         if (!$stmt->execute()) {
-            throw new Exception('Failed to generate verification token');
+            throw new Exception('Failed to generate verification token: ' . $stmt->error);
         }
         
         // Send verification email using the NEW first name
@@ -280,7 +325,14 @@ try {
 } catch (Exception $e) {
     // Rollback transaction on error
     $conn->rollback();
-    echo json_encode(['success' => false, 'message' => 'Error updating profile: ' . $e->getMessage()]);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Error updating profile: ' . $e->getMessage(),
+        'debug' => [
+            'line' => $e->getLine(),
+            'file' => $e->getFile()
+        ]
+    ]);
 } finally {
     // Close database connection
     if (isset($stmt)) {
