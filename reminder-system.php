@@ -125,7 +125,7 @@ function checkAndSendReminders() {
                 
                 <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e8d7d0; text-align: center; font-size: 12px; color: #666;">
                     <p>&copy; ' . date('Y') . ' Nail Architect. All rights reserved.</p>
-                    <p>123 Nail Street, Beauty District, Marikina City</p>
+                    <p>6 Osmena St., TS Cruz Subdivision Novaliches, Quezon City</p>
                 </div>
             </div>';
             

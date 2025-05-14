@@ -516,17 +516,17 @@
                 </p>
                 <p class="section-content">
                     <strong>Nail Architect</strong><br>
-                    123 Elegance Avenue, Suite 456<br>
-                    New York, NY 10001<br>
+                    46 Osmena St., TS Cruz Subdivision<br>
+                    Novaliches, Quezon City<br>
                     Phone: (212) 555-7890<br>
                     Email: legal@nailarchitect.com
                 </p>
             </div>
             
-            <p class="last-updated">Last Updated: November 2024</p>
+            <p class="last-updated">Last Updated: May 2025</p>
         </div>
         
-        <a href="index.html" class="back-button">← Back to Home</a>
+        <a href="index.php" class="back-button">← Back to Home</a>
     </div>
     
     <script>

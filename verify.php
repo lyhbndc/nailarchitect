@@ -295,8 +295,8 @@ mysqli_close($conn);
                 <ul>
                     <li><a href="index.php">Home</a></li>
                     <li><a href="services.php">Services</a></li>
-                    <li><a href="#">Booking</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="login.php">Booking</a></li>
+                    <li><a href="get-in-touch-page.php">Contact</a></li>
                 </ul>
             </div>
             <div class="footer-section">

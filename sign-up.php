@@ -221,10 +221,10 @@ mysqli_close($conn);
             max-width: 600px;
             animation: fadeIn 0.7s ease-out forwards;
             border: 1px solid rgba(235, 184, 184, 0.3);
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.1),
-    0 2px 8px rgba(0, 0, 0, 0.05),
-    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.1),
+                0 2px 8px rgba(0, 0, 0, 0.05),
+                inset 0 1px 2px rgba(255, 255, 255, 0.3);
         }
 
         .signup-title {
@@ -683,6 +683,7 @@ mysqli_close($conn);
                 return;
             }
         });
+
         document.addEventListener('DOMContentLoaded', function() {
             const bookNow = document.querySelector('.book-now');
             bookNow.addEventListener('click', function() {
@@ -693,18 +694,15 @@ mysqli_close($conn);
             servicesLink.addEventListener('click', function() {
                 window.location.href = 'services.php';
             });
-            <?php if ($logged_in): ?>
-                const userInitial = document.querySelector('.user-initial');
-                userInitial.addEventListener('click', function() {
-                    window.location.href = 'members-lounge.php';
-                });
-            <?php else: ?>
-                const loginIcon = document.querySelector('.login-icon');
+
+            // Fixed: Removed PHP conditional that was causing errors
+            const loginIcon = document.querySelector('.login-icon');
+            if (loginIcon) {
                 loginIcon.addEventListener('click', function() {
                     window.location.href = 'login.php';
                 });
-            <?php endif; ?>
-            });
+            }
+        });
     </script>
 </body>
 

@@ -1427,7 +1427,7 @@ input[type="file"] {
                 
                 <div class="form-group">
                     <label for="profile-phone">Phone Number</label>
-                    <input type="tel" id="profile-phone" name="phone" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
+                   <input type="tel" id="profile-phone" name="phone" pattern="[0-9]{11}" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
                 </div>
                 
                 <div class="form-group">
