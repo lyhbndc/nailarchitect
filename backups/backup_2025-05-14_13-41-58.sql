@@ -1,5 +1,5 @@
 -- Database Backup
--- Generated: 2025-05-13 08:31:49
+-- Generated: 2025-05-14 13:41:58
 -- Database: nail_architect_db
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -23,10 +23,11 @@ CREATE TABLE `admin_users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Data for table `admin_users`
-INSERT INTO `admin_users` VALUES ('1', 'admin', 'admin@nailarchitect.com', '$2y$10$YKjlOJ0TmE6nShqT7p3Nw.A7iAKtGjrNhWUFhcZrNR1kS/aGXCpPu', 'Admin', 'User', '09123456789', 'super_admin', '2025-05-12 17:35:49', NULL, '1');
+INSERT INTO `admin_users` VALUES ('1', 'admin', 'admin@nailarchitect.com', '$2y$10$YKjlOJ0TmE6nShqT7p3Nw.A7iAKtGjrNhWUFhcZrNR1kS/aGXCpPu', 'Admin', 'User', '09123456789', 'super_admin', '2025-05-13 01:35:49', NULL, '1');
+INSERT INTO `admin_users` VALUES ('2', 'kuznets', 'kuznets.calleja@gmail.com', '$2y$10$joGmhUe1K7N5JZBXPSyP2e78CCBXbUKvel9E2eBmqgd9KG/JdoX.K', 'Coy', 'Coy', '12312312312', 'admin', '2025-05-13 17:52:40', '2025-05-14 13:39:13', '1');
 
 
 -- Table structure for table `booking_images`
@@ -74,15 +75,15 @@ CREATE TABLE `bookings` (
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Data for table `bookings`
-INSERT INTO `bookings` VALUES ('2', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'press-ons', '2025-05-13', '14:00', 'hehe', 'TBD', '45', '300.00', '0', 'cancelled', '2025-05-11 10:53:10');
-INSERT INTO `bookings` VALUES ('3', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'other', '2025-05-14', '14:00', 'asdasd', 'TBD', '60', '500.00', 'NAI-1939264', 'confirmed', '2025-05-11 10:59:02');
-INSERT INTO `bookings` VALUES ('4', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'soft-gel', '2025-05-15', '14:00', 'asdasd', 'TBD', '60', '800.00', 'NAI-3229037', 'cancelled', '2025-05-11 11:02:29');
-INSERT INTO `bookings` VALUES ('5', '6', 'Berlin Dela Cruz', 'maeracreation@gmail.com', '123187237612', 'other', '2025-05-12', '10:00', '', 'TBD', '60', '500.00', 'NAI-2981935', 'completed', '2025-05-11 13:32:58');
-INSERT INTO `bookings` VALUES ('6', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'soft-gel', '2025-05-12', '15:00', '', 'TBD', '60', '800.00', 'NAI-9264289', 'completed', '2025-05-11 13:35:29');
-INSERT INTO `bookings` VALUES ('7', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'builder-gel', '2025-05-12', '18:00', '', 'TBD', '60', '750.00', 'NAI-3070252', 'confirmed', '2025-05-11 14:03:34');
-INSERT INTO `bookings` VALUES ('8', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'removal-fill', '2025-05-17', '11:00', 'wazzup', 'TBD', '30', '150.00', 'NAI-9689707', 'confirmed', '2025-05-11 16:40:38');
-INSERT INTO `bookings` VALUES ('9', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'builder-gel', '2025-05-14', '15:00', '', 'TBD', '60', '750.00', 'NAI-6387058', 'confirmed', '2025-05-12 00:29:43');
-INSERT INTO `bookings` VALUES ('10', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'soft-gel', '2025-05-14', '16:00', 'hehe', 'TBD', '60', '800.00', 'NAI-7501589', 'pending', '2025-05-12 11:13:38');
+INSERT INTO `bookings` VALUES ('2', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'press-ons', '2025-05-13', '14:00', 'hehe', 'TBD', '45', '300.00', '0', 'cancelled', '2025-05-11 18:53:10');
+INSERT INTO `bookings` VALUES ('3', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'other', '2025-05-14', '14:00', 'asdasd', 'TBD', '60', '500.00', 'NAI-1939264', 'confirmed', '2025-05-11 18:59:02');
+INSERT INTO `bookings` VALUES ('4', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'soft-gel', '2025-05-15', '14:00', 'asdasd', 'TBD', '60', '800.00', 'NAI-3229037', 'cancelled', '2025-05-11 19:02:29');
+INSERT INTO `bookings` VALUES ('5', '6', 'Berlin Dela Cruz', 'maeracreation@gmail.com', '123187237612', 'other', '2025-05-12', '10:00', '', 'TBD', '60', '500.00', 'NAI-2981935', 'completed', '2025-05-11 21:32:58');
+INSERT INTO `bookings` VALUES ('6', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'soft-gel', '2025-05-12', '15:00', '', 'TBD', '60', '800.00', 'NAI-9264289', 'completed', '2025-05-11 21:35:29');
+INSERT INTO `bookings` VALUES ('7', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'builder-gel', '2025-05-12', '18:00', '', 'TBD', '60', '750.00', 'NAI-3070252', 'confirmed', '2025-05-11 22:03:34');
+INSERT INTO `bookings` VALUES ('8', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'removal-fill', '2025-05-17', '11:00', 'wazzup', 'TBD', '30', '150.00', 'NAI-9689707', 'confirmed', '2025-05-12 00:40:38');
+INSERT INTO `bookings` VALUES ('9', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'builder-gel', '2025-05-14', '15:00', '', 'TBD', '60', '750.00', 'NAI-6387058', 'confirmed', '2025-05-12 08:29:43');
+INSERT INTO `bookings` VALUES ('10', '7', 'Lele Cutie', 'johnlexercrisostomo@gmail.com', '09491145757', 'soft-gel', '2025-05-14', '16:00', 'hehe', 'TBD', '60', '800.00', 'NAI-7501589', 'pending', '2025-05-12 19:13:38');
 
 
 -- Table structure for table `chat_conversations`
@@ -121,6 +122,43 @@ CREATE TABLE `chat_messages` (
 
 
 
+-- Table structure for table `inquiries`
+DROP TABLE IF EXISTS `inquiries`;
+CREATE TABLE `inquiries` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(100) NOT NULL,
+  `last_name` varchar(100) DEFAULT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `subject` varchar(200) NOT NULL,
+  `message` text NOT NULL,
+  `status` enum('unread','read','responded') DEFAULT 'unread',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_status` (`status`),
+  KEY `idx_email` (`email`),
+  KEY `idx_created_at` (`created_at`),
+  KEY `idx_subject` (`subject`),
+  FULLTEXT KEY `ft_message` (`message`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- Data for table `inquiries`
+INSERT INTO `inquiries` VALUES ('3', 'Anna', 'Reyes', 'anna.reyes@email.com', '09369871234', 'General Inquiry', 'I love your work! Do you have any ongoing promotions or packages for regular clients?', 'responded', '2025-05-14 04:07:53', '2025-05-14 04:07:53');
+INSERT INTO `inquiries` VALUES ('4', 'Patricia', 'Garcia', 'patricia.g@email.com', NULL, 'Feedback', 'Just wanted to say thank you for the amazing service last week. My nails still look perfect!', 'responded', '2025-05-14 04:07:53', '2025-05-14 04:07:53');
+INSERT INTO `inquiries` VALUES ('7', 'aaa', '', 'bondoc.aaliyah.b@gmail.com', '123187237612', 'services', 'asdasdas', 'responded', '2025-05-14 04:19:21', '2025-05-14 04:26:08');
+INSERT INTO `inquiries` VALUES ('8', 'sdasd', '', 'admin@nailarchitect.com', '0987655323', 'general', 'sdasda', 'read', '2025-05-14 04:19:34', '2025-05-14 04:38:50');
+INSERT INTO `inquiries` VALUES ('9', 'aaa', '', 'admin@nailarchitect.com', '123187237612', 'general', 'sadasd', 'read', '2025-05-14 04:19:44', '2025-05-14 04:25:57');
+
+
+-- Table structure for table `inquiry_statistics`
+DROP TABLE IF EXISTS `inquiry_statistics`;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `inquiry_statistics` AS select count(0) AS `total_inquiries`,sum(case when `inquiries`.`status` = 'unread' then 1 else 0 end) AS `unread_count`,sum(case when `inquiries`.`status` = 'read' then 1 else 0 end) AS `read_count`,sum(case when `inquiries`.`status` = 'responded' then 1 else 0 end) AS `responded_count`,cast(`inquiries`.`created_at` as date) AS `inquiry_date` from `inquiries` group by cast(`inquiries`.`created_at` as date);
+
+-- Data for table `inquiry_statistics`
+INSERT INTO `inquiry_statistics` VALUES ('5', '0', '2', '3', '2025-05-14');
+
+
 -- Table structure for table `message_attachments`
 DROP TABLE IF EXISTS `message_attachments`;
 CREATE TABLE `message_attachments` (
@@ -137,8 +175,8 @@ CREATE TABLE `message_attachments` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Data for table `message_attachments`
-INSERT INTO `message_attachments` VALUES ('3', '19', 'HELLO.png', 'uploads/messages/682010b957cef_HELLO.png', '1883', 'image/png', '2025-05-11 10:51:37');
-INSERT INTO `message_attachments` VALUES ('4', '23', 'asdasdasd.jpg', 'uploads/messages/6821b2e771c2a_asdasdasd.jpg', '52413', 'image/jpeg', '2025-05-12 16:35:51');
+INSERT INTO `message_attachments` VALUES ('3', '19', 'HELLO.png', 'uploads/messages/682010b957cef_HELLO.png', '1883', 'image/png', '2025-05-11 18:51:37');
+INSERT INTO `message_attachments` VALUES ('4', '23', 'asdasdasd.jpg', 'uploads/messages/6821b2e771c2a_asdasdasd.jpg', '52413', 'image/jpeg', '2025-05-13 00:35:51');
 
 
 -- Table structure for table `messages`
@@ -197,8 +235,10 @@ CREATE TABLE `password_resets` (
   KEY `user_id` (`user_id`),
   KEY `idx_token` (`token`),
   CONSTRAINT `password_resets_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- Data for table `password_resets`
+INSERT INTO `password_resets` VALUES ('12', '6', 'c1a2077498cf6d6132537a7e3ad1590dbdaee95ac677e7d1bbc384f60ab7a035', '2025-05-14 00:03:11', '2025-05-14 05:03:11');
 
 
 -- Table structure for table `payment_proofs`
@@ -214,15 +254,15 @@ CREATE TABLE `payment_proofs` (
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Data for table `payment_proofs`
-INSERT INTO `payment_proofs` VALUES ('2', '2', 'uploads/payments/NAI-8455408_ballot.png', '2025-05-11 10:53:10');
-INSERT INTO `payment_proofs` VALUES ('3', '3', 'uploads/payments/NAI-1939264_logout.png', '2025-05-11 10:59:02');
-INSERT INTO `payment_proofs` VALUES ('4', '4', 'uploads/payments/NAI-3229037_send.png', '2025-05-11 11:02:29');
-INSERT INTO `payment_proofs` VALUES ('5', '5', 'uploads/payments/NAI-2981935_asdasdasd.jpg', '2025-05-11 13:32:58');
-INSERT INTO `payment_proofs` VALUES ('6', '6', 'uploads/payments/NAI-9264289_logout.png', '2025-05-11 13:35:29');
-INSERT INTO `payment_proofs` VALUES ('7', '7', 'uploads/payments/NAI-3070252_mdi_vote.png', '2025-05-11 14:03:34');
-INSERT INTO `payment_proofs` VALUES ('8', '8', 'uploads/payments/NAI-9689707_HELLO.png', '2025-05-11 16:40:38');
-INSERT INTO `payment_proofs` VALUES ('9', '9', 'uploads/payments/NAI-6387058_asdasdasd.jpg', '2025-05-12 00:29:43');
-INSERT INTO `payment_proofs` VALUES ('10', '10', 'uploads/payments/NAI-7501589_login3.png', '2025-05-12 11:13:38');
+INSERT INTO `payment_proofs` VALUES ('2', '2', 'uploads/payments/NAI-8455408_ballot.png', '2025-05-11 18:53:10');
+INSERT INTO `payment_proofs` VALUES ('3', '3', 'uploads/payments/NAI-1939264_logout.png', '2025-05-11 18:59:02');
+INSERT INTO `payment_proofs` VALUES ('4', '4', 'uploads/payments/NAI-3229037_send.png', '2025-05-11 19:02:29');
+INSERT INTO `payment_proofs` VALUES ('5', '5', 'uploads/payments/NAI-2981935_asdasdasd.jpg', '2025-05-11 21:32:58');
+INSERT INTO `payment_proofs` VALUES ('6', '6', 'uploads/payments/NAI-9264289_logout.png', '2025-05-11 21:35:29');
+INSERT INTO `payment_proofs` VALUES ('7', '7', 'uploads/payments/NAI-3070252_mdi_vote.png', '2025-05-11 22:03:34');
+INSERT INTO `payment_proofs` VALUES ('8', '8', 'uploads/payments/NAI-9689707_HELLO.png', '2025-05-12 00:40:38');
+INSERT INTO `payment_proofs` VALUES ('9', '9', 'uploads/payments/NAI-6387058_asdasdasd.jpg', '2025-05-12 08:29:43');
+INSERT INTO `payment_proofs` VALUES ('10', '10', 'uploads/payments/NAI-7501589_login3.png', '2025-05-12 19:13:38');
 
 
 -- Table structure for table `user_profile_history`
@@ -272,9 +312,9 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Data for table `users`
-INSERT INTO `users` VALUES ('2', 'Lele', 'Lele', 'cutie@gmail.com', '12312312', '$2y$10$SDHocuC7BeFd8./xbmfVXeQHmlSOZneuAFVlB/qnX2dKRbZ7d6SMG', '2025-04-26 15:14:59', NULL, NULL, '0');
-INSERT INTO `users` VALUES ('3', 'SF', 'SF', 'asdas@gmail.com', '123544566', '$2y$10$UZs/j0PSxs69DEPcrXQ3XOWVbSPFknSqbbDTKbcM9oCejwTtNfn1.', '2025-04-27 15:21:09', NULL, NULL, '0');
-INSERT INTO `users` VALUES ('4', 'Jez', 'Ariel Pogi', 'jezariel13@gmail.com', '123187237612', '$2y$10$xWQi8Dg5Dm8.vizhjEuMG.lU4ADOm8zyUMEtrVcJbYHIoDsx789j.', '2025-05-04 13:53:17', '041c3ab4200b468a70718edeced32de6', '2025-05-05 07:53:17', '0');
-INSERT INTO `users` VALUES ('6', 'Berlin', 'Dela Cruz', 'maeracreation@gmail.com', '123187237612', '$2y$10$ryGclcJPwGdRc02KbmCfKulXnGcvElQp5Y1b4B4zdJdrFmxjQxrcG', '2025-05-04 14:14:43', NULL, '2025-05-05 08:14:43', '1');
-INSERT INTO `users` VALUES ('7', 'Tapu', 'Lele', 'angcuteko213@gmail.com', '09491145757', '$2y$10$x5D4c/FK8ZozJrJ77TuGi.hVCc5UFMVSM5byXUK/aMFJB6LRfwJkO', '2025-05-05 15:15:17', NULL, '2025-05-13 09:58:46', '1');
+INSERT INTO `users` VALUES ('2', 'Lele', 'Lele', 'cutie@gmail.com', '12312312', '$2y$10$SDHocuC7BeFd8./xbmfVXeQHmlSOZneuAFVlB/qnX2dKRbZ7d6SMG', '2025-04-26 23:14:59', NULL, NULL, '0');
+INSERT INTO `users` VALUES ('3', 'SF', 'SF', 'asdas@gmail.com', '123544566', '$2y$10$UZs/j0PSxs69DEPcrXQ3XOWVbSPFknSqbbDTKbcM9oCejwTtNfn1.', '2025-04-27 23:21:09', NULL, NULL, '0');
+INSERT INTO `users` VALUES ('4', 'Jez', 'Ariel Pogi', 'jezariel13@gmail.com', '123187237612', '$2y$10$xWQi8Dg5Dm8.vizhjEuMG.lU4ADOm8zyUMEtrVcJbYHIoDsx789j.', '2025-05-04 21:53:17', '041c3ab4200b468a70718edeced32de6', '2025-05-05 07:53:17', '0');
+INSERT INTO `users` VALUES ('6', 'Berlin', 'Dela Cruz', 'maeracreation@gmail.com', '123187237612', '$2y$10$ryGclcJPwGdRc02KbmCfKulXnGcvElQp5Y1b4B4zdJdrFmxjQxrcG', '2025-05-04 22:14:43', NULL, '2025-05-05 08:14:43', '1');
+INSERT INTO `users` VALUES ('7', 'Tapu', 'Lele', 'angcuteko213@gmail.com', '09491145757', '$2y$10$x5D4c/FK8ZozJrJ77TuGi.hVCc5UFMVSM5byXUK/aMFJB6LRfwJkO', '2025-05-05 23:15:17', NULL, '2025-05-13 09:58:46', '1');
 

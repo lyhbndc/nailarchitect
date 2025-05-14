@@ -23,15 +23,16 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $current_admin = mysqli_fetch_assoc($result);
 
-// Only super admins can access admin data
-if ($current_admin['role'] !== 'super_admin') {
-    http_response_code(403);
-    echo json_encode(['error' => 'Forbidden - Super Admin access required']);
-    exit();
-}
-
 // Get admin ID from query parameter
 $admin_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+// Check permissions: super admin can view all, regular admin can only view self
+$is_super_admin = ($current_admin['role'] === 'super_admin');
+if (!$is_super_admin && $admin_id != $current_admin_id) {
+    http_response_code(403);
+    echo json_encode(['error' => 'Permission denied - You can only view your own profile']);
+    exit();
+}
 
 if ($admin_id > 0) {
     $query = "SELECT * FROM admin_users WHERE id = ?";

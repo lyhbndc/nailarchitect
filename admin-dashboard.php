@@ -873,9 +873,7 @@ $total_revenue = mysqli_query($conn, $total_revenue_query)->fetch_assoc()['reven
                                             </div>
                                         <?php endif; ?>
                                         
-                                        <div class="details-panel-action" onclick="window.location.href='send-reminder.php?id=<?php echo $appointment['id']; ?>'">
-                                            <i class="fas fa-bell"></i> Send Reminder
-                                        </div>
+                                        
                                     </div>
                                 </td>
                             </tr>

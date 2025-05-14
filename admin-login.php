@@ -2,42 +2,67 @@
 // Start session
 session_start();
 
+// Database connection
+$conn = mysqli_connect("localhost", "root", "", "nail_architect_db");
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
 // Check if already logged in
 if (isset($_SESSION['admin_id'])) {
     header('Location: admin-dashboard.php');
     exit();
 }
 
-// Define admin credentials (replace with your preferred admin details)
-$admin_username = 'admin';
-$admin_password = 'admin123'; // In a real app, use password_hash() for storage
-
 // Handle login form submission
 $error_message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = isset($_POST['username']) ? $_POST['username'] : '';
+    $username = isset($_POST['username']) ? mysqli_real_escape_string($conn, $_POST['username']) : '';
     $password = isset($_POST['password']) ? $_POST['password'] : '';
     
-    // Validate credentials
-    if ($username === $admin_username && $password === $admin_password) {
-        // Set admin session
-        $_SESSION['admin_id'] = 1;
-        $_SESSION['admin_username'] = $username;
-        
-        // Redirect to dashboard
-        header('Location: admin-dashboard.php');
-        exit();
+    // Query database for admin user
+    $query = "SELECT * FROM admin_users WHERE username = ? AND is_active = 1";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    if ($admin = mysqli_fetch_assoc($result)) {
+        // Verify password
+        if (password_verify($password, $admin['password'])) {
+            // Set admin session
+            $_SESSION['admin_id'] = $admin['id'];
+            $_SESSION['admin_username'] = $admin['username'];
+            $_SESSION['admin_role'] = $admin['role'];
+            $_SESSION['admin_name'] = $admin['first_name'] . ' ' . $admin['last_name'];
+            
+            // Update last login timestamp
+            $update_login = "UPDATE admin_users SET last_login = CURRENT_TIMESTAMP WHERE id = ?";
+            $update_stmt = mysqli_prepare($conn, $update_login);
+            mysqli_stmt_bind_param($update_stmt, "i", $admin['id']);
+            mysqli_stmt_execute($update_stmt);
+            
+            // Redirect to dashboard
+            header('Location: admin-dashboard.php');
+            exit();
+        } else {
+            $error_message = 'Invalid username or password';
+        }
     } else {
         $error_message = 'Invalid username or password';
     }
+    
+    mysqli_stmt_close($stmt);
 }
+
+mysqli_close($conn);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nail Architect - Login</title>
+    <title>Nail Architect - Admin Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -62,11 +87,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 20px;
             padding: 50px 40px;
             border: 1px solid rgba(235, 184, 184, 0.3);
-  box-shadow: 
-    0 4px 16px rgba(0, 0, 0, 0.1),
-    0 2px 8px rgba(0, 0, 0, 0.05),
-    inset 0 1px 2px rgba(255, 255, 255, 0.3);
-
+            box-shadow: 
+                0 4px 16px rgba(0, 0, 0, 0.1),
+                0 2px 8px rgba(0, 0, 0, 0.05),
+                inset 0 1px 2px rgba(255, 255, 255, 0.3);
             text-align: center;
             max-width: 440px;
             width: 90%;
@@ -79,7 +103,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             position: relative;
             display: inline-block;
         }
-
         
         .logo-img {
             width: 120px;
@@ -289,7 +312,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST" action="">
             <div class="form-group">
                 <label class="form-label">Username</label>
-                <input type="text" name="username" class="form-input" placeholder="Enter admin username" required>
+                <input type="text" name="username" class="form-input" placeholder="Enter admin username" required value="<?php echo isset($_POST['username']) ? htmlspecialchars($_POST['username']) : ''; ?>">
             </div>
             
             <div class="form-group">
@@ -304,14 +327,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fas fa-sign-in-alt"></i> Sign In
             </button>
         </form>
-        
-        <div class="back-link">
-            <a href="index.php">
-                <i class="fas fa-arrow-left"></i> Back to Home
-            </a>
-        </div>
     </div>
-
 
     <script>
         function togglePassword() {

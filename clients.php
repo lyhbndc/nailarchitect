@@ -140,6 +140,7 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
             align-items: center;
             gap: 8px;
             border: none;
+            color: white;
         }
         
         .control-button:hover {
@@ -161,9 +162,11 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
             background-color: rgba(255, 255, 255, 0.5);
         }
         
+        /* Fixed table styling with proper borders */
         .clients-table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
         
         .clients-table th {
@@ -181,6 +184,13 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
             padding: 12px 15px;
             border-bottom: 1px solid rgb(196, 162, 162);
             font-size: 14px;
+        }
+        
+        /* Fix for the last column (Actions) */
+        .clients-table th:last-child,
+        .clients-table td:last-child {
+            text-align: center;
+            width: 180px;
         }
         
         .clients-table tr:hover {
@@ -208,6 +218,9 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
         .action-cell {
             display: flex;
             gap: 8px;
+            justify-content: center;
+            align-items: center;
+            min-height: 40px;
         }
         
         .action-button {
@@ -218,7 +231,7 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
             transition: all 0.3s ease;
             background-color: #2196f3;
             color: white;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 5px;
             border: none;
@@ -301,9 +314,9 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
             </div>
 
             <div class="menu-item" onclick="window.location.href='admin-management.php'">
-    <div class="menu-icon"><i class="fas fa-user-shield"></i></div>
-    <div class="menu-text">Admin Users</div>
-</div>
+                <div class="menu-icon"><i class="fas fa-user-shield"></i></div>
+                <div class="menu-text">Admin Users</div>
+            </div>
             
             <div class="menu-item active" onclick="window.location.href='clients.php'">
                 <div class="menu-icon"><i class="fas fa-users"></i></div>
@@ -432,11 +445,13 @@ $newClients = mysqli_fetch_assoc($newClientsResult)['count'];
                                     <td>{$row['phone']}</td>
                                     <td>{$statusBadge}</td>
                                     <td>{$joinedDate}</td>
-                                    <td class='action-cell'>
-                                        <button class='action-button' 
-                                                onclick='viewClient({$row['id']})'>
-                                            <i class='fas fa-eye'></i> View Details
-                                        </button>
+                                    <td>
+                                        <div class='action-cell'>
+                                            <button class='action-button' 
+                                                    onclick='viewClient({$row['id']})'>
+                                                <i class='fas fa-eye'></i> View Details
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>";
                         }

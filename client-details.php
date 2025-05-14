@@ -68,6 +68,7 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Details - <?php echo $client['first_name'] . ' ' . $client['last_name']; ?></title>
+    <link rel="stylesheet" href="sidebar-admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -82,147 +83,80 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
             background-color: #F2E9E9;
             padding: 0;
         }
-        
-        .sidebar {
-            width: 250px;
-            background-color: #E8D7D0;
-            height: 100vh;
-            padding: 25px 0;
-            position: fixed;
-            overflow-y: auto;
-            left: 0;
-            top: 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            z-index: 100;
-        }
-        
-        .logo-container {
-            padding: 0 20px;
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
             margin-bottom: 30px;
-            display: flex;
-            align-items: center;
         }
         
-        .logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #e0c5b7;
-            position: relative;
-            overflow: hidden;
+        .stat-card {
+            background: linear-gradient(to right, rgb(237, 196, 196), rgb(226, 178, 178));
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.08);
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 20px;
+            background-color: rgba(255, 255, 255, 0.4);
         }
         
-        .logo::after {
-            content: "";
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #dcdcdc;
-            right: -8px;
-            bottom: -8px;
-        }
-        
-        .admin-title {
-            margin-left: 15px;
-            font-weight: 600;
-            font-size: 18px;
-        }
-        
-        .nav-menu {
-            margin-top: 20px;
-        }
-        
-        .menu-section {
-            margin-bottom: 10px;
-            padding: 0 20px;
-            font-size: 12px;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .menu-item {
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            border-left: 4px solid transparent;
-        }
-        
-        .menu-item:hover {
-            background-color: #D9BBB0;
-        }
-        
-        .menu-item.active {
-            background-color: #D9BBB0;
-            border-left-color: #333;
-        }
-        
-        .menu-icon {
-            width: 24px;
-            margin-right: 10px;
-            text-align: center;
-            font-size: 16px;
-        }
-        
-        .menu-text {
+        .stat-title {
             font-size: 14px;
-            font-weight: 500;
+            color: #666;
+            margin-bottom: 5px;
         }
         
-        .content-wrapper {
-            margin-left: 250px;
-            padding: 25px;
-            padding-top: 80px;
-        }
-        
-        .top-bar {
-            position: fixed;
-            top: 0;
-            left: 250px;
-            right: 0;
-            height: 60px;
-            background-color: #E8D7D0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 25px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            z-index: 99;
-        }
-        
-        .page-title {
-            font-size: 22px;
+        .stat-value {
+            font-size: 28px;
             font-weight: 600;
+            margin-bottom: 8px;
         }
         
         .btn-back {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 20px;
-            background-color: #757575;
+            padding: 8px 16px;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             color: white;
             text-decoration: none;
             border-radius: 8px;
             font-size: 14px;
             transition: all 0.3s ease;
             margin-bottom: 20px;
+            border: none;
         }
         
         .btn-back:hover {
-            background-color: #616161;
+            background: linear-gradient(to right, #d98d8d, #ce7878);
         }
         
         .client-header {
-            background-color: #E8D7D0;
+            background-color: white;
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
@@ -233,6 +167,7 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
             color: #333;
             margin-bottom: 10px;
             font-size: 28px;
+            font-weight: 600;
         }
         
         .client-info {
@@ -298,71 +233,35 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
             color: #c62828;
         }
         
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background-color: #E8D7D0;
-            border-radius: 15px;
-            padding: 20px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            text-align: center;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0,0,0,0.08);
-        }
-        
-        .stat-title {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .stat-value {
-            font-size: 28px;
-            font-weight: 600;
-            color: #333;
-        }
-        
         .content-section {
-            background-color: #E8D7D0;
+            background-color: white;
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 30px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
         
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
         .section-title {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #D9BBB0;
         }
         
-        table {
+        .bookings-table {
             width: 100%;
             border-collapse: collapse;
         }
         
-        th, td {
-            padding: 12px 15px;
+        .bookings-table th {
             text-align: left;
-        }
-        
-        th {
-            border-bottom: 1px solid #c0c0c0;
+            padding: 12px 15px;
+            border-bottom: 1px solid rgb(177, 140, 140);
             font-size: 12px;
             color: #666;
             text-transform: uppercase;
@@ -370,48 +269,39 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
             font-weight: 500;
         }
         
-        td {
-            border-bottom: 1px solid #e0e0e0;
+        .bookings-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgb(196, 162, 162);
             font-size: 14px;
         }
         
-        tr:hover {
-            background-color: #D9BBB0;
+        .bookings-table tr:hover {
+            background: linear-gradient(to right, rgb(233, 171, 171), rgb(226, 178, 178));
         }
         
         .no-data {
             text-align: center;
             padding: 40px;
-            color: #999;
-        }
-        
-        .message-box {
-            background-color: #F2E9E9;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #333;
-        }
-        
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        
-        .message-date {
             color: #666;
-            font-size: 12px;
         }
         
-        .message-content {
-            color: #333;
+        .action-button {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #2196f3;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border: none;
         }
         
-        .attachment {
-            color: #2196f3;
-            font-size: 12px;
-            margin-top: 5px;
+        .action-button:hover {
+            background-color: #1976d2;
+            transform: translateY(-2px);
         }
         
         @media (max-width: 1200px) {
@@ -482,6 +372,11 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
                 <div class="menu-icon"><i class="fas fa-calendar-alt"></i></div>
                 <div class="menu-text">Appointments</div>
             </div>
+
+            <div class="menu-item" onclick="window.location.href='admin-management.php'">
+                <div class="menu-icon"><i class="fas fa-user-shield"></i></div>
+                <div class="menu-text">Admin Users</div>
+            </div>
             
             <div class="menu-item active" onclick="window.location.href='clients.php'">
                 <div class="menu-icon"><i class="fas fa-users"></i></div>
@@ -491,6 +386,11 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
             <div class="menu-item" onclick="window.location.href='admin-messages.php'">
                 <div class="menu-icon"><i class="fas fa-envelope"></i></div>
                 <div class="menu-text">Messages</div>
+            </div>
+            
+            <div class="menu-item" onclick="window.location.href='admin-inquiries.php'">
+                <div class="menu-icon"><i class="fas fa-question-circle"></i></div>
+                <div class="menu-text">Inquiries</div>
             </div>
             
             <div class="menu-section">SYSTEM</div>
@@ -549,28 +449,38 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
         <!-- Statistics Section -->
         <div class="dashboard-grid">
             <div class="stat-card">
-                <div class="stat-title">Total Bookings</div>
-                <div class="stat-value"><?php echo $totalBookings; ?></div>
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-title">Total Bookings</div>
+                        <div class="stat-value"><?php echo $totalBookings; ?></div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
             </div>
+            
             <div class="stat-card">
-                <div class="stat-title">Completed Bookings</div>
-                <div class="stat-value"><?php echo $completedBookings; ?></div>
+                <div class="stat-header">
+                    <div>
+                        <div class="stat-title">Completed Bookings</div>
+                        <div class="stat-value"><?php echo $completedBookings; ?></div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
             </div>
-            <!-- <div class="stat-card">
-                <div class="stat-title">Total Spent</div>
-                <div class="stat-value">₱<?php echo number_format($totalSpent, 2); ?></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-title">Average Booking</div>
-                <div class="stat-value">₱<?php echo $completedBookings > 0 ? number_format($totalSpent / $completedBookings, 2) : '0.00'; ?></div>
-            </div> -->
         </div>
 
         <!-- Booking History -->
         <div class="content-section">
-            <h2 class="section-title">Booking History</h2>
+            <div class="section-header">
+                <div class="section-title">Booking History</div>
+            </div>
+            
             <?php if (mysqli_num_rows($bookingsResult) > 0): ?>
-                <table>
+                <table class="bookings-table">
                     <thead>
                         <tr>
                             <th>REFERENCE ID</th>
@@ -604,33 +514,6 @@ mysqli_data_seek($bookingsResult, 0); // Reset pointer again for display
                 <p class="no-data">No bookings found for this client.</p>
             <?php endif; ?>
         </div>
-
-        <!-- Recent Messages -->
-        <!-- <div class="content-section">
-            <h2 class="section-title">Recent Messages</h2>
-            <?php if (mysqli_num_rows($messagesResult) > 0): ?>
-                <?php while ($message = mysqli_fetch_assoc($messagesResult)): ?>
-                    <div class="message-box">
-                        <div class="message-header">
-                            <strong><?php echo $message['subject']; ?></strong>
-                            <span class="message-date">
-                                <?php echo date('M d, Y H:i', strtotime($message['created_at'])); ?>
-                            </span>
-                        </div>
-                        <div class="message-content">
-                            <?php echo nl2br(htmlspecialchars($message['content'])); ?>
-                        </div>
-                        <?php if ($message['file_name']): ?>
-                            <div class="attachment">
-                                <i class="fas fa-paperclip"></i> Attachment: <?php echo $message['file_name']; ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                <?php endwhile; ?>
-            <?php else: ?>
-                <p class="no-data">No messages found for this client.</p>
-            <?php endif; ?>
-        </div> -->
     </div>
 </body>
 </html>
