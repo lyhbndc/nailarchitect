@@ -32,6 +32,22 @@ if ($result->num_rows === 1) {
     exit();
 }
 
+// Check if 2FA is enabled for current user
+$is2FAEnabled = false;
+
+// Check if 2FA is set up in the database
+$check2fa_query = "SELECT enabled FROM user_2fa WHERE user_id = ?";
+$check2fa_stmt = $conn->prepare($check2fa_query);
+$check2fa_stmt->bind_param("i", $user_id);
+$check2fa_stmt->execute();
+$check2fa_result = $check2fa_stmt->get_result();
+
+if ($check2fa_result->num_rows > 0) {
+    $row = $check2fa_result->fetch_assoc();
+    $is2FAEnabled = $row['enabled'] == 1;
+}
+$check2fa_stmt->close();
+
 // Handle logout
 if (isset($_GET['logout'])) {
     session_destroy();
@@ -1093,6 +1109,161 @@ input[type="file"] {
     background-color: #c8e6c9;
     color: #2e7d32;
 }
+.menu-item .status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 8px;
+}
+
+.status-enabled {
+    background-color: #4caf50;
+}
+
+.status-disabled {
+    background-color: #f44336;
+}
+
+/* 2FA Security tab styles */
+.security-card {
+    background-color: #f2e9e9;
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 20px;
+    border: 1px solid rgba(235, 184, 184, 0.3);
+    box-shadow: 
+        0 4px 16px rgba(0, 0, 0, 0.1),
+        0 2px 8px rgba(0, 0, 0, 0.05),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.security-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgb(142, 130, 130);
+}
+
+.security-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.security-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status-enabled {
+    background-color: #c8e6c9;
+    color: #2e7d32;
+}
+
+.status-disabled {
+    background-color: #ffcdd2;
+    color: #c62828;
+}
+
+.security-description {
+    margin-bottom: 25px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.security-info {
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.security-info h4 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #333;
+}
+
+.security-info ol {
+    padding-left: 25px;
+    margin-top: 10px;
+}
+
+.security-info ol li {
+    margin-bottom: 8px;
+}
+
+.security-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.security-btn {
+    padding: 10px 18px;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.security-btn {
+    background: linear-gradient(to right, #e6a4a4, #d98d8d);
+    color: black;
+}
+
+.security-btn:hover {
+    background: linear-gradient(to right, #d98d8d, #ce7878);
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: linear-gradient(to right, #ffcdd2, #ef9a9a);
+}
+
+.btn-danger:hover {
+    background: linear-gradient(to right, #ef9a9a, #e57373);
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #c8e6c9, #a5d6a7);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to right, #a5d6a7, #81c784);
+}
+
+.menu-item .status-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 8px;
+}
+
+/* Adjust existing styles */
+.tab-content {
+    display: none;
+    height: calc(100% - 60px);
+    overflow-y: auto;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+
     </style>
 </head>
 <body>
@@ -1120,347 +1291,292 @@ input[type="file"] {
         <div class="page-subtitle">Manage your appointments and account information</div>
         
         <div class="member-content">
-            <div class="sidebar">
-                <div class="profile-card">
-                    <div class="avatar"><?php echo $first_letter; ?></div>
-                    <div class="profile-name"><?php echo $user['first_name'] . ' ' . $user['last_name']; ?></div>
-                    <div class="profile-email"><?php echo $user['email']; ?></div>
-                    <div class="profile-phone"><?php echo $user['phone']; ?></div>
-                    <div class="action-button" id="edit-profile-btn">Edit Profile</div>
-                </div>
-                
-                <div class="menu-card">
-                    <div class="menu-title">Account Menu</div>
-                    
-                    <div class="menu-item active" id="appointments-menu">
-                        <div class="menu-icon">📅</div>
-                        My Appointments
-                    </div>
-                <div class="menu-item" id="messages-menu">
-                <div class="menu-icon">💬</div>
-                Messages
-            </div>
-                    
-                    <div class="menu-item" id="logout-menu">
-                        <div class="menu-icon">↩️</div>
-                        Logout
-                    </div>
-                </div>
-            </div>
-            
-            <div class="main-content">
-                <div class="tab-container">
-                    <div class="tabs">
-                        <div class="tab active" data-tab="upcoming">Upcoming</div>
-                        <div class="tab" data-tab="past">Past</div>
-                    </div>
-                    
-                    <div class="tab-content active" id="upcoming-tab">
-                        <div class="appointments-header">
-                            <h2 class="section-title">Upcoming Appointments</h2>
-                            <span class="appointments-count"><?php echo count($upcoming_bookings); ?> appointment<?php echo count($upcoming_bookings) !== 1 ? 's' : ''; ?></span>
-                        </div>
-                        
-                        <div class="appointments-wrapper <?php echo count($upcoming_bookings) > 2 ? 'has-scroll' : ''; ?>">
-                            <div class="appointments-list" id="upcoming-appointments">
-                                <?php if (empty($upcoming_bookings)): ?>
-                                    <div class="no-appointments">
-                                        <div class="no-appointments-icon">📅</div>
-                                        <p>You don't have any upcoming appointments.</p>
-                                        <a href="booking.php" class="action-button">Book Appointment</a>
-                                    </div>
-                                <?php else: ?>
-                                    <?php foreach ($upcoming_bookings as $booking): ?>
-                                        <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
-                                            <div class="appointment-card-header">
-                                                <div class="appointment-service">
-                                                    <?php 
-                                                    // Format service name
-                                                    $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
-                                                    echo $service_name; 
-                                                    ?>
-                                                </div>
-                                                <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
-                                                    <?php echo ucfirst($booking['status']); ?>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="appointment-details">
-                                                <div class="detail-item">
-                                                    <div class="detail-label">Date</div>
-                                                    <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
-                                                </div>
-                                                
-                                                <div class="detail-item">
-                                                    <div class="detail-label">Time</div>
-                                                    <div class="detail-value">
-                                                        <?php 
-                                                        // Format time (12-hour format)
-                                                        echo date('g:i A', strtotime($booking['time'])); 
-                                                        ?>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="detail-item">
-                                                    <div class="detail-label">Duration</div>
-                                                    <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
-                                                </div>
-                                                
-                                                <div class="detail-item">
-                                                    <div class="detail-label">Technician</div>
-                                                    <div class="detail-value"><?php echo $booking['technician']; ?></div>
-                                                </div>
-                                                
-                                                <div class="detail-item">
-                                                    <div class="detail-label">Price</div>
-                                                    <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
-                                                </div>
-                                                
-                                                <div class="detail-item">
-        <div class="detail-label">Reference</div>
-        <div class="detail-value">#<?php echo $booking['reference_id']; ?></div>
+         <div class="sidebar">
+    <div class="profile-card">
+        <div class="avatar"><?php echo $first_letter; ?></div>
+        <div class="profile-name"><?php echo $user['first_name'] . ' ' . $user['last_name']; ?></div>
+        <div class="profile-email"><?php echo $user['email']; ?></div>
+        <div class="profile-phone"><?php echo $user['phone']; ?></div>
+        <div class="action-button" id="edit-profile-btn">Edit Profile</div>
     </div>
-                                            </div>
-                                            
-                                            <?php if ($booking['status'] != 'cancelled'): ?>
-                                            <div class="appointment-actions">
-                                                <div class="action-button reschedule-btn" data-id="<?php echo $booking['id']; ?>">Reschedule</div>
-                                                <div class="action-button cancel-btn" data-id="<?php echo $booking['id']; ?>">Cancel</div>
-                                            </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="tab-content" id="past-tab">
-                        <div class="appointments-header">
-                            <h2 class="section-title">Past Appointments</h2>
-                            <span class="appointments-count"><?php echo count($past_bookings); ?> appointment<?php echo count($past_bookings) !== 1 ? 's' : ''; ?></span>
-                        </div>
-                        
-                        <div class="appointments-wrapper <?php echo count($past_bookings) > 2 ? 'has-scroll' : ''; ?>">
-                            <div class="appointments-list" id="past-appointments">
-                                <?php if (empty($past_bookings)): ?>
-                                    <div class="no-appointments">
-                                        <div class="no-appointments-icon">📅</div>
-                                        <p>You don't have any past appointments.</p>
-                                    </div>
-                                <?php else: ?>
-                                    <?php foreach ($past_bookings as $booking): ?>
-                                        <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
-                                            <div class="appointment-header">
-                                                <div class="appointment-service">
-                                                    <?php 
-                                                    // Format service name
-                                                    $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
-                                                    echo $service_name; 
-                                                    ?>
-                                                </div>
-                                                <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
-                                                    <?php echo ucfirst($booking['status']); ?>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="appointment-details">
-                                                <div class="detail-item">
-                                                    <div class="detail-label">Date</div>
-                                                    <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
-                                                </div>
-                                                
-                                                <div class="detail-item">
-                                                    <div class="detail-label">Time</div>
-                                                    <div class="detail-value">
-                                                        <?php 
-                                                        // Format time (12-hour format)
-                                                        echo date('g:i A', strtotime($booking['time'])); 
-                                                        ?>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div class="detail-item">
-                                                    <div class="detail-label">Duration</div>
-                                                    <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
-                                                </div>
-                                                
-                                                <div class="detail-item">
-                                                    <div class="detail-label">Technician</div>
-                                                    <div class="detail-value"><?php echo $booking['technician']; ?></div>
-                                                </div>
-                                                
-                                                <div class="detail-item">
-                                                    <div class="detail-label">Price</div>
-                                                    <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
-                                                </div>
-                                                
-                                                <div class="detail-item">
-        <div class="detail-label">Reference</div>
-        <div class="detail-value">#NAI-<?php echo $booking['reference_id']; ?></div>
-    </div>
-                                            </div>
-                                            
-                                            <?php if ($booking['status'] == 'completed'): ?>
-                                            <div class="appointment-actions">
-                                                <div class="action-button book-again-btn" data-service="<?php echo $booking['service']; ?>">Book Again</div>
-                                            </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-content" id="messages-tab">
-    <div class="section-title">Messages</div>
     
-    <div class="conversation-container">
-        <div class="message-list" id="message-list">
-            <!-- Messages will be loaded here dynamically -->
-            <div class="loading-messages">Loading your conversation...</div>
+    <div class="menu-card">
+        <div class="menu-title">Account Menu</div>
+        
+        <div class="menu-item active" id="appointments-menu">
+            <div class="menu-icon">📅</div>
+            My Appointments
         </div>
         
-        <div class="message-compose">
-            <form id="message-form" enctype="multipart/form-data">
-                <div class="form-group">
-                    <input type="text" id="message-subject" name="subject" placeholder="Subject (required for new conversations)" required>
+        <div class="menu-item" id="messages-menu">
+            <div class="menu-icon">💬</div>
+            Messages
+        </div>
+        
+        <div class="menu-item" id="security-menu">
+            <div class="menu-icon">🔐</div>
+            Two-Factor Authentication
+            <span class="status-indicator <?php echo $is2FAEnabled ? 'status-enabled' : 'status-disabled'; ?>"></span>
+        </div>
+        
+        <div class="menu-item" id="logout-menu">
+            <div class="menu-icon">↩️</div>
+            Logout
+        </div>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="tab-container">
+        <div class="tabs">
+            <div class="tab active" data-tab="upcoming">Upcoming</div>
+            <div class="tab" data-tab="past">Past</div>
+        </div>
+        
+        <!-- Upcoming appointments tab -->
+        <div class="tab-content active" id="upcoming-tab">
+            <div class="appointments-header">
+                <h2 class="section-title">Upcoming Appointments</h2>
+                <span class="appointments-count"><?php echo count($upcoming_bookings); ?> appointment<?php echo count($upcoming_bookings) !== 1 ? 's' : ''; ?></span>
+            </div>
+            
+            <div class="appointments-wrapper <?php echo count($upcoming_bookings) > 2 ? 'has-scroll' : ''; ?>">
+                <div class="appointments-list" id="upcoming-appointments">
+                    <?php if (empty($upcoming_bookings)): ?>
+                        <div class="no-appointments">
+                            <div class="no-appointments-icon">📅</div>
+                            <p>You don't have any upcoming appointments.</p>
+                            <a href="booking.php" class="action-button">Book Appointment</a>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($upcoming_bookings as $booking): ?>
+                            <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
+                                <div class="appointment-card-header">
+                                    <div class="appointment-service">
+                                        <?php 
+                                        // Format service name
+                                        $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
+                                        echo $service_name; 
+                                        ?>
+                                    </div>
+                                    <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
+                                        <?php echo ucfirst($booking['status']); ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="appointment-details">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Date</div>
+                                        <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-label">Time</div>
+                                        <div class="detail-value">
+                                            <?php 
+                                            // Format time (12-hour format)
+                                            echo date('g:i A', strtotime($booking['time'])); 
+                                            ?>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-label">Duration</div>
+                                        <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-label">Technician</div>
+                                        <div class="detail-value"><?php echo $booking['technician']; ?></div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-label">Price</div>
+                                        <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-label">Reference</div>
+                                        <div class="detail-value">#<?php echo $booking['reference_id']; ?></div>
+                                    </div>
+                                </div>
+                                
+                                <?php if ($booking['status'] != 'cancelled'): ?>
+                                <div class="appointment-actions">
+                                    <div class="action-button reschedule-btn" data-id="<?php echo $booking['id']; ?>">Reschedule</div>
+                                    <div class="action-button cancel-btn" data-id="<?php echo $booking['id']; ?>">Cancel</div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Past appointments tab -->
+        <div class="tab-content" id="past-tab">
+            <div class="appointments-header">
+                <h2 class="section-title">Past Appointments</h2>
+                <span class="appointments-count"><?php echo count($past_bookings); ?> appointment<?php echo count($past_bookings) !== 1 ? 's' : ''; ?></span>
+            </div>
+            
+            <div class="appointments-wrapper <?php echo count($past_bookings) > 2 ? 'has-scroll' : ''; ?>">
+                <div class="appointments-list" id="past-appointments">
+                    <?php if (empty($past_bookings)): ?>
+                        <div class="no-appointments">
+                            <div class="no-appointments-icon">📅</div>
+                            <p>You don't have any past appointments.</p>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($past_bookings as $booking): ?>
+                            <div class="appointment-card" data-id="appointment-<?php echo $booking['id']; ?>">
+                                <div class="appointment-card-header">
+                                    <div class="appointment-service">
+                                        <?php 
+                                        // Format service name
+                                        $service_name = ucfirst(str_replace('-', ' ', $booking['service']));
+                                        echo $service_name; 
+                                        ?>
+                                    </div>
+                                    <div class="appointment-status status-<?php echo strtolower($booking['status']); ?>">
+                                        <?php echo ucfirst($booking['status']); ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="appointment-details">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Date</div>
+                                        <div class="detail-value"><?php echo date('F j, Y', strtotime($booking['date'])); ?></div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-label">Time</div>
+                                        <div class="detail-value">
+                                            <?php 
+                                            // Format time (12-hour format)
+                                            echo date('g:i A', strtotime($booking['time'])); 
+                                            ?>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-label">Duration</div>
+                                        <div class="detail-value"><?php echo $booking['duration']; ?> minutes</div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-label">Technician</div>
+                                        <div class="detail-value"><?php echo $booking['technician']; ?></div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-label">Price</div>
+                                        <div class="detail-value">₱<?php echo number_format($booking['price'], 2); ?></div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-label">Reference</div>
+                                        <div class="detail-value">#<?php echo $booking['reference_id']; ?></div>
+                                    </div>
+                                </div>
+                                
+                                <?php if ($booking['status'] == 'completed'): ?>
+                                <div class="appointment-actions">
+                                    <div class="action-button book-again-btn" data-service="<?php echo $booking['service']; ?>">Book Again</div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Messages tab -->
+        <div class="tab-content" id="messages-tab">
+            <div class="section-title">Messages</div>
+            
+            <div class="conversation-container">
+                <div class="message-list" id="message-list">
+                    <!-- Messages will be loaded here dynamically -->
+                    <div class="loading-messages">Loading your conversation...</div>
                 </div>
                 
-                <div class="form-group message-input-container">
-                    <textarea id="message-content" name="content" placeholder="Type your message here..." required></textarea>
-                    <div class="message-actions">
-                        <label for="message-attachment" class="attachment-label">
-                            <i class="fa fa-paperclip"></i>
-                        </label>
-                        <input type="file" id="message-attachment" name="attachment" style="display: none;">
-                        <button type="submit" class="send-button" id="send-message">
-                            <i class="fa fa-paper-plane"></i>
-                        </button>
+                <div class="message-compose">
+                    <form id="message-form" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <input type="text" id="message-subject" name="subject" placeholder="Subject (required for new conversations)" required>
+                        </div>
+                        
+                        <div class="form-group message-input-container">
+                            <textarea id="message-content" name="content" placeholder="Type your message here..." required></textarea>
+                            <div class="message-actions">
+                                <label for="message-attachment" class="attachment-label">
+                                    <i class="fa fa-paperclip"></i>
+                                </label>
+                                <input type="file" id="message-attachment" name="attachment" style="display: none;">
+                                <button type="submit" class="send-button" id="send-message">
+                                    <i class="fa fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="attachment-note">You can attach images or documents up to 5MB.</p>
+                        <div id="attachment-preview" class="attachment-preview-container"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Security tab -->
+        <div class="tab-content" id="security-tab">
+            <div class="section-title">Security Settings</div>
+            
+            <div class="security-card">
+                <div class="security-header">
+                    <h3>Two-Factor Authentication (2FA)</h3>
+                    <div class="security-status <?php echo $is2FAEnabled ? 'status-enabled' : 'status-disabled'; ?>">
+                        <?php echo $is2FAEnabled ? 'Enabled' : 'Disabled'; ?>
                     </div>
                 </div>
-                <p class="attachment-note">You can attach images or documents up to 5MB.</p>
-                <div id="attachment-preview" class="attachment-preview-container"></div>
-            </form>
-        </div>
-    </div>
-</div>
-</div>
+                
+                <div class="security-description">
+                    <p>Two-factor authentication adds an extra layer of security to your account by requiring a verification code from your mobile device each time you sign in.</p>
+                    
+                    <?php if ($is2FAEnabled): ?>
+                        <div class="security-info">
+                            <h4>Your account is protected</h4>
+                            <p>To log in, you'll need to enter a verification code from your authenticator app.</p>
+                            <p>If you lose access to your authenticator app, you can use backup codes to sign in.</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="security-info">
+                            <h4>How it works:</h4>
+                            <ol>
+                                <li>Install an authenticator app like Google Authenticator on your mobile device</li>
+                                <li>Scan the QR code shown during setup</li>
+                                <li>Enter the verification code to confirm</li>
+                                <li>Save your backup codes in a secure place</li>
+                            </ol>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="security-actions">
+                    <?php if ($is2FAEnabled): ?>
+                        <a href="2fa-setup.php?action=manage" class="security-btn">Manage 2FA Settings</a>
+                        <a href="2fa-setup.php?action=disable" class="security-btn btn-danger">Disable 2FA</a>
+                    <?php else: ?>
+                        <a href="2fa-setup.php" class="security-btn btn-primary">Enable 2FA</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Reschedule Modal -->
-    <div class="modal" id="reschedule-modal">
-        <div class="modal-content">
-            <div class="close-modal">&times;</div>
-            <div class="modal-title">Reschedule Appointment</div>
-            
-            <div class="date-picker">
-                <label for="new-date">Select New Date</label>
-                <input type="date" id="new-date" required>
-            </div>
-            
-            <div class="time-picker">
-                <label for="new-time">Select New Time</label>
-                <select id="new-time" required>
-                    <option value="">Select a time</option>
-                    <option value="9:00">9:00 AM</option>
-                    <option value="10:00">10:00 AM</option>
-                    <option value="11:00">11:00 AM</option>
-                    <option value="12:00">12:00 PM</option>
-                    <option value="13:00">1:00 PM</option>
-                    <option value="14:00">2:00 PM</option>
-                    <option value="15:00">3:00 PM</option>
-                    <option value="16:00">4:00 PM</option>
-                    <option value="17:00">5:00 PM</option>
-                    <option value="18:00">6:00 PM</option>
-                </select>
-            </div>
-            
-            <div class="modal-buttons">
-                <div class="modal-button confirm-button" id="confirm-reschedule">Confirm</div>
-                <div class="modal-button cancel-button" id="cancel-reschedule">Cancel</div>
-            </div>
-        </div>
-    </div>
-    
-   <!-- Cancel Modal -->
-   <div class="modal" id="cancel-modal">
-        <div class="modal-content">
-            <div class="close-modal">&times;</div>
-            <div class="modal-title">Cancel Appointment</div>
-            
-            <p>Are you sure you want to cancel your appointment? A cancellation fee may apply if it's within 24 hours of your scheduled time.</p>
-            
-            <div class="modal-buttons">
-                <div class="modal-button confirm-button" id="confirm-cancel">Yes, Cancel</div>
-                <div class="modal-button cancel-button" id="abort-cancel">No, Keep It</div>
-            </div>
-        </div>
-    </div>
+</div>
 
-    <!-- Profile Edit Modal -->
-    <div class="modal profile-edit-modal" id="profile-modal">
-        <div class="modal-content">
-            <div class="close-modal">&times;</div>
-            <div class="modal-title">Edit Profile</div>
-            
-            <div id="profile-message"></div>
-            
-            <form class="profile-form" id="profile-form">
-                <div class="form-group">
-                    <label for="profile-first-name">First Name</label>
-                    <input type="text" id="profile-first-name" name="first_name" value="<?php echo htmlspecialchars($user['first_name']); ?>" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="profile-last-name">Last Name</label>
-                    <input type="text" id="profile-last-name" name="last_name" value="<?php echo htmlspecialchars($user['last_name']); ?>" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="profile-email">Email Address</label>
-                    <input type="email" id="profile-email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="profile-phone">Phone Number</label>
-                   <input type="tel" id="profile-phone" name="phone" pattern="[0-9]{11}" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')" value="<?php echo htmlspecialchars($user['phone']); ?>" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="profile-password">New Password (leave blank to keep current)</label>
-                    <input type="password" id="profile-password" name="password" placeholder="New password">
-                </div>
-                
-                <div class="form-group">
-                    <label for="profile-confirm-password">Confirm New Password</label>
-                    <input type="password" id="profile-confirm-password" name="confirm_password" placeholder="Confirm new password">
-                </div>
-                
-                <div class="form-group full-width">
-    <label for="update-past-records">
-        <input type="checkbox" id="update-past-records" name="update_past_records" checked>
-        <span>Update all my past booking records with new information</span>
-    </label>
-    <p style="font-size: 12px; color: #666; margin-top: 5px;">
-        If checked, all your past appointments will show your new name and contact details. 
-        If unchecked, only future appointments will be updated.
-    </p>
-</div>
-                
-                <div class="profile-modal-buttons">
-                    <button type="submit" class="modal-button save-profile-btn">Save Changes</button>
-                    <button type="button" class="modal-button cancel-profile-btn" id="cancel-profile">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-   document.addEventListener('DOMContentLoaded', function() {
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
     // Navigation for header links
     document.querySelector('.nav-link').addEventListener('click', function() {
         window.location.href = 'services.php';
@@ -1526,6 +1642,15 @@ input[type="file"] {
                 
                 // Load messages
                 loadMessages();
+            } else if (item.id === 'security-menu') {
+                // Hide all tab contents
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                // Hide the appointment tabs navigation
+                document.querySelector('.tabs').style.display = 'none';
+                
+                // Show security tab content
+                document.getElementById('security-tab').classList.add('active');
             } else if (item.id === 'logout-menu') {
                 // Logout functionality
                 window.location.href = 'members-lounge.php?logout=1';
@@ -1965,8 +2090,8 @@ input[type="file"] {
                                 dateStr = messageDate.toLocaleDateString('en-US', { 
                                     year: 'numeric', 
                                     month: 'short', 
-                                    day: 'numeric' 
-                                });
+                                    day: 'numeric'
+                                    });
                             }
                             
                             // Add date separator if day changes

@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+// Include 2FA functions
+require_once '2fa-functions.php';
+
 // Handle logout
 if (isset($_GET['logout'])) {
     // Destroy the session
@@ -40,14 +43,28 @@ if (isset($_POST['login'])) {
             }
             // Verify the password
             else if (password_verify($password, $hashedPassword)) {
-                // Set session variables
-                $_SESSION['user_id'] = $row['id'];
-                $_SESSION['user_name'] = $row['first_name'] . ' ' . $row['last_name'];
-                $_SESSION['user_email'] = $email;
+                // Check if 2FA is enabled
+                if (is2FAEnabled($conn, $row['id'], null)) {
+                    // Store temporary session data for 2FA verification
+                    $_SESSION['2fa_required'] = true;
+                    $_SESSION['2fa_user_id'] = $row['id'];
+                    $_SESSION['2fa_user_name'] = $row['first_name'] . ' ' . $row['last_name'];
+                    $_SESSION['2fa_user_email'] = $email;
+                    $_SESSION['2fa_admin'] = false;
+                    
+                    // Redirect to 2FA verification page
+                    header("Location: 2fa-verify.php");
+                    exit();
+                } else {
+                    // No 2FA required, proceed with normal login
+                    $_SESSION['user_id'] = $row['id'];
+                    $_SESSION['user_name'] = $row['first_name'] . ' ' . $row['last_name'];
+                    $_SESSION['user_email'] = $email;
 
-                // Redirect to members area
-                header("Location: members-lounge.php");
-                exit();
+                    // Redirect to members area
+                    header("Location: members-lounge.php");
+                    exit();
+                }
             } else {
                 $error_message = "Invalid email or password. Please try again.";
             }
