@@ -43,7 +43,7 @@ unset($_SESSION['verification_email_sent']);
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1500px;
             width: 100%;
             flex: 1;
             margin: 0 auto;
@@ -58,10 +58,6 @@ unset($_SESSION['verification_email_sent']);
             padding-bottom: 15px;
         }
         
-        .logo-container img {
-            height: 60px;
-        }
-        
         .pending-container {
             display: flex;
             flex-direction: column;
@@ -73,7 +69,7 @@ unset($_SESSION['verification_email_sent']);
         }
         
         .pending-box {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 40px;
             width: 100%;
@@ -207,6 +203,31 @@ unset($_SESSION['verification_email_sent']);
             border-top: 1px solid #444;
             margin-top: 20px;
         }
+        .back-button {
+            display: inline-block;
+            margin-top: 30px;
+            font-size: 14px;
+            cursor: pointer;
+            position: relative;
+            animation: fadeIn 0.8s ease-out forwards;
+            align-self: center;
+        }
+
+        .back-button:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: #000;
+            transition: width 0.3s ease;
+        }
+
+        .back-button:hover:after {
+            width: 100%;
+        }
+
     </style>
 </head>
 <body>
@@ -260,35 +281,9 @@ unset($_SESSION['verification_email_sent']);
                 </div>
             </div>
             
-            <a href="index.php" class="home-button">Return to Home</a>
+            <div class="back-button" onclick="window.location.href='index.php'">← Back to Home</div>
         </div>
     </div>
     
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Nail Architect</h3>
-                <p>Your destination for premium nail care and beauty services.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="index.php">Home</a></li>
-                    <li><a href="services.php">Services</a></li>
-                    <li><a href="#">Booking</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact Us</h3>
-                <p>123 Nail Street, Beauty District<br>
-                Phone: (123) 456-7890<br>
-                Email: info@nailarchitect.com</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Nail Architect. All rights reserved.</p>
-        </div>
-    </footer>
 </body>
 </html>
