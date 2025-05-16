@@ -86,11 +86,11 @@ function sendConfirmationEmail($booking_data) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'jcalleja.k12043059@umak.edu.ph';
-        $mail->Password = 'pjcu jxec zzbc rbso';
+        $mail->Username = 'nailarchitect.glamhub@gmail.com';
+        $mail->Password = 'xvft ygzc fijz vmth';
         $mail->SMTPSecure = 'ssl';
         $mail->Port = 465;
-        $mail->setFrom('jcalleja.k12043059@umak.edu.ph', 'Nail Architect');
+        $mail->setFrom('nailarchitect.glamhub@gmail.com', 'Nail Architect');
         $mail->addAddress($booking_data['email']);
         $mail->isHTML(true);
         
@@ -168,11 +168,11 @@ function sendCancellationEmail($booking_data) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'jcalleja.k12043059@umak.edu.ph';
-        $mail->Password = 'pjcu jxec zzbc rbso';
+        $mail->Username = 'nailarchitect.glamhub@gmail.com';
+        $mail->Password = 'xvft ygzc fijz vmth';
         $mail->SMTPSecure = 'ssl';
         $mail->Port = 465;
-        $mail->setFrom('jcalleja.k12043059@umak.edu.ph', 'Nail Architect');
+        $mail->setFrom('nailarchitect.glamhub@gmail.com', 'Nail Architect');
         $mail->addAddress($booking_data['email']);
         $mail->isHTML(true);
         
@@ -232,11 +232,11 @@ function sendCompletionEmail($booking_data) {
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
-        $mail->Username = 'jcalleja.k12043059@umak.edu.ph';
-        $mail->Password = 'pjcu jxec zzbc rbso';
+        $mail->Username = 'nailarchitect.glamhub@gmail.com';
+        $mail->Password = 'xvft ygzc fijz vmth';
         $mail->SMTPSecure = 'ssl';
         $mail->Port = 465;
-        $mail->setFrom('jcalleja.k12043059@umak.edu.ph', 'Nail Architect');
+        $mail->setFrom('nailarchitect.glamhub@gmail.com', 'Nail Architect');
         $mail->addAddress($booking_data['email']);
         $mail->isHTML(true);
         
