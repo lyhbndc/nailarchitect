@@ -180,14 +180,14 @@ mysqli_close($conn);
         }
         
         h2 {
-            color: #333;
+            color: black;
             margin-bottom: 10px;
             font-size: 24px;
             font-weight: bold;
         }
         
         .subtitle {
-            color: #666;
+            color: black;
             margin-bottom: 30px;
             font-size: 16px;
         }
@@ -276,7 +276,7 @@ mysqli_close($conn);
         .alternative-btn {
             background: none;
             border: none;
-            color: #ae9389;
+            color: black;
             text-decoration: underline;
             cursor: pointer;
             font-size: 14px;

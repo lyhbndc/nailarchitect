@@ -157,8 +157,24 @@ mysqli_close($conn);
             display: flex;
             flex-direction: column;
         }
+
+        .container{
+            max-width: 1500px;
+            width: 100%;
+            flex: 1;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
         
-        .container {
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+        }
+        
+        .incontainer {
             max-width: 800px;
             margin: 30px auto;
             padding: 40px;
@@ -354,6 +370,7 @@ mysqli_close($conn);
             margin-top: 20px;
         }
         
+        
         .cancel-button {
             padding: 12px 24px;
             background-color: #e0e0e0;
@@ -366,6 +383,7 @@ mysqli_close($conn);
             text-align: center;
             text-decoration: none;
             color: #333;
+            margin-top: 20px;
         }
         
         .cancel-button:hover {
@@ -446,9 +464,6 @@ mysqli_close($conn);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
         
-        .logo-container img {
-            height: 60px;
-        }
         
         .back-link {
             padding: 8px 16px;
@@ -485,18 +500,23 @@ mysqli_close($conn);
     <div class="swirl-pattern"></div>
     <div class="polish-drips"></div>
     
-    <div class="header-container">
-        <div class="logo-container">
-            <a href="index.php">
-                <img src="Assets/logo.png" alt="Nail Architect Logo">
-                </a>
-        </div>
-        <a href="members-lounge.php" class="back-link">
-            <span>&larr;</span> Back to Members Lounge
-        </a>
-    </div>
-    
-    <div class="container">
+     <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">
+                    <a href="index.php">
+                        <img src="Assets/logo.png" alt="Nail Architect Logo">
+                    </a>
+                </div>
+            </div>
+            <div class="nav-links">
+                <div class="nav-link">Services</div>
+                <div class="book-now">Book Now</div>
+                <div class="login-icon"></div>
+            </div>
+        </header>
+
+    <div class="incontainer">
         <h1 class="page-title">Two-Factor Authentication</h1>
         <p class="page-subtitle">
             <?php 
@@ -593,7 +613,7 @@ mysqli_close($conn);
                         </div>
                         <div class="step">
                             3
-                            <span class="step-title">Backup Codes</span>
+                            <span class="step-title">Backup</span>
                         </div>
                     </div>
                 

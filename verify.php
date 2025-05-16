@@ -85,7 +85,7 @@ mysqli_close($conn);
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1500px;
             width: 100%;
             flex: 1;
             margin: 0 auto;
@@ -100,9 +100,6 @@ mysqli_close($conn);
             padding-bottom: 15px;
         }
         
-        .logo-container img {
-            height: 60px;
-        }
         
         .verification-container {
             display: flex;
@@ -115,7 +112,7 @@ mysqli_close($conn);
         }
         
         .verification-box {
-            background-color: #e8d7d0;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             padding: 40px;
             width: 100%;
@@ -156,7 +153,7 @@ mysqli_close($conn);
         .verification-button {
             display: inline-block;
             padding: 12px 30px;
-            background-color: #d9bbb0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             border: none;
             border-radius: 30px;
             font-size: 16px;
@@ -168,7 +165,7 @@ mysqli_close($conn);
         }
         
         .verification-button:hover {
-            background-color: #ae9389;
+            background: linear-gradient(to right, #d98d8d, #ce7878);
             transform: translateY(-2px);
         }
         
@@ -279,36 +276,8 @@ mysqli_close($conn);
                 <a href="resend-verification.php" class="verification-button">Resend Verification</a>
                 <?php endif; ?>
             </div>
-            
-            <a href="index.php" class="back-to-home">← Back to Home</a>
         </div>
     </div>
     
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Nail Architect</h3>
-                <p>Your destination for premium nail care and beauty services.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="index.php">Home</a></li>
-                    <li><a href="services.php">Services</a></li>
-                    <li><a href="login.php">Booking</a></li>
-                    <li><a href="get-in-touch-page.php">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact Us</h3>
-                <p>123 Nail Street, Beauty District<br>
-                Phone: (123) 456-7890<br>
-                Email: info@nailarchitect.com</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Nail Architect. All rights reserved.</p>
-        </div>
-    </footer>
 </body>
 </html>

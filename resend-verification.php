@@ -148,41 +148,59 @@ mysqli_close($conn);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resend Verification - Nail Architect</title>
+    <link rel="stylesheet" href="navbar.css">
     <link rel="icon" type="image/png" href="Assets/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+            font-family: Poppins, sans-serif;
         }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
         
         body {
             background-color: #F2E9E9;
-            min-height: 100vh;
+            padding: 20px;
             display: flex;
             flex-direction: column;
         }
         
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            max-width: 1500px;
+            width: 100%;
             flex: 1;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
         }
         
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 0;
-        }
-        
-        .logo img {
-            height: 60px;
+            padding-bottom: 15px;
         }
         
         .main-content {
@@ -194,7 +212,7 @@ mysqli_close($conn);
         }
         
         .card {
-            background-color: #fff;
+            background-color: rgb(245, 207, 207);
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             width: 100%;
@@ -206,7 +224,7 @@ mysqli_close($conn);
         .card-title {
             font-size: 24px;
             font-weight: 600;
-            color: #333;
+            color: black;
             margin-bottom: 30px;
             text-align: center;
         }
@@ -264,12 +282,12 @@ mysqli_close($conn);
         .btn {
             display: inline-block;
             padding: 12px 25px;
-            background-color: #d9bbb0;
+            background: linear-gradient(to right, #e6a4a4, #d98d8d);
             color: #333;
             border: none;
             border-radius: 30px;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: center;
@@ -277,7 +295,7 @@ mysqli_close($conn);
         }
         
         .btn:hover {
-            background-color: #c4a99e;
+            background: linear-gradient(to right, #d98d8d, #ce7878);
             transform: translateY(-2px);
         }
         
@@ -295,7 +313,7 @@ mysqli_close($conn);
         }
         
         a {
-            color: #ae9389;
+            color: black;
             text-decoration: none;
             transition: color 0.3s;
         }
@@ -310,60 +328,7 @@ mysqli_close($conn);
             gap: 8px;
             font-size: 14px;
         }
-        
-        footer {
-            background-color: #333;
-            color: #fff;
-            padding: 30px 0;
-            margin-top: auto;
-        }
-        
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            padding: 0 20px;
-        }
-        
-        .footer-section {
-            flex: 1;
-            min-width: 200px;
-            margin-bottom: 20px;
-        }
-        
-        .footer-section h3 {
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: #e8d7d0;
-        }
-        
-        .footer-section ul {
-            list-style: none;
-        }
-        
-        .footer-section ul li {
-            margin-bottom: 8px;
-        }
-        
-        .footer-section ul li a {
-            color: #ddd;
-            text-decoration: none;
-        }
-        
-        .footer-section ul li a:hover {
-            color: #fff;
-        }
-        
-        .footer-bottom {
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid #444;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #aaa;
-        }
+    
         
         @media (max-width: 768px) {
             .card {
@@ -381,7 +346,8 @@ mysqli_close($conn);
 <body>
     <div class="container">
         <header>
-            <div class="logo">
+        <div class="logo-container">
+        <div class="logo">
                 <a href="index.php">
                     <img src="Assets/logo.png" alt="Nail Architect Logo">
                 </a>
@@ -424,35 +390,8 @@ mysqli_close($conn);
                 </div>
             </div>
             
-            <a href="index.php" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
         </div>
     </div>
     
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>Nail Architect</h3>
-                <p>Your destination for premium nail care and beauty services.</p>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="index.php">Home</a></li>
-                    <li><a href="services.php">Services</a></li>
-                    <li><a href="#">Booking</a></li>
-                    <li><a href="#">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Contact Us</h3>
-                <p>123 Nail Street, Beauty District<br>
-                Phone: (123) 456-7890<br>
-                Email: info@nailarchitect.com</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; <?php echo date('Y'); ?> Nail Architect. All rights reserved.</p>
-        </div>
-    </footer>
 </body>
 </html>
