@@ -267,74 +267,102 @@ if (isset($_GET['logout'])) {
 
         <div class="gallery-filters">
             <div class="filter-button active" data-filter="all">All</div>
-            <div class="filter-button" data-filter="manicure">Manicure</div>
-            <div class="filter-button" data-filter="pedicure">Pedicure</div>
-            <div class="filter-button" data-filter="nail-art">Nail Art</div>
-            <div class="filter-button" data-filter="extensions">Extensions</div>
+            <div class="filter-button" data-filter="soft-gel">Soft Gel</div>
+            <div class="filter-button" data-filter="builder-gel">Builder Gel</div>
+            <div class="filter-button" data-filter="press-ons">Press Ons</div>
+            <div class="filter-button" data-filter="menicure">Menicure</div>
         </div>
 
         <div class="gallery-grid">
-            <div class="gallery-item" data-category="manicure nail-art">
-                <img src="Assets/visit.png" alt="Nail design" class="gallery-image">
+            <div class="gallery-item" data-category="soft-gel">
+                <img src="Assets/gallery/sg1.jpeg" alt="Nail design" class="gallery-image">
                 <div class="gallery-overlay">
-                    <div class="overlay-title">Pink Ombré</div>
-                    <div class="overlay-desc">Gel manicure with gradient effect</div>
+                    <div class="overlay-title">Abstract Minimalist</div>
+                    <div class="overlay-desc">Soft gel with minimalist chrome line art and subtle rhinestone accents on a neutral base.</div>
                 </div>
             </div>
 
-            <div class="gallery-item" data-category="manicure">
-                <img src="Assets/visit.png" alt="Nail design" class="gallery-image">
+            <div class="gallery-item" data-category="soft-gel">
+                <img src="Assets/gallery/sg2.jpeg" alt="Nail design" class="gallery-image">
                 <div class="gallery-overlay">
-                    <div class="overlay-title">French Tips</div>
-                    <div class="overlay-desc">Classic design with modern twist</div>
+                    <div class="overlay-title">Burgundy Petal Tips</div>
+                    <div class="overlay-desc">Soft gel featuring pink base with burgundy French tips and delicate red flower details.</div>
                 </div>
             </div>
 
-            <div class="gallery-item" data-category="nail-art">
-                <img src="Assets/visit.png" alt="Nail design" class="gallery-image">
+            <div class="gallery-item" data-category="soft-gel">
+                <img src="Assets/gallery/sg3.jpeg" alt="Nail design" class="gallery-image">
                 <div class="gallery-overlay">
-                    <div class="overlay-title">Abstract Art</div>
-                    <div class="overlay-desc">Freehand design with matte finish</div>
+                    <div class="overlay-title">Fruity Fun</div>
+                    <div class="overlay-desc">Soft gel with bright summer motifs including citrus slices, fish, and colorful floral designs.</div>
                 </div>
             </div>
 
-            <div class="gallery-item" data-category="manicure nail-art">
-                <img src="Assets/visit.png" alt="Nail design" class="gallery-image">
+            <div class="gallery-item" data-category="builder-gel">
+                <img src="Assets/gallery/bg1.jpeg" alt="Nail design" class="gallery-image">
                 <div class="gallery-overlay">
-                    <div class="overlay-title">Glitter Accents</div>
-                    <div class="overlay-desc">Sparkle details on neutral base</div>
+                    <div class="overlay-title">Blush Almond</div>
+                    <div class="overlay-desc">Builder gel in soft pink with almond shape for an elegant, natural look.</div>
                 </div>
             </div>
 
-            <div class="gallery-item" data-category="extensions">
-                <img src="Assets/visit.png" alt="Nail design" class="gallery-image">
+            <div class="gallery-item" data-category="builder-gel">
+                <img src="Assets/gallery/bg2.jpeg" alt="Nail design" class="gallery-image">
                 <div class="gallery-overlay">
-                    <div class="overlay-title">Almond Shape</div>
-                    <div class="overlay-desc">Elegant extensions with jewel tones</div>
+                    <div class="overlay-title">Milky French</div>
+                    <div class="overlay-desc">Builder gel featuring translucent pink base with crisp white tips in oval shape.</div>
                 </div>
             </div>
 
-            <div class="gallery-item" data-category="nail-art">
-                <img src="Assets/visit.png" alt="Nail design" class="gallery-image">
+            <div class="gallery-item" data-category="press-ons">
+                <img src="Assets/gallery/po1.jpeg" alt="Nail design" class="gallery-image">
                 <div class="gallery-overlay">
-                    <div class="overlay-title">Minimalist Lines</div>
-                    <div class="overlay-desc">Simple geometric patterns</div>
+                    <div class="overlay-title">Celestial Bloom</div>
+                    <div class="overlay-desc">Press-ons with nude base, blue floral French tips and gold crescent moon accents.</div>
                 </div>
             </div>
 
-            <div class="gallery-item" data-category="pedicure">
-                <img src="Assets/visit.png" alt="Nail design" class="gallery-image">
+            <div class="gallery-item" data-category="press-ons">
+                <img src="Assets/gallery/po2.jpeg" alt="Nail design" class="gallery-image">
                 <div class="gallery-overlay">
-                    <div class="overlay-title">Summer Colors</div>
-                    <div class="overlay-desc">Bright tropical palette</div>
+                    <div class="overlay-title">Cartoon Cosmos</div>
+                    <div class="overlay-desc">Press-ons featuring Rick and Morty characters on olive green nails with cosmic black swirls.</div>
                 </div>
             </div>
 
-            <div class="gallery-item" data-category="pedicure nail-art">
-                <img src="Assets/visit.png" alt="Nail design" class="gallery-image">
+            <div class="gallery-item" data-category="press-ons">
+                <img src="Assets/gallery/po3.jpeg" alt="Nail design" class="gallery-image">
                 <div class="gallery-overlay">
-                    <div class="overlay-title">Marble Effect</div>
-                    <div class="overlay-desc">Stone-inspired design in neutrals</div>
+                    <div class="overlay-title">Amber Geometry</div>
+                    <div class="overlay-desc">Press-ons with transparent nude base, brown geometric patterns and gold wire accents.</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="press-ons">
+                <img src="Assets/gallery/po4.jpeg" alt="Nail design" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="overlay-title">Geek Chic</div>
+                    <div class="overlay-desc">Press-ons showcasing colorful superhero and science-themed designs with pop culture references.</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="menicure">
+                <img src="Assets/gallery/m1.jpeg" alt="Nail design" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="overlay-title">Street Art Mix</div>
+                    <div class="overlay-desc">Menicure featuring eclectic designs on clear base including blue flames, black symbols, racing checks, and micro florals for an edgy urban vibe.</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="menicure">
+                <img src="Assets/gallery/m2.jpeg" alt="Nail design" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="overlay-title">Cosmic Pastels</div>
+                    <div class="overlay-desc">Menicure with soft blue tones, burgundy spirals, and yellow star accent on short rounded nails for a subtle yet artistic statement.</div>
+                </div>
+            </div>
+            <div class="gallery-item" data-category="menicure">
+                <img src="Assets/gallery/m3.jpeg" alt="Nail design" class="gallery-image">
+                <div class="gallery-overlay">
+                    <div class="overlay-title">Monochrome Graphic</div>
+                    <div class="overlay-desc">Menicure in sleek black and white with bold spiral patterns, sun motifs, and minimalist striping for a modern, architectural look.</div>
                 </div>
             </div>
         </div>
